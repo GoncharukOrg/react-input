@@ -1,0 +1,88 @@
+{
+  "name": "@react-input/number-format",
+  "version": "1.0.0",
+  "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
+  "description": "React input component for formatted number input with locale-specific.",
+  "keywords": [
+    "react",
+    "react component",
+    "react hook",
+    "input",
+    "text field",
+    "number",
+    "format",
+    "number format",
+    "currency format",
+    "percent format",
+    "pattern"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GoncharukBro/react-input.git",
+    "directory": "packages/number-format"
+  },
+  "bugs": {
+    "url": "https://github.com/GoncharukBro/react-input/issues"
+  },
+  "homepage": "https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#readme",
+  "license": "MIT",
+  "module": "dist/index.js",
+  "main": "dist/node/index.cjs",
+  "types": "dist/declaration/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/node/index.cjs"
+    },
+    "./*": {
+      "import": [
+        "./dist/*.js",
+        "./dist/*"
+      ],
+      "require": [
+        "./dist/node/*.cjs",
+        "./dist/node/*"
+      ]
+    },
+    "./*.js": {
+      "import": [
+        "./dist/*.js",
+        "./dist/*"
+      ],
+      "require": [
+        "./dist/node/*.cjs",
+        "./dist/node/*"
+      ]
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "dist/declaration/index.d.ts": [
+        "dist/declaration/index.d.ts"
+      ],
+      "*": [
+        "dist/declaration/*"
+      ]
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rollup --config rollup.config.ts --configPlugin typescript"
+  },
+  "peerDependencies": {
+    "@types/react": ">=16.8",
+    "react": ">=16.8",
+    "react-dom": ">=16.8"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  }
+}

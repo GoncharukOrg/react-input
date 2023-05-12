@@ -65,7 +65,8 @@
         "dist/declaration/index.d.ts"
       ],
       "*": [
-        "dist/declaration/*"
+        "dist/declaration/*",
+        "dist/declaration/*/index.d.ts"
       ]
     }
   },

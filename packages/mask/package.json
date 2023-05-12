@@ -64,7 +64,8 @@
         "dist/declaration/index.d.ts"
       ],
       "*": [
-        "dist/declaration/*"
+        "dist/declaration/*",
+        "dist/declaration/*/index.d.ts"
       ]
     }
   },
@@ -72,7 +73,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rollup --config rollup.config.ts --configPlugin typescript"
+    "build": "rollup --config rollup.config.js"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

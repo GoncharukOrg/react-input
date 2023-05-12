@@ -301,6 +301,10 @@ export default function Component(props: any) {
 }
 ```
 
+## Other packages from `@react-input`
+
+- [`@react-input/number-format`](https://www.npmjs.com/package/@react-input/number-format) - apply locale-specific number, currency, and percentage formatting to input using a provided component or hook bound to the input element.
+
 ## Feedback
 
 If you find a bug or want to make a suggestion for improving the package, [open the issues on GitHub](https://github.com/GoncharukBro/react-input/issues) or email [goncharuk.bro@gmail.com](mailto:goncharuk.bro@gmail.com).

@@ -1,4 +1,4 @@
-import type { InputType } from '../core/types';
+import type { InputType } from '@react-input/core/types';
 
 import type { MaskPart, Replacement } from '../types';
 

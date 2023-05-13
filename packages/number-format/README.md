@@ -12,7 +12,7 @@
 npm i @react-input/number-format
 ```
 
-or using **Yarn**:
+or using **yarn**:
 
 ```bash
 yarn add @react-input/number-format

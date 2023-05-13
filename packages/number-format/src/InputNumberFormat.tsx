@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 
-import useConnectedInputRef from './core/hooks/useConnectedInputRef';
-import type { InputComponent, InputComponentProps } from './core/types';
+import useConnectedInputRef from '@react-input/core/hooks/useConnectedInputRef';
+import type { InputComponent, InputComponentProps } from '@react-input/core/types';
 
 import type { NumberFormatProps } from './types';
 

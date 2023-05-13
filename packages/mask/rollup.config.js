@@ -1,5 +1,5 @@
 /* eslint-disable import/no-relative-packages */
-import createRollupConfig from '../../createRollupConfig.js';
+import createRollupConfig from '../../utils/createRollupConfig.js';
 
 const input = ['src/index.ts', 'src/InputMask.tsx', 'src/useMask.ts'];
 

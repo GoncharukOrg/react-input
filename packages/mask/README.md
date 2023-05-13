@@ -12,7 +12,7 @@
 npm i @react-input/mask
 ```
 
-or using **Yarn**:
+or using **yarn**:
 
 ```bash
 yarn add @react-input/mask

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import type { ExtendedHTMLInputElement } from './core/types';
+import type { ExtendedHTMLInputElement } from '@react-input/core/types';
 
 import type { Replacement } from './types';
 

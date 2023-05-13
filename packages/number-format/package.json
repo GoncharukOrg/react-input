@@ -76,6 +76,9 @@
   "scripts": {
     "build": "rollup --config rollup.config.js"
   },
+  "dependencies": {
+    "@react-input/core": "^1.0.0"
+  },
   "peerDependencies": {
     "@types/react": ">=16.8",
     "react": ">=16.8",

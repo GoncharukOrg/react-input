@@ -1,6 +1,6 @@
 import type { InputAttributes } from '../types';
 
-export interface SyntheticChangeError {
+interface SyntheticChangeError {
   cause?: { __attributes?: Partial<InputAttributes> };
 }
 
@@ -9,10 +9,12 @@ export interface SyntheticChangeError {
  * передать аттрибуты для установки в `input` элемент.
  */
 // eslint-disable-next-line no-redeclare
-export class SyntheticChangeError extends Error {
+class SyntheticChangeError extends Error {
   constructor(message: string, cause?: SyntheticChangeError['cause']) {
     super(message);
     this.name = 'SyntheticChangeError';
     this.cause = cause;
   }
 }
+
+export default SyntheticChangeError;

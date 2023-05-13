@@ -1,4 +1,4 @@
-import type { CustomInputEvent, CustomInputEventHandler } from './core/types';
+import type { CustomInputEvent, CustomInputEventHandler } from '@react-input/core/types';
 
 export type MaskPart = {
   /**

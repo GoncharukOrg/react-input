@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 import setInputAttributes from '../utils/setInputAttributes';
 
-import { SyntheticChangeError } from '../errors/SyntheticChangeError';
+import SyntheticChangeError from '../errors/SyntheticChangeError';
 
 import type {
   CustomInputEventHandler,

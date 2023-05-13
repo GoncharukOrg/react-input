@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 
-import type { ComponentStory, Meta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
-import { InputMask as InputMaskComponent, useMask } from '../src';
-import type { InputMaskProps, MaskEventDetail } from '../src';
+import { InputMask, type MaskEventDetail, useMask } from '../src';
 
 export default {
   title: 'Mask',
-  component: InputMaskComponent,
-} as Meta<InputMaskProps>;
+  component: InputMask,
+} satisfies Meta<typeof InputMask>;
 
-export const Hook: ComponentStory<any> = () => {
+function StoryHook() {
   const [detail, setDetail] = useState<MaskEventDetail | null>(null);
   const [value, setValue] = useState('');
 
@@ -37,4 +36,8 @@ export const Hook: ComponentStory<any> = () => {
       <pre>{JSON.stringify(detail, null, 2)}</pre>
     </>
   );
-};
+}
+
+export const Hook = {
+  render: StoryHook,
+} satisfies StoryObj<typeof InputMask>;

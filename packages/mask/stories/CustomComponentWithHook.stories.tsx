@@ -1,14 +1,13 @@
 import React, { forwardRef, useState } from 'react';
 
-import type { ComponentStory, Meta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
-import { InputMask as InputMaskComponent, useMask } from '../src';
-import type { InputMaskProps, MaskEventDetail } from '../src';
+import { InputMask, type MaskEventDetail, useMask } from '../src';
 
 export default {
   title: 'Mask',
-  component: InputMaskComponent,
-} as Meta<InputMaskProps>;
+  component: InputMask,
+} satisfies Meta<typeof InputMask>;
 
 const CustomComponent = forwardRef(
   (
@@ -24,7 +23,7 @@ const CustomComponent = forwardRef(
   }
 );
 
-export const CustomComponentWithHook: ComponentStory<any> = () => {
+function StoryCustomComponentWithHook() {
   const [detail, setDetail] = useState<MaskEventDetail | null>(null);
 
   const ref = useMask({
@@ -44,4 +43,8 @@ export const CustomComponentWithHook: ComponentStory<any> = () => {
       <pre>{JSON.stringify(detail, null, 2)}</pre>
     </>
   );
-};
+}
+
+export const CustomComponentWithHook = {
+  render: StoryCustomComponentWithHook,
+} satisfies StoryObj<typeof InputMask>;

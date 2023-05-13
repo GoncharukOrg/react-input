@@ -1,14 +1,14 @@
 import React from 'react';
 
-import type { ComponentStory, Meta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { useNumberFormat } from '../src';
 
 export default {
   title: 'Number Format',
-} as Meta;
+} satisfies Meta;
 
-export const Hook: ComponentStory<any> = () => {
+function StoryHook() {
   const refIN = useNumberFormat();
   const refRU = useNumberFormat({ locales: 'ru-RU', maximumIntegerDigits: 6 });
   const refRUCur = useNumberFormat({ locales: 'ru-RU', format: 'currency', currency: 'RUB' });
@@ -59,4 +59,8 @@ export const Hook: ComponentStory<any> = () => {
       </div>
     </>
   );
-};
+}
+
+export const Hook = {
+  render: StoryHook,
+} satisfies StoryObj;

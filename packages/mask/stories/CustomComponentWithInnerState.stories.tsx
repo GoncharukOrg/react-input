@@ -1,14 +1,13 @@
 import React, { forwardRef, useState } from 'react';
 
-import type { ComponentStory, Meta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
-import { InputMask as InputMaskComponent } from '../src';
-import type { InputMaskProps } from '../src';
+import { InputMask } from '../src';
 
 export default {
   title: 'Mask',
-  component: InputMaskComponent,
-} as Meta<InputMaskProps>;
+  component: InputMask,
+} satisfies Meta<typeof InputMask>;
 
 const CustomComponent = forwardRef(
   ({ label }: { label?: string }, forwardedRef: React.ForwardedRef<HTMLInputElement>) => {
@@ -28,13 +27,17 @@ const CustomComponent = forwardRef(
   }
 );
 
-export const CustomComponentWithInnerState: ComponentStory<typeof InputMaskComponent> = () => {
+function StoryCustomComponentWithInnerState() {
   return (
-    <InputMaskComponent
+    <InputMask
       component={CustomComponent}
       label="Мой заголовок"
       mask="+7 (___) ___-__-__"
       replacement={{ _: /\d/ }}
     />
   );
-};
+}
+
+export const CustomComponentWithInnerState = {
+  render: StoryCustomComponentWithInnerState,
+} satisfies StoryObj<typeof InputMask>;

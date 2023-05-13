@@ -69,8 +69,10 @@
     "access": "public"
   },
   "scripts": {
-    "entries": "node ../../scripts/createEntries.js",
-    "build": "rollup --config rollup.config.js"
+    "write-entries": "node ../../scripts/writeEntries.js",
+    "remove-dist": "node ../../scripts/removeDist.js",
+    "build-rollup": "rollup --config rollup.config.js",
+    "build": "npm run write-entries && npm run remove-dist && npm run build-rollup && node ../../scripts/consoleSuccess.js"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

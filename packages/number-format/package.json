@@ -74,8 +74,10 @@
     "access": "public"
   },
   "scripts": {
-    "clear": "node ../../scripts/clearDeclarationDir.js",
-    "build": "rollup --config rollup.config.js"
+    "remove-dist": "node ../../scripts/removeDist.js",
+    "build-rollup": "rollup --config rollup.config.js",
+    "clear-declaration": "node ../../scripts/clearDeclaration.js",
+    "build": "npm run remove-dist && npm run build-rollup && npm run clear-declaration && node ../../scripts/consoleSuccess.js"
   },
   "dependencies": {
     "@react-input/core": "^1.0.0"

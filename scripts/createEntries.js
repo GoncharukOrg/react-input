@@ -1,7 +1,7 @@
 const fs = require('fs');
 const util = require('util');
 
-const getPaths = require('./getPaths');
+const getPaths = require('../utils/getPaths');
 
 const paths = getPaths('./src');
 const resolvedPaths = paths.filter((path) => {

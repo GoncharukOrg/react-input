@@ -73,7 +73,7 @@
     "access": "public"
   },
   "scripts": {
-    "clear": "node ../../utils/clearDeclarationDir.js",
+    "clear": "node ../../scripts/clearDeclarationDir.js",
     "build": "rollup --config rollup.config.js"
   },
   "dependencies": {

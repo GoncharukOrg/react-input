@@ -69,7 +69,7 @@
     "access": "public"
   },
   "scripts": {
-    "entries": "node ../../utils/createEntries.js",
+    "entries": "node ../../scripts/createEntries.js",
     "build": "rollup --config rollup.config.js"
   },
   "peerDependencies": {

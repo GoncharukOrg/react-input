@@ -4,10 +4,10 @@ import type { MaskPart, Replacement } from '../types';
 
 interface ResolveSelectionParam {
   inputType: InputType;
-  added: string;
-  beforeRange: string;
-  afterRange: string;
   value: string;
+  addedValue: string;
+  beforeChangeValue: string;
+  afterChangeValue: string;
   parts: MaskPart[];
   replacement: Replacement;
   separate: boolean;
@@ -20,10 +20,10 @@ interface ResolveSelectionParam {
  */
 export default function resolveSelection({
   inputType,
-  added,
-  beforeRange,
-  afterRange,
   value,
+  addedValue,
+  beforeChangeValue,
+  afterChangeValue,
   parts,
   replacement,
   separate,
@@ -32,24 +32,26 @@ export default function resolveSelection({
     return type === 'input' || (separate && type === 'replacement');
   });
 
-  const addedLastIndex = unmaskedChars[beforeRange.length + added.length - 1]?.index;
-  const beforeRangeLastIndex = unmaskedChars[beforeRange.length - 1]?.index;
-  const afterRangeFirstIndex = unmaskedChars[beforeRange.length + added.length]?.index;
+  const lastAddedValueIndex =
+    unmaskedChars[beforeChangeValue.length + addedValue.length - 1]?.index;
+  const lastBeforeChangeValueIndex = unmaskedChars[beforeChangeValue.length - 1]?.index;
+  const firstAfterChangeValueIndex =
+    unmaskedChars[beforeChangeValue.length + addedValue.length]?.index;
 
   if (inputType === 'insert') {
-    if (addedLastIndex !== undefined) return addedLastIndex + 1;
-    if (afterRangeFirstIndex !== undefined) return afterRangeFirstIndex;
-    if (beforeRangeLastIndex !== undefined) return beforeRangeLastIndex + 1;
+    if (lastAddedValueIndex !== undefined) return lastAddedValueIndex + 1;
+    if (firstAfterChangeValueIndex !== undefined) return firstAfterChangeValueIndex;
+    if (lastBeforeChangeValueIndex !== undefined) return lastBeforeChangeValueIndex + 1;
   }
 
   if (inputType === 'deleteForward') {
-    if (afterRangeFirstIndex !== undefined) return afterRangeFirstIndex;
-    if (beforeRangeLastIndex !== undefined) return beforeRangeLastIndex + 1;
+    if (firstAfterChangeValueIndex !== undefined) return firstAfterChangeValueIndex;
+    if (lastBeforeChangeValueIndex !== undefined) return lastBeforeChangeValueIndex + 1;
   }
 
   if (inputType === 'deleteBackward') {
-    if (beforeRangeLastIndex !== undefined) return beforeRangeLastIndex + 1;
-    if (afterRangeFirstIndex !== undefined) return afterRangeFirstIndex;
+    if (lastBeforeChangeValueIndex !== undefined) return lastBeforeChangeValueIndex + 1;
+    if (firstAfterChangeValueIndex !== undefined) return firstAfterChangeValueIndex;
   }
 
   // Находим первый индекс символа замены указанного в свойстве `replacement`

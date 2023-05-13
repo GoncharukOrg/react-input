@@ -3,15 +3,15 @@ import type { InputType } from '@react-input/core/types';
 import type { LocalizedNumberFormatValues, ResolvedNumberFormatOptions } from '../types';
 
 interface ResolveSelectionParam {
-  previousLocalizedValues: LocalizedNumberFormatValues;
   localizedValues: LocalizedNumberFormatValues;
+  previousLocalizedValues: LocalizedNumberFormatValues;
   resolvedOptions: ResolvedNumberFormatOptions;
   inputType: InputType;
-  added: string;
+  addedValue: string;
   previousValue: string;
   nextValue: string;
-  selectionStartRange: number;
-  selectionEndRange: number;
+  changeStart: number;
+  changeEnd: number;
 }
 
 interface ResolveSelectionReturn {
@@ -25,18 +25,18 @@ interface ResolveSelectionReturn {
  * @returns
  */
 export default function resolveSelection({
-  previousLocalizedValues,
   localizedValues,
+  previousLocalizedValues,
   resolvedOptions,
   inputType,
-  added,
+  addedValue,
   previousValue,
   nextValue,
-  selectionStartRange,
-  selectionEndRange,
+  changeStart,
+  changeEnd,
 }: ResolveSelectionParam): ResolveSelectionReturn {
   if (
-    RegExp(`^[.,${localizedValues.decimal}]$`).test(added) &&
+    RegExp(`^[.,${localizedValues.decimal}]$`).test(addedValue) &&
     previousValue.includes(localizedValues.decimal)
   ) {
     const decimalIndex = nextValue.indexOf(localizedValues.decimal);
@@ -48,7 +48,7 @@ export default function resolveSelection({
   }
 
   if (
-    RegExp(`^[\\-\\${localizedValues.minusSign}]$`).test(added) &&
+    RegExp(`^[\\-\\${localizedValues.minusSign}]$`).test(addedValue) &&
     previousValue.includes(localizedValues.minusSign)
   ) {
     const minusSignIndex = nextValue.indexOf(localizedValues.minusSign);
@@ -62,16 +62,16 @@ export default function resolveSelection({
   // необходимо выделить все нули для последующего удаления `integer`. Такое
   // поведение оправдано в случае если `minimumIntegerDigits` больше чем 1
   if (inputType === 'deleteBackward' || inputType === 'deleteForward') {
-    const [previousValueBeforeDecimal] = previousValue.split(previousLocalizedValues.decimal);
+    const [beforeDecimalPreviousValue] = previousValue.split(previousLocalizedValues.decimal);
 
     if (
-      selectionEndRange <= previousValueBeforeDecimal.length &&
-      !RegExp(`[${previousLocalizedValues.digits.slice(1)}]`).test(previousValueBeforeDecimal)
+      changeEnd <= beforeDecimalPreviousValue.length &&
+      !RegExp(`[${previousLocalizedValues.digits.slice(1)}]`).test(beforeDecimalPreviousValue)
     ) {
-      const firstPreviousIntegerDigitIndex = previousValueBeforeDecimal.indexOf(
+      const firstPreviousIntegerDigitIndex = beforeDecimalPreviousValue.indexOf(
         previousLocalizedValues.digits[0]
       );
-      const lastPreviousIntegerDigitIndex = previousValueBeforeDecimal.lastIndexOf(
+      const lastPreviousIntegerDigitIndex = beforeDecimalPreviousValue.lastIndexOf(
         previousLocalizedValues.digits[0]
       );
 
@@ -80,14 +80,14 @@ export default function resolveSelection({
 
       // Нам не нужно повторно сохранять выделение
       const hasSelection =
-        selectionStartRange === firstPreviousIntegerDigitIndex &&
-        selectionEndRange === lastPreviousIntegerDigitIndex + 1;
+        changeStart === firstPreviousIntegerDigitIndex &&
+        changeEnd === lastPreviousIntegerDigitIndex + 1;
 
       if (
         hasPreviousIntegerDigitIndex &&
         !hasSelection &&
-        selectionEndRange > firstPreviousIntegerDigitIndex &&
-        selectionEndRange <= lastPreviousIntegerDigitIndex + 1
+        changeEnd > firstPreviousIntegerDigitIndex &&
+        changeEnd <= lastPreviousIntegerDigitIndex + 1
       ) {
         return { start: firstPreviousIntegerDigitIndex, end: lastPreviousIntegerDigitIndex + 1 };
       }
@@ -99,13 +99,13 @@ export default function resolveSelection({
   // Поскольку длина значения способна меняться, за счёт добавления/удаления
   // символов разрядности, гарантированным способом получить точную позицию
   // каретки, в рамках изменения значения при добавлении/удалении значения,
-  // будет подсчёт количества цифр до выделенной области изменения (до `selectionStartRange`).
+  // будет подсчёт количества цифр до выделенной области изменения (до `changeStart`).
 
   let countStableDigits = 0;
 
-  // Находим символы "устойчивого" числа до `selectionStartRange` (не учитывая
+  // Находим символы "устойчивого" числа до `changeStart` (не учитывая
   // нули от начала значения до первой цифры не равной нулю в `integer`)
-  for (let i = 0, start = false; i < selectionStartRange; i++) {
+  for (let i = 0, start = false; i < changeStart; i++) {
     const isDigit = previousLocalizedValues.digits.includes(previousValue[i]);
 
     if (!start) {
@@ -121,7 +121,7 @@ export default function resolveSelection({
   // Важно учесть добавленные символы, в противном
   // случае позиция каретки не будет сдвигаться
   if (inputType === 'insert') {
-    const previousValueBeforeSelectionStartRange = previousValue.slice(0, selectionStartRange);
+    const previousValueBeforeSelectionStartRange = previousValue.slice(0, changeStart);
 
     // eslint-disable-next-line prefer-const
     let [previousInteger, previousFraction = ''] = previousValueBeforeSelectionStartRange
@@ -135,19 +135,19 @@ export default function resolveSelection({
     const regExp$1 = RegExp(`[^\\d${localizedValues.digits}]+`, 'g');
     const previousDecimalIndex = previousValue.indexOf(previousLocalizedValues.decimal);
 
-    let absAdded = added
+    let absAdded = addedValue
       .replace(RegExp(`[\\-\\${localizedValues.minusSign}]`, 'g'), '')
       .replace(RegExp(`[,${localizedValues.decimal}]`, 'g'), '.');
 
     // Поскольку десятичный разделитель не может находиться
     // перед имеющимся разделителем, нам важно удалить его
-    if (previousDecimalIndex !== -1 && selectionEndRange <= previousDecimalIndex) {
+    if (previousDecimalIndex !== -1 && changeEnd <= previousDecimalIndex) {
       absAdded = absAdded.replace(regExp$1, '');
     }
 
     let [addedInteger, addedFraction = ''] = absAdded.split('.');
 
-    if (previousDecimalIndex !== -1 && selectionStartRange > previousDecimalIndex) {
+    if (previousDecimalIndex !== -1 && changeStart > previousDecimalIndex) {
       if (absAdded.includes('.')) {
         const joinedPreviousInteger = previousInteger + previousFraction;
 
@@ -221,7 +221,7 @@ export default function resolveSelection({
 
     if (
       nextValue[selection] === localizedValues.decimal &&
-      RegExp(`[.,${localizedValues.decimal}]`).test(added[added.length - 1] ?? '')
+      RegExp(`[.,${localizedValues.decimal}]`).test(addedValue[addedValue.length - 1] ?? '')
     ) {
       selection += 1;
     }

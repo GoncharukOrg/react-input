@@ -49,7 +49,7 @@ export default function resolveDetail(
   // заранее обрезать символ не соответствующий максимальному количеству символов
 
   // - `replace` - Учитываем `minimumSignificantDigits` и `minimumIntegerDigits`.
-  // Так, при `added` "2": "000 001" -> "000 0012" -> "12" -> "000 012"
+  // Так, при `addedValue` "2": "000 001" -> "000 0012" -> "12" -> "000 012"
   integer = integer.replace(/^0+/g, '').slice(0, resolvedOptions.maximumIntegerDigits);
 
   // if (fraction !== undefined && resolvedOptions.maximumSignificantDigits !== undefined) {

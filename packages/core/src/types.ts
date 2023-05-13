@@ -21,12 +21,12 @@ export type Init = (param: InitParam) => Pick<InputAttributes, 'value'>;
 
 interface TrackingParam {
   inputType: InputType;
-  added: string;
-  deleted: string;
-  previousValue: string;
-  selectionStartRange: number;
-  selectionEndRange: number;
   value: string;
+  addedValue: string;
+  deletedValue: string;
+  previousValue: string;
+  changeStart: number;
+  changeEnd: number;
   selectionStart: number;
   selectionEnd: number;
 }

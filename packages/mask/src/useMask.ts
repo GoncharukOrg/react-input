@@ -75,7 +75,7 @@ export default function useMask(
    */
 
   const tracking = useCallback<Tracking<MaskEventDetail>>(
-    ({ inputType, added, previousValue, selectionStartRange, selectionEndRange }) => {
+    ({ inputType, addedValue, previousValue, changeStart, changeEnd }) => {
       if (cache.current === null) {
         throw new SyntheticChangeError('The state has not been initialized.');
       }
@@ -92,9 +92,9 @@ export default function useMask(
       // Дополнительно нам важно учесть, что немаскированное значение с учетом удаления или добавления символов должно
       // получаться с помощью закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
 
-      let beforeRange = unmask({
+      let beforeChangeValue = unmask({
         value: previousValue,
-        end: selectionStartRange,
+        end: changeStart,
         mask: cache.current.props.mask,
         replacement: cache.current.props.replacement,
         separate: cache.current.props.separate,
@@ -107,70 +107,70 @@ export default function useMask(
       // Важно определить корректное значение на данном этапе
       const replacementChars = cache.current.props.mask.replace(regExp$1, '');
 
-      if (beforeRange) {
-        beforeRange = filter({
-          value: beforeRange,
+      if (beforeChangeValue) {
+        beforeChangeValue = filter({
+          value: beforeChangeValue,
           replacementChars,
           replacement: cache.current.props.replacement,
           separate: cache.current.props.separate,
         });
       }
 
-      if (added) {
+      if (addedValue) {
         // eslint-disable-next-line no-param-reassign
-        added = filter({
-          value: added,
-          replacementChars: replacementChars.slice(beforeRange.length),
+        addedValue = filter({
+          value: addedValue,
+          replacementChars: replacementChars.slice(beforeChangeValue.length),
           replacement: cache.current.props.replacement,
           separate: false, // Поскольку нас интересуют только "полезные" символы, фильтруем без учёта заменяемых символов
         });
       }
 
-      if (inputType === 'insert' && added === '') {
+      if (inputType === 'insert' && addedValue === '') {
         throw new SyntheticChangeError(
           'The character does not match the key value of the `replacement` object.'
         );
       }
 
-      let afterRange = unmask({
+      let afterChangeValue = unmask({
         value: previousValue,
-        start: selectionEndRange,
+        start: changeEnd,
         mask: cache.current.props.mask,
         replacement: cache.current.props.replacement,
         separate: cache.current.props.separate,
       });
 
-      // Модифицируем `afterRange` чтобы позиция символов не смещалась. Необходимо выполнять
-      // после фильтрации `added` и перед фильтрацией `afterRange`
+      // Модифицируем `afterChangeValue` чтобы позиция символов не смещалась. Необходимо выполнять
+      // после фильтрации `addedValue` и перед фильтрацией `afterChangeValue`
       if (cache.current.props.separate) {
         // Находим заменяемые символы в диапазоне изменяемых символов
         const separateChars = cache.current.props.mask
-          .slice(selectionStartRange, selectionEndRange)
+          .slice(changeStart, changeEnd)
           .replace(regExp$1, '');
 
-        // Получаем количество символов для сохранения перед `afterRange`. Возможные значения:
+        // Получаем количество символов для сохранения перед `afterChangeValue`. Возможные значения:
         // `меньше ноля` - обрезаем значение от начала на количество символов;
         // `ноль` - не меняем значение;
         // `больше ноля` - добавляем заменяемые символы к началу значения.
-        const countSeparateChars = separateChars.length - added.length;
+        const countSeparateChars = separateChars.length - addedValue.length;
 
         if (countSeparateChars < 0) {
-          afterRange = afterRange.slice(-countSeparateChars);
+          afterChangeValue = afterChangeValue.slice(-countSeparateChars);
         } else if (countSeparateChars > 0) {
-          afterRange = separateChars.slice(-countSeparateChars) + afterRange;
+          afterChangeValue = separateChars.slice(-countSeparateChars) + afterChangeValue;
         }
       }
 
-      if (afterRange) {
-        afterRange = filter({
-          value: afterRange,
-          replacementChars: replacementChars.slice(beforeRange.length + added.length),
+      if (afterChangeValue) {
+        afterChangeValue = filter({
+          value: afterChangeValue,
+          replacementChars: replacementChars.slice(beforeChangeValue.length + addedValue.length),
           replacement: cache.current.props.replacement,
           separate: cache.current.props.separate,
         });
       }
 
-      const input = beforeRange + added + afterRange;
+      const input = beforeChangeValue + addedValue + afterChangeValue;
 
       /* eslint-disable prefer-const */
       let {
@@ -192,10 +192,10 @@ export default function useMask(
 
       const selection = resolveSelection({
         inputType,
-        added,
-        beforeRange,
-        afterRange,
         value: detail.value,
+        addedValue,
+        beforeChangeValue,
+        afterChangeValue,
         parts: detail.parts,
         replacement: modifiedReplacement,
         separate: modifiedSeparate,

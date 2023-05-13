@@ -89,7 +89,7 @@ export default function useNumberFormat(
    */
 
   const tracking = useCallback<Tracking<NumberFormatEventDetail>>(
-    ({ inputType, added, previousValue, selectionStartRange, selectionEndRange }) => {
+    ({ inputType, addedValue, previousValue, changeStart, changeEnd }) => {
       if (cache.current === null) {
         throw new SyntheticChangeError('The state has not been initialized.');
       }
@@ -135,9 +135,9 @@ export default function useNumberFormat(
       };
 
       // eslint-disable-next-line no-param-reassign
-      added = filter(added);
+      addedValue = filter(addedValue);
 
-      if (inputType === 'insert' && !added) {
+      if (inputType === 'insert' && !addedValue) {
         throw new SyntheticChangeError('The added value does not contain allowed characters.');
       }
 
@@ -148,10 +148,10 @@ export default function useNumberFormat(
 
       // Нам важно удалить ненужные символы перед преобразованием в число, так
       // как символ группы и символ десятичного разделителя могут пересекаться
-      const before = previousValue.slice(0, selectionStartRange).replace(regExp$1, '');
-      const after = previousValue.slice(selectionEndRange).replace(regExp$1, '');
+      const beforeChangeValue = previousValue.slice(0, changeStart).replace(regExp$1, '');
+      const afterChangeValue = previousValue.slice(changeEnd).replace(regExp$1, '');
 
-      let normalizedValue = before + added + after;
+      let normalizedValue = beforeChangeValue + addedValue + afterChangeValue;
 
       // Фильтруем значение для преобразование в число
       normalizedValue = filter(normalizedValue)
@@ -170,8 +170,8 @@ export default function useNumberFormat(
       // создав автоматическую вставку при любой позиции каретки
       {
         const isReflectMinusSign =
-          RegExp(`^[\\-\\${localizedValues.minusSign}]$`).test(added) &&
-          selectionStartRange === selectionEndRange;
+          RegExp(`^[\\-\\${localizedValues.minusSign}]$`).test(addedValue) &&
+          changeStart === changeEnd;
 
         const hasPreviousValueMinusSign = previousValue.includes(previousLocalizedValues.minusSign);
         const hasNormalizedValueMinusSign = normalizedValue.includes('-');
@@ -223,8 +223,8 @@ export default function useNumberFormat(
 
           // Если изменения происходят в области `minimumFractionDigits`
           const isRange =
-            selectionStartRange >= previousFractionIndex &&
-            selectionEndRange < previousFractionIndex + (previousMinimumFractionDigits || 1);
+            changeStart >= previousFractionIndex &&
+            changeEnd < previousFractionIndex + (previousMinimumFractionDigits || 1);
 
           if (isRange && previousFraction.length <= (previousMinimumFractionDigits || 1)) {
             normalizedValue = normalizedValue.replace(/0+$/g, '');
@@ -241,15 +241,15 @@ export default function useNumberFormat(
       });
 
       const selection = resolveSelection({
-        previousLocalizedValues,
         localizedValues,
+        previousLocalizedValues,
         resolvedOptions: resolved,
         inputType,
-        added,
+        addedValue,
         previousValue,
         nextValue: detail.value,
-        selectionStartRange,
-        selectionEndRange,
+        changeStart,
+        changeEnd,
       });
 
       cache.current.value = detail.value;

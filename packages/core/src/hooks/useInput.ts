@@ -145,14 +145,14 @@ export default function useInput<D = unknown>({
           throw new SyntheticChangeError('Input type detection error.');
         }
 
-        let added = '';
-        let deleted = '';
-        let selectionStartRange = selection.current.start;
-        let selectionEndRange = selection.current.end;
+        let addedValue = '';
+        let deletedValue = '';
+        let changeStart = selection.current.start;
+        let changeEnd = selection.current.end;
 
         switch (inputType) {
           case 'insert': {
-            added = value.slice(selection.current.start, selectionStart);
+            addedValue = value.slice(selection.current.start, selectionStart);
             break;
           }
           case 'deleteBackward':
@@ -161,10 +161,10 @@ export default function useInput<D = unknown>({
             // при удалении без выделения позиция каретки "до" и "после" будут совпадать
             const countDeleted = previousValue.length - value.length;
 
-            selectionStartRange = selectionStart;
-            selectionEndRange = selectionStart + countDeleted;
+            changeStart = selectionStart;
+            changeEnd = selectionStart + countDeleted;
 
-            deleted = previousValue.slice(selectionStartRange, selectionEndRange);
+            deletedValue = previousValue.slice(changeStart, changeEnd);
             break;
           }
           default: {
@@ -174,12 +174,12 @@ export default function useInput<D = unknown>({
 
         const trackingResult = tracking({
           inputType,
-          added,
-          deleted,
-          previousValue,
-          selectionStartRange,
-          selectionEndRange,
           value,
+          addedValue,
+          deletedValue,
+          previousValue,
+          changeStart,
+          changeEnd,
           selectionStart,
           selectionEnd,
         });

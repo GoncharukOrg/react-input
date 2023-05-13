@@ -1,13 +1,18 @@
 import { forwardRef } from 'react';
 
 import useConnectedInputRef from '@react-input/core/hooks/useConnectedInputRef';
-import type { InputComponent, InputComponentProps } from '@react-input/core/types';
+import type {
+  InputComponent,
+  PropsWithComponent,
+  PropsWithoutComponent,
+} from '@react-input/core/types';
 
 import type { MaskProps } from './types';
 
 import useMask from './useMask';
 
-export type InputMaskProps<P extends object | null = null> = MaskProps & InputComponentProps<P>;
+export type InputMaskProps<P extends object | null = null> = MaskProps &
+  (P extends null ? PropsWithoutComponent : P extends object ? PropsWithComponent<P> : {});
 
 function InputMaskComponent(
   props: InputMaskProps,

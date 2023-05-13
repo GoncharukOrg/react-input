@@ -44,15 +44,17 @@ export interface ExtendedHTMLInputElement extends HTMLInputElement {
   };
 }
 
-export type InputComponentProps<P extends object | null = null> = P extends null
-  ? { component?: undefined } & React.InputHTMLAttributes<HTMLInputElement>
-  : P extends object
-  ? { component: React.ComponentType<P & React.RefAttributes<HTMLInputElement>> } & P
-  : {};
+export type PropsWithoutComponent = {
+  component?: undefined;
+} & React.InputHTMLAttributes<HTMLInputElement>;
+
+export type PropsWithComponent<P extends object> = {
+  component: React.ComponentType<P & React.RefAttributes<HTMLInputElement>>;
+} & P;
 
 export type InputComponent<T extends object> = {
-  (props: T & InputComponentProps & React.RefAttributes<HTMLInputElement>): JSX.Element;
+  (props: T & PropsWithoutComponent & React.RefAttributes<HTMLInputElement>): JSX.Element;
   <P extends object>(
-    props: T & InputComponentProps<P> & React.RefAttributes<HTMLInputElement>
+    props: T & PropsWithComponent<P> & React.RefAttributes<HTMLInputElement>
   ): JSX.Element;
 };

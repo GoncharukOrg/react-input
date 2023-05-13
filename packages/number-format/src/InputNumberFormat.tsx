@@ -1,14 +1,18 @@
 import { forwardRef } from 'react';
 
 import useConnectedInputRef from '@react-input/core/hooks/useConnectedInputRef';
-import type { InputComponent, InputComponentProps } from '@react-input/core/types';
+import type {
+  InputComponent,
+  PropsWithComponent,
+  PropsWithoutComponent,
+} from '@react-input/core/types';
 
 import type { NumberFormatProps } from './types';
 
 import useNumberFormat from './useNumberFormat';
 
 export type InputNumberFormatProps<P extends object | null = null> = NumberFormatProps &
-  InputComponentProps<P>;
+  (P extends null ? PropsWithoutComponent : P extends object ? PropsWithComponent<P> : {});
 
 function InputNumberFormatComponent(
   props: InputNumberFormatProps,

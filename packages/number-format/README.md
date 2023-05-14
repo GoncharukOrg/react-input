@@ -302,6 +302,12 @@ export default function Component(props: any) {
 }
 ```
 
+## Testing
+
+Because each input performs the necessary calculations to set the formatting of the value, you need to set a delay between character inputs when testing the input in your application, otherwise the test may not succeed due to the necessary changes between inputs not taking effect.
+
+The recommended delay time is 15 milliseconds, however, you may need to set a different time, which can be found experimentally.
+
 ## Other packages from `@react-input`
 
 - [`@react-input/mask`](https://www.npmjs.com/package/@react-input/mask) - apply any mask to the input using a provided component or a hook bound to the input element.

@@ -3,6 +3,7 @@
   "compilerOptions": {
     "declaration": true,
     "declarationDir": "dist/declaration",
+    "removeComments": true,
     "rootDir": "src",
     "outDir": "dist"
   },

@@ -118,8 +118,8 @@ export default function resolveDetail(
     // minimumSignificantDigits: currentMinimumSignificantDigits,
   }).format(number);
 
-  // В значении могут встречаться символы пробела в юникоде, нам важно заменить
-  // такие символы на обычный пробел для соответствия стандартному значению
+  // В значении может встречаться юникод, нам важно заменить
+  // такие символы для соответствия стандартному значению
   nextValue = nextValue.replace(/\s/g, ' ');
 
   const sign = nextValue.includes('+')

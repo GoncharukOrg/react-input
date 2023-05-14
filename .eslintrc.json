@@ -3,13 +3,7 @@
     "browser": true,
     "es2021": true
   },
-  "extends": [
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:storybook/recommended",
-    "airbnb",
-    "prettier"
-  ],
+  "extends": ["plugin:react/recommended", "plugin:react-hooks/recommended", "airbnb", "prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
@@ -33,23 +27,23 @@
     "no-nested-ternary": 0,
     "no-undef": 0,
     "no-underscore-dangle": 0,
-    "no-unused-vars": [
-      1,
-      {
-        "args": "none"
-      }
-    ],
+    "no-unused-vars": [1, { "args": "none" }],
     "no-use-before-define": 0,
     "react/function-component-definition": 0,
-    "react/jsx-filename-extension": [
-      2,
-      {
-        "extensions": [".jsx", ".tsx"]
-      }
-    ],
+    "react/jsx-filename-extension": [2, { "extensions": [".jsx", ".tsx"] }],
     "react/jsx-props-no-spreading": 0,
     "react/jsx-uses-react": 0,
     "react/react-in-jsx-scope": 0,
     "react/require-default-props": 0
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"],
+      "extends": ["plugin:jest-dom/recommended", "plugin:testing-library/react"]
+    },
+    {
+      "files": ["**/stories/**/*.[jt]s?(x)", "**/?(*.)+stories.[jt]s?(x)"],
+      "extends": ["plugin:storybook/recommended"]
+    }
+  ]
 }

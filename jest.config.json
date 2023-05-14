@@ -1,0 +1,4 @@
+{
+  "clearMocks": true,
+  "testEnvironment": "jsdom"
+}

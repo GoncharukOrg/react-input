@@ -1,55 +1,55 @@
 import React from 'react';
 
+import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { InputMask } from '.';
 
-const options = { delay: 10 };
+const user = userEvent.setup({ delay: 15 });
 
-async function init(value: string) {
-  render(<InputMask mask="+7 (___) ___-__-__" replacement="_" />);
-  const input = screen.getByRole('textbox') as HTMLInputElement;
-  await userEvent.type(input, value, options);
+const init = () => {
+  render(<InputMask mask="+7 (___) ___-__-__" replacement="_" data-testid="input-mask" />);
+  return screen.getByTestId<HTMLInputElement>('input-mask');
+};
+
+const initWithDefaultType = async () => {
+  const input = init();
+  await user.type(input, '9123456789');
   return input;
-}
+};
 
 test('Type', async () => {
-  const input = await init('9123456789');
+  const input = await initWithDefaultType();
   expect(input).toHaveValue('+7 (912) 345-67-89');
 });
 
-// test('Replace characters within the selected range', async () => {
-//   const input = await init('9123456789');
-//   input.setSelectionRange(4, 5);
-//   await userEvent.type(input, '0', options);
-//   expect(input).toHaveValue('+7 (012) 345-67-89');
-// });
+test('Replace characters within the selected range', async () => {
+  const input = await initWithDefaultType();
+  await user.type(input, '0', { initialSelectionStart: 4, initialSelectionEnd: 8 });
+  expect(input).toHaveValue('+7 (034) 567-89');
+});
 
-// test('Backspace after change character', async () => {
-//   const input = await init();
-//   input.setSelectionRange(5, 5);
-//   await userEvent.type(input, '{backspace}', options);
-//   expect(input).toHaveValue('+7 (123) 456-78-9');
-// });
+test('Backspace after user character', async () => {
+  const input = await initWithDefaultType();
+  await user.type(input, '{Backspace}', { initialSelectionStart: 5, initialSelectionEnd: 5 });
+  expect(input).toHaveValue('+7 (123) 456-78-9');
+});
 
-// test('Backspace after mask character', async () => {
-//   const input = await init();
-//   input.setSelectionRange(8, 8);
-//   await userEvent.type(input, '{backspace}', options);
-//   expect(input).toHaveValue('+7 (912) 345-67-89');
-// });
+test('Backspace after mask character', async () => {
+  const input = await initWithDefaultType();
+  await user.type(input, '{Backspace}', { initialSelectionStart: 8, initialSelectionEnd: 8 });
+  expect(input).toHaveValue('+7 (912) 345-67-89');
+});
 
-// test('Delete before change character', async () => {
-//   const input = await init();
-//   input.setSelectionRange(4, 4);
-//   await userEvent.type(input, '{del}', options);
-//   expect(input).toHaveValue('+7 (123) 456-78-9');
-// });
+test('Delete before user character', async () => {
+  const input = await initWithDefaultType();
+  await user.type(input, '{Delete}', { initialSelectionStart: 4, initialSelectionEnd: 4 });
+  expect(input).toHaveValue('+7 (123) 456-78-9');
+});
 
-// test('Delete before mask character', async () => {
-//   const input = await init();
-//   input.setSelectionRange(7, 7);
-//   await userEvent.type(input, '{del}', options);
-//   expect(input).toHaveValue('+7 (912) 345-67-89');
-// });
+test('Delete before mask character', async () => {
+  const input = await initWithDefaultType();
+  await user.type(input, '{Delete}', { initialSelectionStart: 7, initialSelectionEnd: 7 });
+  expect(input).toHaveValue('+7 (912) 345-67-89');
+});

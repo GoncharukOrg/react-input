@@ -26,22 +26,22 @@
   },
   "homepage": "https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#readme",
   "license": "MIT",
-  "module": "dist/index.js",
+  "module": "dist/module/index.js",
   "main": "dist/node/index.cjs",
-  "types": "dist/declaration/index.d.ts",
+  "types": "dist/@types/index.d.ts",
   "files": [
     "dist"
   ],
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
+      "import": "./dist/module/index.js",
       "require": "./dist/node/index.cjs"
     },
     "./*": {
       "import": [
-        "./dist/*.js",
-        "./dist/*"
+        "./dist/module/*.js",
+        "./dist/module/*"
       ],
       "require": [
         "./dist/node/*.cjs",
@@ -50,8 +50,8 @@
     },
     "./*.js": {
       "import": [
-        "./dist/*.js",
-        "./dist/*"
+        "./dist/module/*.js",
+        "./dist/module/*"
       ],
       "require": [
         "./dist/node/*.cjs",
@@ -61,12 +61,12 @@
   },
   "typesVersions": {
     "*": {
-      "dist/declaration/index.d.ts": [
-        "dist/declaration/index.d.ts"
+      "dist/@types/index.d.ts": [
+        "dist/@types/index.d.ts"
       ],
       "*": [
-        "dist/declaration/*",
-        "dist/declaration/*/index.d.ts"
+        "dist/@types/*",
+        "dist/@types/*/index.d.ts"
       ]
     }
   },
@@ -74,10 +74,10 @@
     "access": "public"
   },
   "scripts": {
-    "remove-dist": "node ../../scripts/removeDist.js",
+    "remove-dist": "node ../../scripts/remove-dist.js",
     "build-rollup": "rollup --config rollup.config.js",
-    "clear-declaration": "node ../../scripts/clearDeclaration.js",
-    "build": "npm run remove-dist && npm run build-rollup && npm run clear-declaration && node ../../scripts/consoleSuccess.js"
+    "clear-types": "node ../../scripts/clear-types.js",
+    "build": "npm run remove-dist && npm run build-rollup && npm run clear-types && node ../../scripts/restore-dist.js && node ../../scripts/console-success.js"
   },
   "dependencies": {
     "@react-input/core": "^1.0.0"

@@ -21,22 +21,22 @@
   },
   "homepage": "https://github.com/GoncharukBro/react-input/tree/main/packages/core#readme",
   "license": "MIT",
-  "module": "dist/index.js",
+  "module": "dist/module/index.js",
   "main": "dist/node/index.cjs",
-  "types": "dist/declaration/index.d.ts",
+  "types": "dist/@types/index.d.ts",
   "files": [
     "dist"
   ],
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
+      "import": "./dist/module/index.js",
       "require": "./dist/node/index.cjs"
     },
     "./*": {
       "import": [
-        "./dist/*.js",
-        "./dist/*"
+        "./dist/module/*.js",
+        "./dist/module/*"
       ],
       "require": [
         "./dist/node/*.cjs",
@@ -45,8 +45,8 @@
     },
     "./*.js": {
       "import": [
-        "./dist/*.js",
-        "./dist/*"
+        "./dist/module/*.js",
+        "./dist/module/*"
       ],
       "require": [
         "./dist/node/*.cjs",
@@ -56,12 +56,12 @@
   },
   "typesVersions": {
     "*": {
-      "dist/declaration/index.d.ts": [
-        "dist/declaration/index.d.ts"
+      "dist/@types/index.d.ts": [
+        "dist/@types/index.d.ts"
       ],
       "*": [
-        "dist/declaration/*",
-        "dist/declaration/*/index.d.ts"
+        "dist/@types/*",
+        "dist/@types/*/index.d.ts"
       ]
     }
   },
@@ -69,10 +69,10 @@
     "access": "public"
   },
   "scripts": {
-    "write-entries": "node ../../scripts/writeEntries.js",
-    "remove-dist": "node ../../scripts/removeDist.js",
+    "write-entries": "node ../../scripts/write-entries.js",
+    "remove-dist": "node ../../scripts/remove-dist.js",
     "build-rollup": "rollup --config rollup.config.js",
-    "build": "npm run write-entries && npm run remove-dist && npm run build-rollup && node ../../scripts/consoleSuccess.js"
+    "build": "npm run write-entries && npm run remove-dist && npm run build-rollup && node ../../scripts/restore-dist.js && node ../../scripts/console-success.js"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

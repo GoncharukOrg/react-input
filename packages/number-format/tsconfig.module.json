@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declaration": true,
-    "declarationDir": "dist/declaration",
+    "declarationDir": "dist/@types",
     "removeComments": true,
     "rootDir": "src",
     "outDir": "dist"

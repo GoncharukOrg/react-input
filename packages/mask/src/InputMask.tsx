@@ -1,11 +1,7 @@
 import { forwardRef } from 'react';
 
-import useConnectedInputRef from '@react-input/core/hooks/useConnectedInputRef';
-import type {
-  InputComponent,
-  PropsWithComponent,
-  PropsWithoutComponent,
-} from '@react-input/core/types';
+import { useConnectedInputRef } from '@react-input/core';
+import type { InputComponent, PropsWithComponent, PropsWithoutComponent } from '@react-input/core';
 
 import type { MaskProps } from './types';
 

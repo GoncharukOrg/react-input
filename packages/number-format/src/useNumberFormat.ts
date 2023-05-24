@@ -1,8 +1,7 @@
 import { useCallback, useRef } from 'react';
 
-import SyntheticChangeError from '@react-input/core/errors/SyntheticChangeError';
-import useInput from '@react-input/core/hooks/useInput';
-import type { Init, Tracking } from '@react-input/core/types';
+import { SyntheticChangeError, useInput } from '@react-input/core';
+import type { Init, Tracking } from '@react-input/core';
 
 import localizeValues from './utils/localizeValues';
 import resolveDetail from './utils/resolveDetail';

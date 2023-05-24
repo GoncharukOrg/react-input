@@ -1,4 +1,4 @@
-import type { CustomInputEvent, CustomInputEventHandler } from '@react-input/core/types';
+import type { CustomInputEvent, CustomInputEventHandler } from '@react-input/core';
 
 export interface NumberFormatEventDetail {
   value: string;

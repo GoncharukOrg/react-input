@@ -9,7 +9,7 @@ export default {
   component: InputMask,
 } satisfies Meta<typeof InputMask>;
 
-function StoryTestProps() {
+function Component() {
   const [detail, setDetail] = useState<MaskEventDetail | null>(null);
   const [state, setState] = useState({
     mask: '+7 (___) ___-__-__',
@@ -59,17 +59,11 @@ function StoryTestProps() {
         Изменить replacement
       </button> */}
 
-      <button
-        type="button"
-        onClick={() => setState((prev) => ({ ...prev, showMask: !prev.showMask }))}
-      >
+      <button type="button" onClick={() => setState((prev) => ({ ...prev, showMask: !prev.showMask }))}>
         Изменить showMask
       </button>
 
-      <button
-        type="button"
-        onClick={() => setState((prev) => ({ ...prev, separate: !prev.separate }))}
-      >
+      <button type="button" onClick={() => setState((prev) => ({ ...prev, separate: !prev.separate }))}>
         Изменить separate
       </button>
 
@@ -79,5 +73,5 @@ function StoryTestProps() {
 }
 
 export const TestProps = {
-  render: StoryTestProps,
+  render: Component,
 } satisfies StoryObj<typeof InputMask>;

@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-console
-console.log(`
+console.info(`
 
 ┏(-_-)┛┗(-_- )┓┗(-_-)┛┏(-_-)┓ᕙ༼◕ل͜◕༽ᕗ┏(-_-)┛┗(-_- )┓┗(-_-)┛┏(-_-)┓
 

@@ -12,12 +12,7 @@ interface FilterParam {
  * @param param
  * @returns
  */
-export default function filter({
-  value,
-  replacementChars,
-  replacement,
-  separate,
-}: FilterParam): string {
+export default function filter({ value, replacementChars, replacement, separate }: FilterParam): string {
   let __replacementChars = replacementChars;
 
   return value.split('').reduce((prev, char) => {

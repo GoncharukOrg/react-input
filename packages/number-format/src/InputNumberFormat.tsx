@@ -8,19 +8,17 @@ import type { NumberFormatProps } from './types';
 import useNumberFormat from './useNumberFormat';
 
 export type InputNumberFormatProps<P extends object | null = null> = NumberFormatProps &
-  (P extends null ? PropsWithoutComponent : P extends object ? PropsWithComponent<P> : {});
+  (P extends null ? PropsWithoutComponent : P extends object ? PropsWithComponent<P> : Record<string, never>);
 
-function InputNumberFormatComponent(
+function ForwardedInputNumberFormat(
   props: InputNumberFormatProps,
   forwardedInputRef: React.ForwardedRef<HTMLInputElement>
 ): JSX.Element;
-// eslint-disable-next-line no-redeclare
-function InputNumberFormatComponent<P extends object>(
+function ForwardedInputNumberFormat<P extends object>(
   props: InputNumberFormatProps<P>,
   forwardedInputRef: React.ForwardedRef<HTMLInputElement>
 ): JSX.Element;
-// eslint-disable-next-line no-redeclare
-function InputNumberFormatComponent<P extends object>(
+function ForwardedInputNumberFormat<P extends object>(
   {
     component: Component,
     locales,
@@ -65,8 +63,6 @@ function InputNumberFormatComponent<P extends object>(
   return <input ref={connectedInputRef} {...props} />;
 }
 
-const InputNumberFormat = forwardRef(
-  InputNumberFormatComponent
-) as unknown as InputComponent<NumberFormatProps>;
+const InputNumberFormat = forwardRef(ForwardedInputNumberFormat) as unknown as InputComponent<NumberFormatProps>;
 
 export default InputNumberFormat;

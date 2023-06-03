@@ -9,7 +9,7 @@ export default {
   component: InputMask,
 } satisfies Meta<typeof InputMask>;
 
-function StoryUncontrolledComponent() {
+function Component() {
   const [detail, setDetail] = useState<MaskEventDetail | null>(null);
 
   return (
@@ -28,5 +28,5 @@ function StoryUncontrolledComponent() {
 }
 
 export const UncontrolledComponent = {
-  render: StoryUncontrolledComponent,
+  render: Component,
 } satisfies StoryObj<typeof InputMask>;

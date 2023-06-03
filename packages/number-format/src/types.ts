@@ -61,8 +61,7 @@ interface IncludedOptions {
 
 export type NumberFormatOptions = ResolveOptions<Intl.NumberFormatOptions> & IncludedOptions;
 
-export type ResolvedNumberFormatOptions = ResolveOptions<Intl.ResolvedNumberFormatOptions> &
-  Required<IncludedOptions>;
+export type ResolvedNumberFormatOptions = ResolveOptions<Intl.ResolvedNumberFormatOptions> & Required<IncludedOptions>;
 
 export interface LocalizedNumberFormatValues {
   signBackwards: boolean;

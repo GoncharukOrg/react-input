@@ -9,35 +9,32 @@ export default {
   component: InputMask,
 } satisfies Meta<typeof InputMask>;
 
-const CustomComponent = forwardRef(
-  ({ label }: { label?: string }, forwardedRef: React.ForwardedRef<HTMLInputElement>) => {
-    const [value, setValue] = useState('');
+interface ForwardedCustomComponentProps {
+  label?: string;
+}
 
-    return (
-      <>
-        <label htmlFor="custom-input">{label}</label>
-        <input
-          ref={forwardedRef}
-          id="custom-input"
-          value={value}
-          onChange={(event) => setValue(event.target.value)}
-        />
-      </>
-    );
-  }
-);
+function ForwardedCustomComponent(
+  { label }: ForwardedCustomComponentProps,
+  forwardedRef: React.ForwardedRef<HTMLInputElement>
+) {
+  const [value, setValue] = useState('');
 
-function StoryCustomComponentWithInnerState() {
   return (
-    <InputMask
-      component={CustomComponent}
-      label="Мой заголовок"
-      mask="+7 (___) ___-__-__"
-      replacement={{ _: /\d/ }}
-    />
+    <>
+      <label htmlFor="custom-input">{label}</label>
+      <input ref={forwardedRef} id="custom-input" value={value} onChange={(event) => setValue(event.target.value)} />
+    </>
+  );
+}
+
+const CustomComponent = forwardRef(ForwardedCustomComponent);
+
+function Component() {
+  return (
+    <InputMask component={CustomComponent} label="Мой заголовок" mask="+7 (___) ___-__-__" replacement={{ _: /\d/ }} />
   );
 }
 
 export const CustomComponentWithInnerState = {
-  render: StoryCustomComponentWithInnerState,
+  render: Component,
 } satisfies StoryObj<typeof InputMask>;

@@ -13,11 +13,7 @@ import type { MaskEventDetail, MaskPart, Replacement } from '../types';
  * - при `true`: `pattern === /^abc(?!_)\D123$/` и `pattern.test('abc_123')` вернёт `false`.
  * @returns
  */
-function generatePattern(
-  mask: string,
-  replacement: Replacement,
-  disableReplacementKey: boolean
-): string {
+function generatePattern(mask: string, replacement: Replacement, disableReplacementKey: boolean): string {
   const special = ['[', ']', '\\', '/', '^', '$', '.', '|', '?', '*', '+', '(', ')', '{', '}'];
 
   return mask.split('').reduce((prev, char, index, array) => {
@@ -97,10 +93,7 @@ interface FormatOptions {
  * @param param.showMask
  * @returns объект с данными маскированного значение
  */
-export default function resolveDetail(
-  input: string,
-  { mask, replacement, showMask }: FormatOptions
-): MaskEventDetail {
+export default function resolveDetail(input: string, { mask, replacement, showMask }: FormatOptions): MaskEventDetail {
   let formattedValue = formatToMask(input, { mask, replacement });
 
   const parts = formatToParts(formattedValue, { mask, replacement });

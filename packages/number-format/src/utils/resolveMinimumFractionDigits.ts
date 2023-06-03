@@ -1,8 +1,8 @@
 import { ResolvedNumberFormatOptions } from '../types';
 
 interface ResolveMinimumFractionDigitsParam {
-  integer: string;
-  fraction: string;
+  // integer: string;
+  // fraction: string;
   resolvedOptions: ResolvedNumberFormatOptions;
 }
 
@@ -12,8 +12,8 @@ interface ResolveMinimumFractionDigitsParam {
  * @returns
  */
 export default function resolveMinimumFractionDigits({
-  integer,
-  fraction,
+  // integer,
+  // fraction,
   resolvedOptions,
 }: ResolveMinimumFractionDigitsParam) {
   const { minimumFractionDigits = 0 } = resolvedOptions;

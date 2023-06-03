@@ -9,14 +9,7 @@ interface UnmaskParam {
   separate: boolean;
 }
 
-export default function unmask({
-  value,
-  start = 0,
-  end,
-  mask,
-  replacement,
-  separate,
-}: UnmaskParam) {
+export default function unmask({ value, start = 0, end, mask, replacement, separate }: UnmaskParam) {
   const slicedMask = mask.slice(start, end);
   const slicedValue = value.slice(start, end);
 

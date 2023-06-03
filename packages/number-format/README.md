@@ -38,9 +38,9 @@ yarn add @react-input/number-format
 | `onNumberFormat`        |                       `function`                       |             | Handler for the custom event `input-number-format`. Called asynchronously after the `change` event, accessing the `detail` property containing additional useful information about the value. (see «[Number format event](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#format-event)»).                                                                                                                                                                                                                                                                          |
 
 > Since the package is based on the `Intl.NumberFormat` constructor, it is important to consider that the functionality of both the package itself and its properties will depend on your browser versions. You can view support for browser versions [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat).
-
+>
 > If you are using TypeScript, the properties of the `InputNumberFormat` component will be typed based on your version of TypeScript, so make sure you are using the latest stable version of TypeScript in your project.
-
+>
 > You can also pass other properties available element `input` default or your own components, when integrated across the property `component`.
 
 ## Usage
@@ -164,12 +164,7 @@ import { InputNumberFormat } from '@react-input/number-format';
 export default function App() {
   const [detail, setDetail] = useState(null);
 
-  return (
-    <InputNumberFormat
-      value={detail?.value ?? ''}
-      onNumberFormat={(event) => setDetail(event.detail)}
-    />
-  );
+  return <InputNumberFormat value={detail?.value ?? ''} onNumberFormat={(event) => setDetail(event.detail)} />;
 }
 ```
 

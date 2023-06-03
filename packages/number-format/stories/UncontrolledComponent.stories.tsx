@@ -9,7 +9,7 @@ export default {
   component: InputNumberFormat,
 } satisfies Meta<typeof InputNumberFormat>;
 
-function StoryUncontrolledComponent() {
+function Component() {
   const [detail, setDetail] = useState<NumberFormatEventDetail | null>(null);
 
   return (
@@ -34,5 +34,5 @@ function StoryUncontrolledComponent() {
 }
 
 export const UncontrolledComponent = {
-  render: StoryUncontrolledComponent,
+  render: Component,
 } satisfies StoryObj<typeof InputNumberFormat>;

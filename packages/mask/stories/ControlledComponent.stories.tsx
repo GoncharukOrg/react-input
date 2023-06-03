@@ -9,7 +9,7 @@ export default {
   component: InputMask,
 } satisfies Meta<typeof InputMask>;
 
-function StoryControlledComponent() {
+function Component() {
   const [value, setValue] = useState('');
 
   return (
@@ -19,7 +19,6 @@ function StoryControlledComponent() {
         replacement={{ _: /\d/ }}
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        onMask={() => {}}
       />
 
       <pre>{JSON.stringify({ value }, null, 2)}</pre>
@@ -28,5 +27,5 @@ function StoryControlledComponent() {
 }
 
 export const ControlledComponent = {
-  render: StoryControlledComponent,
+  render: Component,
 } satisfies StoryObj<typeof InputMask>;

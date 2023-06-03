@@ -21,12 +21,10 @@ export default function useError({ locales, options }: UseErrorParam) {
     const { current, resolved } = resolveOptions(locales, options);
 
     const invalidType =
-      typeof current.maximumIntegerDigits !== 'number' &&
-      typeof current.maximumIntegerDigits !== 'undefined';
+      typeof current.maximumIntegerDigits !== 'number' && typeof current.maximumIntegerDigits !== 'undefined';
 
     const invalidRange =
-      typeof current.maximumIntegerDigits === 'number' &&
-      current.maximumIntegerDigits < resolved.minimumIntegerDigits;
+      typeof current.maximumIntegerDigits === 'number' && current.maximumIntegerDigits < resolved.minimumIntegerDigits;
 
     if (invalidType || invalidRange) {
       throw new RangeError('maximumIntegerDigits value is out of range.');

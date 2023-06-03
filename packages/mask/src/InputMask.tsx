@@ -8,19 +8,17 @@ import type { MaskProps } from './types';
 import useMask from './useMask';
 
 export type InputMaskProps<P extends object | null = null> = MaskProps &
-  (P extends null ? PropsWithoutComponent : P extends object ? PropsWithComponent<P> : {});
+  (P extends null ? PropsWithoutComponent : P extends object ? PropsWithComponent<P> : Record<string, never>);
 
-function InputMaskComponent(
+function ForwardedInputMask(
   props: InputMaskProps,
   forwardedInputRef: React.ForwardedRef<HTMLInputElement>
 ): JSX.Element;
-// eslint-disable-next-line no-redeclare
-function InputMaskComponent<P extends object>(
+function ForwardedInputMask<P extends object>(
   props: InputMaskProps<P>,
   forwardedInputRef: React.ForwardedRef<HTMLInputElement>
 ): JSX.Element;
-// eslint-disable-next-line no-redeclare
-function InputMaskComponent<P extends object>(
+function ForwardedInputMask<P extends object>(
   {
     component: Component,
     mask,
@@ -44,6 +42,6 @@ function InputMaskComponent<P extends object>(
   return <input ref={connectedInputRef} {...props} />;
 }
 
-const InputMask = forwardRef(InputMaskComponent) as unknown as InputComponent<MaskProps>;
+const InputMask = forwardRef(ForwardedInputMask) as unknown as InputComponent<MaskProps>;
 
 export default InputMask;

@@ -1,42 +1,63 @@
 {
-  "env": {
-    "browser": true,
-    "es2021": true
-  },
-  "extends": ["plugin:react/recommended", "plugin:react-hooks/recommended", "airbnb", "prettier"],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true
+  "extends": [
+    "eslint:recommended",
+    "airbnb",
+    "react-app",
+    "react-app/jest",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "prettier"
+  ],
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
     },
-    "ecmaVersion": 12,
-    "sourceType": "module"
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      }
+    },
+    "react": {
+      "createClass": "createReactClass",
+      "pragma": "React",
+      "fragment": "Fragment",
+      "version": "detect",
+      "flowVersion": "0.53"
+    }
   },
-  "plugins": ["react", "@typescript-eslint"],
   "rules": {
-    "arrow-body-style": 0,
+    "@typescript-eslint/no-unused-vars": [1, { "ignoreRestSiblings": true, "varsIgnorePattern": "^React$" }],
     "camelcase": 0,
-    "consistent-return": 1,
-    "default-case": 0,
-    "import/extensions": 0,
-    "import/no-extraneous-dependencies": 0,
-    "import/no-unresolved": 0,
-    "import/prefer-default-export": 0,
-    "max-classes-per-file": 0,
-    "no-plusplus": 0,
+    "no-console": [2, { "allow": ["info", "warn", "error"] }],
     "no-nested-ternary": 0,
-    "no-undef": 0,
+    "no-plusplus": 0,
     "no-underscore-dangle": 0,
-    "no-unused-vars": [1, { "args": "none" }],
-    "no-use-before-define": 0,
-    "react/function-component-definition": 0,
+    "import/extensions": [2, "ignorePackages", { "js": "never", "jsx": "never", "ts": "never", "tsx": "never" }],
+    "import/no-anonymous-default-export": [
+      2,
+      {
+        "allowArray": true,
+        "allowArrowFunction": false,
+        "allowAnonymousClass": false,
+        "allowAnonymousFunction": false,
+        "allowCallExpression": true,
+        "allowNew": false,
+        "allowLiteral": false,
+        "allowObject": true
+      }
+    ],
     "react/jsx-filename-extension": [2, { "extensions": [".jsx", ".tsx"] }],
     "react/jsx-props-no-spreading": 0,
-    "react/jsx-uses-react": 0,
-    "react/react-in-jsx-scope": 0,
     "react/require-default-props": 0
   },
   "overrides": [
+    {
+      "files": ["**/*.ts?(x)"],
+      "extends": ["plugin:@typescript-eslint/recommended"]
+    },
     {
       "files": ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"],
       "extends": ["plugin:jest-dom/recommended", "plugin:testing-library/react"]

@@ -7,7 +7,7 @@ interface ResolveSelectionParam {
   value: string;
   addedValue: string;
   beforeChangeValue: string;
-  afterChangeValue: string;
+  // afterChangeValue: string;
   parts: MaskPart[];
   replacement: Replacement;
   separate: boolean;
@@ -23,20 +23,16 @@ export default function resolveSelection({
   value,
   addedValue,
   beforeChangeValue,
-  afterChangeValue,
+  // afterChangeValue,
   parts,
   replacement,
   separate,
 }: ResolveSelectionParam): number {
-  const unmaskedChars = parts.filter(({ type }) => {
-    return type === 'input' || (separate && type === 'replacement');
-  });
+  const unmaskedChars = parts.filter(({ type }) => type === 'input' || (separate && type === 'replacement'));
 
-  const lastAddedValueIndex =
-    unmaskedChars[beforeChangeValue.length + addedValue.length - 1]?.index;
+  const lastAddedValueIndex = unmaskedChars[beforeChangeValue.length + addedValue.length - 1]?.index;
   const lastBeforeChangeValueIndex = unmaskedChars[beforeChangeValue.length - 1]?.index;
-  const firstAfterChangeValueIndex =
-    unmaskedChars[beforeChangeValue.length + addedValue.length]?.index;
+  const firstAfterChangeValueIndex = unmaskedChars[beforeChangeValue.length + addedValue.length]?.index;
 
   if (inputType === 'insert') {
     if (lastAddedValueIndex !== undefined) return lastAddedValueIndex + 1;
@@ -55,9 +51,9 @@ export default function resolveSelection({
   }
 
   // Находим первый индекс символа замены указанного в свойстве `replacement`
-  const replacementCharIndex = value.split('').findIndex((char) => {
-    return Object.prototype.hasOwnProperty.call(replacement, char);
-  });
+  const replacementCharIndex = value
+    .split('')
+    .findIndex((char) => Object.prototype.hasOwnProperty.call(replacement, char));
 
   return replacementCharIndex !== -1 ? replacementCharIndex : value.length;
 }

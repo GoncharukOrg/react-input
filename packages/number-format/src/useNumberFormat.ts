@@ -24,9 +24,7 @@ interface Cache {
   fallbackProps: CachedNumberFormatProps;
 }
 
-export default function useNumberFormat(
-  props?: NumberFormatProps
-): React.MutableRefObject<HTMLInputElement | null> {
+export default function useNumberFormat(props?: NumberFormatProps): React.MutableRefObject<HTMLInputElement | null> {
   const {
     locales,
     format,
@@ -169,8 +167,7 @@ export default function useNumberFormat(
       // создав автоматическую вставку при любой позиции каретки
       {
         const isReflectMinusSign =
-          RegExp(`^[\\-\\${localizedValues.minusSign}]$`).test(addedValue) &&
-          changeStart === changeEnd;
+          RegExp(`^[\\-\\${localizedValues.minusSign}]$`).test(addedValue) && changeStart === changeEnd;
 
         const hasPreviousValueMinusSign = previousValue.includes(previousLocalizedValues.minusSign);
         const hasNormalizedValueMinusSign = normalizedValue.includes('-');
@@ -193,7 +190,7 @@ export default function useNumberFormat(
       // для замены значения, чтобы заменить "0" на вводимое значение,
       // например, при вводе "1", получим "0.00" -> "0.1" -> "0.10" (не "0.100")
       if (/\..*0$/.test(normalizedValue)) {
-        let previousInteger = '';
+        // let previousInteger = '';
         let previousFraction = '';
         let previousFractionIndex = -1;
 
@@ -203,7 +200,7 @@ export default function useNumberFormat(
 
           if (!decimal) {
             if (isDecimal) decimal = true;
-            if (isDigit) previousInteger += previousValue[i];
+            // if (isDigit) previousInteger += previousValue[i];
           } else if (isDigit) {
             previousFraction += previousValue[i];
             if (previousFractionIndex === -1) previousFractionIndex = i;
@@ -212,12 +209,9 @@ export default function useNumberFormat(
 
         if (previousFractionIndex !== -1) {
           const previousMinimumFractionDigits = resolveMinimumFractionDigits({
-            integer: previousInteger,
-            fraction: previousFraction,
-            resolvedOptions: resolveOptions(
-              cache.current.props.locales,
-              cache.current.props.options
-            ).resolved,
+            // integer: previousInteger,
+            // fraction: previousFraction,
+            resolvedOptions: resolveOptions(cache.current.props.locales, cache.current.props.options).resolved,
           });
 
           // Если изменения происходят в области `minimumFractionDigits`

@@ -12,9 +12,8 @@ import type { MaskEventDetail, MaskProps, Replacement } from './types';
 
 import useError from './useError';
 
-const convertToReplacementObject = (replacement: string): Replacement => {
-  return replacement.length > 0 ? { [replacement]: /./ } : {};
-};
+const convertToReplacementObject = (replacement: string): Replacement =>
+  replacement.length > 0 ? { [replacement]: /./ } : {};
 
 type CachedMaskProps = Required<Omit<MaskProps, 'modify' | 'onMask'>> & {
   replacement: Replacement;
@@ -26,9 +25,7 @@ interface Cache {
   fallbackProps: CachedMaskProps;
 }
 
-export default function useMask(
-  props?: MaskProps
-): React.MutableRefObject<HTMLInputElement | null> {
+export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLInputElement | null> {
   const {
     mask = '',
     replacement: replacementProps = {},
@@ -39,16 +36,14 @@ export default function useMask(
   } = props ?? {};
 
   const replacement =
-    typeof replacementProps === 'string'
-      ? convertToReplacementObject(replacementProps)
-      : replacementProps;
+    typeof replacementProps === 'string' ? convertToReplacementObject(replacementProps) : replacementProps;
 
   const cache = useRef<Cache | null>(null);
 
   // Преобразовываем объект `replacement` в строку для сравнения с зависимостью в `useCallback`
-  const stringifiedReplacement = JSON.stringify(replacement, (key, value) => {
-    return value instanceof RegExp ? value.toString() : value;
-  });
+  const stringifiedReplacement = JSON.stringify(replacement, (key, value) =>
+    value instanceof RegExp ? value.toString() : value
+  );
 
   /**
    *
@@ -126,9 +121,7 @@ export default function useMask(
       }
 
       if (inputType === 'insert' && addedValue === '') {
-        throw new SyntheticChangeError(
-          'The character does not match the key value of the `replacement` object.'
-        );
+        throw new SyntheticChangeError('The character does not match the key value of the `replacement` object.');
       }
 
       let afterChangeValue = unmask({
@@ -143,9 +136,7 @@ export default function useMask(
       // после фильтрации `addedValue` и перед фильтрацией `afterChangeValue`
       if (cache.current.props.separate) {
         // Находим заменяемые символы в диапазоне изменяемых символов
-        const separateChars = cache.current.props.mask
-          .slice(changeStart, changeEnd)
-          .replace(regExp$1, '');
+        const separateChars = cache.current.props.mask.slice(changeStart, changeEnd).replace(regExp$1, '');
 
         // Получаем количество символов для сохранения перед `afterChangeValue`. Возможные значения:
         // `меньше ноля` - обрезаем значение от начала на количество символов;
@@ -194,7 +185,7 @@ export default function useMask(
         value: detail.value,
         addedValue,
         beforeChangeValue,
-        afterChangeValue,
+        // afterChangeValue,
         parts: detail.parts,
         replacement: modifiedReplacement,
         separate: modifiedSeparate,

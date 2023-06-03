@@ -1,10 +1,6 @@
 import type { InputType } from '@react-input/core';
 
-import type {
-  LocalizedNumberFormatValues,
-  NumberFormatOptions,
-  ResolvedNumberFormatOptions,
-} from '../types';
+import type { LocalizedNumberFormatValues, NumberFormatOptions, ResolvedNumberFormatOptions } from '../types';
 
 import resolveMinimumFractionDigits from './resolveMinimumFractionDigits';
 
@@ -64,16 +60,14 @@ export default function resolveDetail(
 
   fraction = fraction?.slice(0, currentMaximumFractionDigits);
 
-  const number = Number(
-    (isNegative ? '-' : '') + (integer || '0') + (fraction ? `.${fraction}` : '')
-  );
+  const number = Number((isNegative ? '-' : '') + (integer || '0') + (fraction ? `.${fraction}` : ''));
 
   // Чтобы иметь возможность прописывать "0" и сохранять его с каждой итерацией,
   // переопределяем `minimumFractionDigits` и `minimumSignificantDigits`
 
   currentMinimumFractionDigits = resolveMinimumFractionDigits({
-    integer,
-    fraction: fraction ?? '',
+    // integer,
+    // fraction: fraction ?? '',
     resolvedOptions,
   });
 
@@ -107,7 +101,6 @@ export default function resolveDetail(
     // }
   }
 
-  // eslint-disable-next-line no-unused-vars
   const { format, groupDisplay, maximumIntegerDigits, ...options } = currentOptions ?? {};
 
   let nextValue = Intl.NumberFormat(locales, {
@@ -134,13 +127,10 @@ export default function resolveDetail(
   if (sign !== undefined && localizedValues.signBackwards) {
     nextValue = nextValue.replace(RegExp(`[‎؜\\${sign}]`, 'g'), '');
 
-    const lastDigitIndex = nextValue.search(
-      RegExp(`[${localizedValues.digits}](?!.*[${localizedValues.digits}])`)
-    );
+    const lastDigitIndex = nextValue.search(RegExp(`[${localizedValues.digits}](?!.*[${localizedValues.digits}])`));
 
     if (lastDigitIndex !== -1) {
-      nextValue =
-        nextValue.slice(0, lastDigitIndex + 1) + sign + nextValue.slice(lastDigitIndex + 1);
+      nextValue = nextValue.slice(0, lastDigitIndex + 1) + sign + nextValue.slice(lastDigitIndex + 1);
 
       if (nextValue[0] !== '‏') {
         nextValue = `‏${nextValue}`;

@@ -4,9 +4,9 @@ const util = require('util');
 const getPaths = require('../utils/getPaths');
 
 const paths = getPaths('./src');
-const resolvedPaths = paths.filter((path) => {
-  return !/^\.\/src\/index.tsx?$|\.stories\.tsx?$|\.test\.tsx?$|\.d\.ts$/gm.test(path);
-});
+const resolvedPaths = paths.filter(
+  (path) => !/^\.\/src\/index.tsx?$|\.stories\.tsx?$|\.test\.tsx?$|\.d\.ts$/gm.test(path)
+);
 
 const allImportTypes = [];
 
@@ -30,8 +30,6 @@ const imports = resolvedPaths.map((path) => {
   return `export { default as ${moduleName} } from './${normalizedPath}';\n`;
 });
 
-util.promisify(fs.writeFile)(
-  './src/index.ts',
-  `${imports.join('')}\n${allImportTypes.join('\n')}`,
-  { encoding: 'utf-8' }
-);
+util.promisify(fs.writeFile)('./src/index.ts', `${imports.join('')}\n${allImportTypes.join('\n')}`, {
+  encoding: 'utf-8',
+});

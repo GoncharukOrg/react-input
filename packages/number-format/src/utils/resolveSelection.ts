@@ -35,10 +35,7 @@ export default function resolveSelection({
   changeStart,
   changeEnd,
 }: ResolveSelectionParam): ResolveSelectionReturn {
-  if (
-    RegExp(`^[.,${localizedValues.decimal}]$`).test(addedValue) &&
-    previousValue.includes(localizedValues.decimal)
-  ) {
+  if (RegExp(`^[.,${localizedValues.decimal}]$`).test(addedValue) && previousValue.includes(localizedValues.decimal)) {
     const decimalIndex = nextValue.indexOf(localizedValues.decimal);
 
     if (decimalIndex !== -1) {
@@ -68,20 +65,15 @@ export default function resolveSelection({
       changeEnd <= beforeDecimalPreviousValue.length &&
       !RegExp(`[${previousLocalizedValues.digits.slice(1)}]`).test(beforeDecimalPreviousValue)
     ) {
-      const firstPreviousIntegerDigitIndex = beforeDecimalPreviousValue.indexOf(
-        previousLocalizedValues.digits[0]
-      );
-      const lastPreviousIntegerDigitIndex = beforeDecimalPreviousValue.lastIndexOf(
-        previousLocalizedValues.digits[0]
-      );
+      const firstPreviousIntegerDigitIndex = beforeDecimalPreviousValue.indexOf(previousLocalizedValues.digits[0]);
+      const lastPreviousIntegerDigitIndex = beforeDecimalPreviousValue.lastIndexOf(previousLocalizedValues.digits[0]);
 
       const hasPreviousIntegerDigitIndex =
         firstPreviousIntegerDigitIndex !== -1 && lastPreviousIntegerDigitIndex !== -1;
 
       // Нам не нужно повторно сохранять выделение
       const hasSelection =
-        changeStart === firstPreviousIntegerDigitIndex &&
-        changeEnd === lastPreviousIntegerDigitIndex + 1;
+        changeStart === firstPreviousIntegerDigitIndex && changeEnd === lastPreviousIntegerDigitIndex + 1;
 
       if (
         hasPreviousIntegerDigitIndex &&
@@ -125,10 +117,7 @@ export default function resolveSelection({
 
     // eslint-disable-next-line prefer-const
     let [previousInteger, previousFraction = ''] = previousValueBeforeSelectionStartRange
-      .replace(
-        RegExp(`[^${previousLocalizedValues.decimal}${previousLocalizedValues.digits}]`, 'g'),
-        ''
-      )
+      .replace(RegExp(`[^${previousLocalizedValues.decimal}${previousLocalizedValues.digits}]`, 'g'), '')
       .replace(RegExp(`^${previousLocalizedValues.digits[0]}+`, 'g'), '')
       .split(previousLocalizedValues.decimal);
 
@@ -169,8 +158,7 @@ export default function resolveSelection({
     }
 
     const normalizedAdded =
-      addedInteger.slice(0, resolvedOptions.maximumIntegerDigits - previousInteger.length) +
-      addedFraction;
+      addedInteger.slice(0, resolvedOptions.maximumIntegerDigits - previousInteger.length) + addedFraction;
 
     countStableDigits += normalizedAdded.replace(regExp$1, '').length;
   }
@@ -184,8 +172,7 @@ export default function resolveSelection({
   for (let i = 0, start = false, countDigits = 0; i < nextValue.length; i++) {
     if (
       !start &&
-      (localizedValues.decimal === nextValue[i] ||
-        localizedValues.digits.slice(1).includes(nextValue[i]))
+      (localizedValues.decimal === nextValue[i] || localizedValues.digits.slice(1).includes(nextValue[i]))
     ) {
       start = true;
     }
@@ -229,9 +216,7 @@ export default function resolveSelection({
 
   // Страхуем границы позиции каретки
   {
-    const p$1 = `[\\${localizedValues.minusSign}${
-      localizedValues.decimal
-    }${localizedValues.digits.slice(1)}]`;
+    const p$1 = `[\\${localizedValues.minusSign}${localizedValues.decimal}${localizedValues.digits.slice(1)}]`;
     const p$2 = `[\\${localizedValues.minusSign}${localizedValues.digits}][^${localizedValues.digits}]*$`;
 
     const firstStableDigitIndex = nextValue.search(RegExp(p$1));

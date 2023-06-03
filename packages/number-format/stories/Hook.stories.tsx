@@ -8,7 +8,7 @@ export default {
   title: 'Number Format',
 } satisfies Meta;
 
-function StoryHook() {
+function Component() {
   const refIN = useNumberFormat();
   const refRU = useNumberFormat({ locales: 'ru-RU', maximumIntegerDigits: 6 });
   const refRUCur = useNumberFormat({ locales: 'ru-RU', format: 'currency', currency: 'RUB' });
@@ -62,5 +62,5 @@ function StoryHook() {
 }
 
 export const Hook = {
-  render: StoryHook,
+  render: Component,
 } satisfies StoryObj;

@@ -9,7 +9,7 @@ export default {
   component: InputMask,
 } satisfies Meta<typeof InputMask>;
 
-function StoryControlledComponentWithModifyPhone() {
+function Component() {
   const [detail, setDetail] = useState<MaskEventDetail | null>(null);
 
   const modify = (input: string) => {
@@ -33,5 +33,5 @@ function StoryControlledComponentWithModifyPhone() {
 }
 
 export const ControlledComponentWithModifyPhone = {
-  render: StoryControlledComponentWithModifyPhone,
+  render: Component,
 } satisfies StoryObj<typeof InputMask>;

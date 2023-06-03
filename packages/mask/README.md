@@ -76,9 +76,7 @@ like this:
 import { InputMask } from '@react-input/mask';
 
 export default function App() {
-  return (
-    <InputMask mask="dd.mm.yyyy" replacement={{ d: /\d/, m: /\d/, y: /\d/ }} showMask separate />
-  );
+  return <InputMask mask="dd.mm.yyyy" replacement={{ d: /\d/, m: /\d/, y: /\d/ }} showMask separate />;
 }
 ```
 
@@ -181,14 +179,7 @@ const CustomInput = forwardRef(({ label }, forwardedRef) => {
 
 // Component with InputMask
 export default function App() {
-  return (
-    <InputMask
-      component={CustomInput}
-      mask="___-___"
-      replacement="_"
-      label="Label for custom component"
-    />
-  );
+  return <InputMask component={CustomInput} mask="___-___" replacement="_" label="Label for custom component" />;
 }
 ```
 
@@ -290,14 +281,7 @@ import { InputMask } from '@react-input/mask';
 import { CustomInput, type CustomInputProps } from './CustomInput';
 
 export default function Component(props: any) {
-  return (
-    <InputMask<CustomInputProps>
-      component={CustomInput}
-      mask="___-___"
-      replacement="_"
-      {...props}
-    />
-  );
+  return <InputMask<CustomInputProps> component={CustomInput} mask="___-___" replacement="_" {...props} />;
 }
 ```
 

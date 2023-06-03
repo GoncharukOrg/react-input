@@ -5,9 +5,7 @@ import type { LocalizedNumberFormatValues } from '../types';
  * @param locales
  * @returns
  */
-export default function localizeValues(
-  locales: string | string[] | undefined
-): LocalizedNumberFormatValues {
+export default function localizeValues(locales: string | string[] | undefined): LocalizedNumberFormatValues {
   const value = Intl.NumberFormat(locales, {
     useGrouping: false,
     signDisplay: 'always',

@@ -4,19 +4,12 @@ import setInputAttributes from '../utils/setInputAttributes';
 
 import SyntheticChangeError from '../errors/SyntheticChangeError';
 
-import type {
-  CustomInputEventHandler,
-  ExtendedHTMLInputElement,
-  Init,
-  InputType,
-  Tracking,
-} from '../types';
+import type { CustomInputEventHandler, ExtendedHTMLInputElement, Init, InputType, Tracking } from '../types';
 
 import useDispatchCustomInputEvent from './useDispatchCustomInputEvent';
 
-const validInputElement = (inputElement: HTMLInputElement | null) => {
-  return inputElement !== null && inputElement.type === 'text';
-};
+const validInputElement = (inputElement: HTMLInputElement | null) =>
+  inputElement !== null && inputElement.type === 'text';
 
 interface UseInputParam<D> {
   init: Init;
@@ -63,11 +56,9 @@ export default function useInput<D = unknown>({
     if (process.env.NODE_ENV === 'production') return;
 
     if (inputRef.current === null) {
-      // eslint-disable-next-line no-console
       console.error(new Error('Input element does not exist.'));
     }
     if (inputRef.current !== null && inputRef.current.type !== 'text') {
-      // eslint-disable-next-line no-console
       console.error(new Error('The type of the input element does not match the type "text".'));
     }
   }, []);
@@ -126,22 +117,13 @@ export default function useInput<D = unknown>({
         // Определяем тип ввода (ручное определение типа ввода способствует кроссбраузерности)
         if (selectionStart > selection.current.start) {
           inputType = 'insert';
-        } else if (
-          selectionStart <= selection.current.start &&
-          selectionStart < selection.current.end
-        ) {
+        } else if (selectionStart <= selection.current.start && selectionStart < selection.current.end) {
           inputType = 'deleteBackward';
-        } else if (
-          selectionStart === selection.current.end &&
-          value.length < previousValue.length
-        ) {
+        } else if (selectionStart === selection.current.end && value.length < previousValue.length) {
           inputType = 'deleteForward';
         }
 
-        if (
-          (inputType === 'deleteBackward' || inputType === 'deleteForward') &&
-          value.length > previousValue.length
-        ) {
+        if ((inputType === 'deleteBackward' || inputType === 'deleteForward') && value.length > previousValue.length) {
           throw new SyntheticChangeError('Input type detection error.');
         }
 

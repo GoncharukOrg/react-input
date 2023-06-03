@@ -54,7 +54,5 @@ export type PropsWithComponent<P extends object> = {
 
 export type InputComponent<T extends object> = {
   (props: T & PropsWithoutComponent & React.RefAttributes<HTMLInputElement>): JSX.Element;
-  <P extends object>(
-    props: T & PropsWithComponent<P> & React.RefAttributes<HTMLInputElement>
-  ): JSX.Element;
+  <P extends object>(props: T & PropsWithComponent<P> & React.RefAttributes<HTMLInputElement>): JSX.Element;
 };

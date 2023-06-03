@@ -9,21 +9,26 @@ export default {
   component: InputMask,
 } satisfies Meta<typeof InputMask>;
 
-const CustomComponent = forwardRef(
-  (
-    { label, value }: { label?: string; value: string },
-    forwardedRef: React.ForwardedRef<HTMLInputElement>
-  ) => {
-    return (
-      <>
-        <label htmlFor="custom-input">{label}</label>
-        <input ref={forwardedRef} id="custom-input" value={value} />
-      </>
-    );
-  }
-);
+interface ForwardedCustomComponentProps {
+  label?: string;
+  value: string;
+}
 
-function StoryCustomComponentWithOuterState() {
+function ForwardedCustomComponent(
+  { label, value }: ForwardedCustomComponentProps,
+  forwardedRef: React.ForwardedRef<HTMLInputElement>
+) {
+  return (
+    <>
+      <label htmlFor="custom-input">{label}</label>
+      <input ref={forwardedRef} id="custom-input" value={value} />
+    </>
+  );
+}
+
+const CustomComponent = forwardRef(ForwardedCustomComponent);
+
+function Component() {
   const [detail, setDetail] = useState<MaskEventDetail | null>(null);
 
   return (
@@ -43,5 +48,5 @@ function StoryCustomComponentWithOuterState() {
 }
 
 export const CustomComponentWithOuterState = {
-  render: StoryCustomComponentWithOuterState,
+  render: Component,
 } satisfies StoryObj<typeof InputMask>;

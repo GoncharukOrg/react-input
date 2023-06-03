@@ -1,4 +1,5 @@
 /* eslint-disable import/no-relative-packages */
+/* eslint-disable import/extensions */
 import createRollupConfig from '../../utils/createRollupConfig.js';
 import reduce from '../../utils/reduce.js';
 

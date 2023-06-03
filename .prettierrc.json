@@ -1,21 +1,4 @@
 {
-  "printWidth": 100,
-  "singleQuote": true,
-  "importOrder": [
-    "^react",
-    "<THIRD_PARTY_MODULES>",
-    "^.*core",
-    "^\\.\\..*/hooks",
-    "^\\.\\..*/utils",
-    "^\\.\\..*/errors",
-    "^\\.\\..*/types",
-    "^\\.\\.",
-    "^\\./hooks",
-    "^\\./utils",
-    "^\\./errors",
-    "^\\./types",
-    "^\\."
-  ],
-  "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true
+  "printWidth": 120,
+  "singleQuote": true
 }

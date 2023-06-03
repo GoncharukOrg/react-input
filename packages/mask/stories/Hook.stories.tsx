@@ -9,7 +9,7 @@ export default {
   component: InputMask,
 } satisfies Meta<typeof InputMask>;
 
-function StoryHook() {
+function Component() {
   const [detail, setDetail] = useState<MaskEventDetail | null>(null);
   const [value, setValue] = useState('');
 
@@ -39,5 +39,5 @@ function StoryHook() {
 }
 
 export const Hook = {
-  render: StoryHook,
+  render: Component,
 } satisfies StoryObj<typeof InputMask>;

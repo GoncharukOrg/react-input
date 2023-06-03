@@ -82,9 +82,12 @@ export default function useInput<D = unknown>({
     if (inputRef.current === null || !validInputElement(inputRef.current)) return;
 
     const { controlled = false, initialValue = '' } = inputRef.current._wrapperState ?? {};
-    const initResult = init({ controlled, initialValue });
+    // При создании `input` элемента возможно программное изменение свойства `value`, что может
+    // сказаться на отображении состояния элемента, поэтому важно учесть свойство `value` в приоритете
+    // ISSUE: https://github.com/GoncharukBro/react-input/issues/3
+    const initResult = init({ controlled, initialValue: inputRef.current.value || initialValue });
 
-    // Поскольку в предыдущем шаге мы изменяем инициализированное значение, мы
+    // Поскольку в предыдущем шаге возможно изменение инициализированного значения, мы
     // также должны изменить значение элемента, при этом мы не должны устанавливать
     // позицию каретки, так как установка позиции здесь приведёт к автофокусу
     setInputAttributes(inputRef.current, { value: initResult.value });

@@ -1,11 +1,11 @@
 import { forwardRef } from 'react';
 
 import { useConnectedInputRef } from '@react-input/core';
-import type { InputComponent, PropsWithComponent, PropsWithoutComponent } from '@react-input/core';
-
-import type { NumberFormatProps } from './types';
 
 import useNumberFormat from './useNumberFormat';
+
+import type { NumberFormatProps } from './types';
+import type { InputComponent, PropsWithComponent, PropsWithoutComponent } from '@react-input/core';
 
 export type InputNumberFormatProps<P extends object | null = null> = NumberFormatProps &
   (P extends null ? PropsWithoutComponent : P extends object ? PropsWithComponent<P> : Record<string, never>);

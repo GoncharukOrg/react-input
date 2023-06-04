@@ -1,16 +1,15 @@
 import { useCallback, useRef } from 'react';
 
 import { SyntheticChangeError, useInput } from '@react-input/core';
-import type { Init, Tracking } from '@react-input/core';
 
+import useError from './useError';
 import filter from './utils/filter';
 import resolveDetail from './utils/resolveDetail';
 import resolveSelection from './utils/resolveSelection';
 import unmask from './utils/unmask';
 
 import type { MaskEventDetail, MaskProps, Replacement } from './types';
-
-import useError from './useError';
+import type { Init, Tracking } from '@react-input/core';
 
 const convertToReplacementObject = (replacement: string): Replacement =>
   replacement.length > 0 ? { [replacement]: /./ } : {};

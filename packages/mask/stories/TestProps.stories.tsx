@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-import type { Meta, StoryObj } from '@storybook/react';
-
 import { InputMask, type MaskEventDetail } from '../src';
+
+import type { Meta, StoryObj } from '@storybook/react';
 
 export default {
   title: 'Mask',

@@ -36,6 +36,7 @@
     "no-plusplus": 0,
     "no-underscore-dangle": 0,
     "import/extensions": [2, "ignorePackages", { "js": "never", "jsx": "never", "ts": "never", "tsx": "never" }],
+    "import/no-extraneous-dependencies": 0,
     "import/no-anonymous-default-export": [
       2,
       {
@@ -47,6 +48,16 @@
         "allowNew": false,
         "allowLiteral": false,
         "allowObject": true
+      }
+    ],
+    "import/order": [
+      2,
+      {
+        "newlines-between": "always",
+        "alphabetize": { "order": "asc", "orderImportKind": "asc" },
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "object", "type"],
+        "pathGroups": [{ "pattern": "react?(-dom)", "group": "external", "position": "before" }],
+        "pathGroupsExcludedImportTypes": ["react?(-dom)"]
       }
     ],
     "react/jsx-filename-extension": [2, { "extensions": [".jsx", ".tsx"] }],

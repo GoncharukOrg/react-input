@@ -1,6 +1,5 @@
-import type { InputType } from '@react-input/core';
-
 import type { MaskPart, Replacement } from '../types';
+import type { InputType } from '@react-input/core';
 
 interface ResolveSelectionParam {
   inputType: InputType;

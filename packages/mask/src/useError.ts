@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 
-import type { ExtendedHTMLInputElement } from '@react-input/core';
-
 import type { Replacement } from './types';
+import type { ExtendedHTMLInputElement } from '@react-input/core';
 
 const createError = (firstString: string, secondString: string) => {
   const message = `${firstString}

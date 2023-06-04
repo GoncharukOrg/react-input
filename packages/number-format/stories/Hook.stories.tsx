@@ -1,8 +1,8 @@
 import React from 'react';
 
-import type { Meta, StoryObj } from '@storybook/react';
-
 import { useNumberFormat } from '../src';
+
+import type { Meta, StoryObj } from '@storybook/react';
 
 export default {
   title: 'Number Format',

@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import InputMask, { InputMaskProps } from './InputMask';
+import InputMask, { type InputMaskProps } from '@react-input/mask/InputMask';
 
 const user = userEvent.setup({ delay: 15 });
 

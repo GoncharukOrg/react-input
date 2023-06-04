@@ -1,8 +1,8 @@
 import { useCallback, useRef } from 'react';
 
 import { SyntheticChangeError, useInput } from '@react-input/core';
-import type { Init, Tracking } from '@react-input/core';
 
+import useError from './useError';
 import localizeValues from './utils/localizeValues';
 import resolveDetail from './utils/resolveDetail';
 import resolveMinimumFractionDigits from './utils/resolveMinimumFractionDigits';
@@ -10,8 +10,7 @@ import resolveOptions from './utils/resolveOptions';
 import resolveSelection from './utils/resolveSelection';
 
 import type { NumberFormatEventDetail, NumberFormatOptions, NumberFormatProps } from './types';
-
-import useError from './useError';
+import type { Init, Tracking } from '@react-input/core';
 
 interface CachedNumberFormatProps {
   locales: NumberFormatProps['locales'];

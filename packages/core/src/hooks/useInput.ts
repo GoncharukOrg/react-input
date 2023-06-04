@@ -1,12 +1,11 @@
 import { useEffect, useRef } from 'react';
 
+import SyntheticChangeError from '../errors/SyntheticChangeError';
 import setInputAttributes from '../utils/setInputAttributes';
 
-import SyntheticChangeError from '../errors/SyntheticChangeError';
+import useDispatchCustomInputEvent from './useDispatchCustomInputEvent';
 
 import type { CustomInputEventHandler, ExtendedHTMLInputElement, Init, InputType, Tracking } from '../types';
-
-import useDispatchCustomInputEvent from './useDispatchCustomInputEvent';
 
 const validInputElement = (inputElement: HTMLInputElement | null) =>
   inputElement !== null && inputElement.type === 'text';

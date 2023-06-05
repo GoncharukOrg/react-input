@@ -1,4 +1,4 @@
-import { NumberFormatOptions, ResolvedNumberFormatOptions } from '../types';
+import type { NumberFormatOptions, ResolvedNumberFormatOptions } from '../types';
 
 interface TempResolved extends Partial<Intl.ResolvedNumberFormatOptions> {
   localeMatcher?: string;

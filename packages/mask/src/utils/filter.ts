@@ -1,4 +1,4 @@
-import { Replacement } from '../types';
+import type { Replacement } from '../types';
 
 interface FilterParam {
   value: string;

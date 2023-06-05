@@ -2,7 +2,6 @@ export { default as InputMask } from './InputMask';
 export { default as useMask } from './useMask';
 
 export type { InputMaskProps } from './InputMask';
-
 export type {
   MaskProps,
   Replacement,

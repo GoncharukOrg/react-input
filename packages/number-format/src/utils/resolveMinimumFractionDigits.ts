@@ -1,4 +1,4 @@
-import { ResolvedNumberFormatOptions } from '../types';
+import type { ResolvedNumberFormatOptions } from '../types';
 
 interface ResolveMinimumFractionDigitsParam {
   // integer: string;

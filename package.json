@@ -9,6 +9,7 @@
     "eslint": "npx eslint .",
     "eslint:fix": "npx eslint --fix .",
     "prettier": "npx prettier --write .",
+    "ts:check": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

@@ -5,17 +5,17 @@
   "description": "React input component for formatted number input with locale-specific.",
   "keywords": [
     "react",
-    "react component",
-    "react hook",
+    "react-component",
+    "react-hook",
     "react-number-format",
     "input",
     "input-number-format",
-    "text field",
+    "text-field",
     "number",
     "format",
-    "number format",
-    "currency format",
-    "percent format",
+    "number-format",
+    "currency-format",
+    "percent-format",
     "pattern"
   ],
   "repository": {

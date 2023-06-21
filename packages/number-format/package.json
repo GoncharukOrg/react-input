@@ -1,6 +1,6 @@
 {
   "name": "@react-input/number-format",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
   "description": "React input component for formatted number input with locale-specific.",
   "keywords": [

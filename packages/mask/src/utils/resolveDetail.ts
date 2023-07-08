@@ -16,19 +16,28 @@ import type { MaskEventDetail, MaskPart, Replacement } from '../types';
 function generatePattern(mask: string, replacement: Replacement, disableReplacementKey: boolean): string {
   const special = ['[', ']', '\\', '/', '^', '$', '.', '|', '?', '*', '+', '(', ')', '{', '}'];
 
-  return mask.split('').reduce((prev, char, index, array) => {
-    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, char);
-    const lookahead = disableReplacementKey ? `(?!${char})` : '';
+  let pattern = '';
 
-    const pattern = isReplacementKey
-      ? lookahead + replacement[char].toString().slice(1, -1)
-      : special.includes(char)
-      ? `\\${char}`
-      : char;
+  for (let i = 0; i < mask.length; i++) {
+    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, mask[i]);
+    const lookahead = disableReplacementKey ? `(?!${mask[i]})` : '';
 
-    const value = prev + pattern;
-    return index + 1 === array.length ? `${value}$` : value;
-  }, '^');
+    if (i === 0) {
+      pattern += '^';
+    }
+
+    pattern += isReplacementKey
+      ? lookahead + replacement[mask[i]].toString().slice(1, -1)
+      : special.includes(mask[i])
+      ? `\\${mask[i]}`
+      : mask[i];
+
+    if (i === mask.length - 1) {
+      pattern += '$';
+    }
+  }
+
+  return pattern;
 }
 
 interface Options {
@@ -66,16 +75,19 @@ function formatToParts(value: string, { mask, replacement }: Options): MaskPart[
  */
 function formatToMask(input: string, { mask, replacement }: Options): string {
   let position = 0;
+  let formattedValue = '';
 
-  return mask.split('').reduce((prev, char) => {
-    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, char);
+  for (let i = 0; i < mask.length; i++) {
+    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, mask[i]);
 
     if (isReplacementKey && input[position] !== undefined) {
-      return prev + input[position++];
+      formattedValue += input[position++];
+    } else {
+      formattedValue += mask[i];
     }
+  }
 
-    return prev + char;
-  }, '');
+  return formattedValue;
 }
 
 interface FormatOptions {

@@ -13,17 +13,17 @@ export default function unmask({ value, start = 0, end, mask, replacement, separ
   const slicedMask = mask.slice(start, end);
   const slicedValue = value.slice(start, end);
 
-  return slicedMask.split('').reduce((prev, char, index) => {
-    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, char);
+  let unmaskedValue = '';
 
-    if (isReplacementKey && slicedValue[index] !== undefined && slicedValue[index] !== char) {
-      return prev + slicedValue[index];
+  for (let i = 0; i < slicedMask.length; i++) {
+    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, slicedMask[i]);
+
+    if (isReplacementKey && slicedValue[i] !== undefined && slicedValue[i] !== slicedMask[i]) {
+      unmaskedValue += slicedValue[i];
+    } else if (isReplacementKey && separate) {
+      unmaskedValue += slicedMask[i];
     }
+  }
 
-    if (isReplacementKey && separate) {
-      return prev + char;
-    }
-
-    return prev;
-  }, '');
+  return unmaskedValue;
 }

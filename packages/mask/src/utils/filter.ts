@@ -15,15 +15,17 @@ interface FilterParam {
 export default function filter({ value, replacementChars, replacement, separate }: FilterParam): string {
   let __replacementChars = replacementChars;
 
-  return value.split('').reduce((prev, char) => {
-    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, char);
-    const isValidChar = !isReplacementKey && replacement[__replacementChars[0]]?.test(char);
+  let filteredValue = '';
 
-    if ((separate ? char === __replacementChars[0] : false) || isValidChar) {
+  for (let i = 0; i < value.length; i++) {
+    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, value[i]);
+    const isValidChar = !isReplacementKey && replacement[__replacementChars[0]]?.test(value[i]);
+
+    if ((separate && value[i] === __replacementChars[0]) || isValidChar) {
       __replacementChars = __replacementChars.slice(1);
-      return prev + char;
+      filteredValue += value[i];
     }
+  }
 
-    return prev;
-  }, '');
+  return filteredValue;
 }

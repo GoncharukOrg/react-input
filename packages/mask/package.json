@@ -38,7 +38,8 @@
   "exports": {
     ".": {
       "import": "./dist/module/index.js",
-      "require": "./dist/node/index.cjs"
+      "require": "./dist/node/index.cjs",
+      "types": "./dist/@types/index.d.ts"
     },
     "./*": {
       "import": [
@@ -48,6 +49,10 @@
       "require": [
         "./dist/node/*.cjs",
         "./dist/node/*"
+      ],
+      "types": [
+        "./dist/@types/*.d.ts",
+        "./dist/@types/*"
       ]
     },
     "./*.js": {
@@ -58,6 +63,10 @@
       "require": [
         "./dist/node/*.cjs",
         "./dist/node/*"
+      ],
+      "types": [
+        "./dist/@types/*.d.ts",
+        "./dist/@types/*"
       ]
     }
   },

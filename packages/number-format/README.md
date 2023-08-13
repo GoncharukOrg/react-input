@@ -51,7 +51,7 @@ One of the key features of the `@react-input/number-format` package is that it c
 
 Let's see how we can easily implement formatting based on the given locale and the minimum number of decimal places using the `InputNumberFormat` component:
 
-```jsx
+```tsx
 import { InputNumberFormat } from '@react-input/number-format';
 
 export default function App() {
@@ -63,7 +63,7 @@ You can work with the `InputNumberFormat` component in the same way as with the 
 
 Now the same thing, but using the `useNumberFormat` hook:
 
-```jsx
+```tsx
 import { useNumberFormat } from '@react-input/number-format';
 
 export default function App() {
@@ -156,13 +156,13 @@ By itself, the `input-number-format` event can completely replace the `change` e
 
 An example of using the `input-number-format` event:
 
-```jsx
+```tsx
 import { useState } from 'react';
 
-import { InputNumberFormat } from '@react-input/number-format';
+import { InputNumberFormat, type NumberFormatEventDetail } from '@react-input/number-format';
 
 export default function App() {
-  const [detail, setDetail] = useState(null);
+  const [detail, setDetail] = useState<NumberFormatEventDetail | null>(null);
 
   return <InputNumberFormat value={detail?.value ?? ''} onNumberFormat={(event) => setDetail(event.detail)} />;
 }
@@ -178,13 +178,17 @@ With this approach, the `InputNumberFormat` component acts as a HOC, adding addi
 
 Here's how to do it:
 
-```jsx
+```tsx
 import { forwardRef } from 'react';
 
 import { InputNumberFormat } from '@react-input/number-format';
 
+interface CustomInputProps {
+  label: string;
+}
+
 // Custom input component
-const CustomInput = forwardRef(({ label }, forwardedRef) => {
+const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(({ label }, forwardedRef) => {
   return (
     <>
       <label htmlFor="custom-input">{label}</label>
@@ -207,27 +211,41 @@ If you are using [Material UI](https://mui.com/), you need to create a component
 
 In this case, the Material UI component will pass an additional `inputRef` property to your component, which you will need to pass as the value for the `ref` property of the element of the `InputNumberFormat` component.
 
-Here's how to do it:
+Here's how to do it using the `InputNumberFormat` component:
 
-```jsx
-import { InputNumberFormat } from '@react-input/number-format';
+```tsx
+import { forwardRef } from 'react';
 
-import { TextField } from '@material-ui/core';
+import { InputNumberFormat, type InputNumberFormatProps } from '@react-input/number-format';
+import { TextField } from '@mui/material';
 
 // Component with InputNumberFormat
-function InputNumberFormatComponent({ inputRef, ...props }) {
-  return <InputNumberFormat ref={inputRef} {...props} />;
-}
+const ForwardedInputNumberFormat = forwardRef<HTMLInputElement, InputNumberFormatProps>((props, forwardedRef) => {
+  return <InputNumberFormat ref={forwardedRef} locales="en" maximumFractionDigits={2} {...props} />;
+});
 
 // Component with Material UI
 export default function App() {
   return (
     <TextField
       InputProps={{
-        inputComponent: CustomInputNumberFormatComponent,
+        inputComponent: ForwardedInputNumberFormat,
       }}
     />
   );
+}
+```
+
+or using the `useNumberFormat` hook:
+
+```tsx
+import { useNumberFormat } from '@react-input/number-format';
+import { TextField } from '@mui/material';
+
+export default function App() {
+  const inputRef = useNumberFormat({ locales: 'en', maximumFractionDigits: 2 });
+
+  return <TextField inputRef={inputRef} />;
 }
 ```
 
@@ -238,11 +256,14 @@ The `@react-input/number-format` package is written in [TypeScript](https://www.
 ```tsx
 import { useState } from 'react';
 
-import { InputNumberFormat } from '@react-input/number-format';
-import type { NumberFormatEventDetail, NumberFormatEventHandler } from '@react-input/number-format';
+import {
+  InputNumberFormat,
+  type NumberFormatEventDetail,
+  type NumberFormatEventHandler,
+} from '@react-input/number-format';
 
 export default function App() {
-  const [detail, setDetail] = useState<NumberFormatEventDetail, null>(null);
+  const [detail, setDetail] = useState<NumberFormatEventDetail | null>(null);
 
   // Or `event: NumberFormatEvent`
   const handleNumberFormat: NumberFormatEventHandler = (event) => {

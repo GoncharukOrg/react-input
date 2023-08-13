@@ -40,7 +40,7 @@ One of the key features of the `@react-input/mask` package is that it only relie
 
 Let's see how you can easily implement a mask for entering a phone number using the `InputMask` component:
 
-```jsx
+```tsx
 import { InputMask } from '@react-input/mask';
 
 export default function App() {
@@ -52,7 +52,7 @@ You can work with the `InputMask` component in the same way as with the `input` 
 
 Now the same thing, but using the `useMask` hook:
 
-```jsx
+```tsx
 import { useMask } from '@react-input/mask';
 
 export default function App() {
@@ -72,7 +72,7 @@ The `replacement` property sets the characters to be replaced in the mask, where
 
 like this:
 
-```jsx
+```tsx
 import { InputMask } from '@react-input/mask';
 
 export default function App() {
@@ -94,11 +94,11 @@ The `modify` function takes a value without mask characters that is valid at the
 
 Let's consider a possible situation when we need to change the mask depending on the phone city code:
 
-```jsx
+```tsx
 import { InputMask } from '@react-input/mask';
 
 export default function App() {
-  const modify = (input) => {
+  const modify = (input: string) => {
     return { mask: input[0] === '7' ? '+_ (___) ___-__-__' : undefined };
   };
 
@@ -128,13 +128,13 @@ By itself, the `input-mask` event can completely replace the `change` event, but
 
 An example of using the `input-mask` event:
 
-```jsx
+```tsx
 import { useState } from 'react';
 
-import { InputMask } from '@react-input/mask';
+import { InputMask, type MaskEventDetail } from '@react-input/mask';
 
 export default function App() {
-  const [detail, setDetail] = useState(null);
+  const [detail, setDetail] = useState<MaskEventDetail | null>(null);
 
   return (
     <>
@@ -144,7 +144,7 @@ export default function App() {
         value={detail?.value ?? ''}
         onMask={(event) => setDetail(event.detail)}
       />
-      {detail.input && !detail.isValid && <span>The field is not filled.</span>}
+      {detail?.input && !detail.isValid && <span>The field is not filled.</span>}
     </>
   );
 }
@@ -162,13 +162,17 @@ With this approach, the `InputMask` component acts as a HOC, adding additional l
 
 Here's how to do it:
 
-```jsx
+```tsx
 import { forwardRef } from 'react';
 
 import { InputMask } from '@react-input/mask';
 
+interface CustomInputProps {
+  label: string;
+}
+
 // Custom input component
-const CustomInput = forwardRef(({ label }, forwardedRef) => {
+const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(({ label }, forwardedRef) => {
   return (
     <>
       <label htmlFor="custom-input">{label}</label>
@@ -191,27 +195,41 @@ If you are using [Material UI](https://mui.com/), you need to create a component
 
 In this case, the Material UI component will pass an additional `inputRef` property to your component, which you will need to pass as the value for the `ref` property of the element of the `InputMask` component.
 
-Here's how to do it:
+Here's how to do it using the `InputMask` component:
 
-```jsx
-import { InputMask } from '@react-input/mask';
+```tsx
+import { forwardRef } from 'react';
 
-import { TextField } from '@material-ui/core';
+import { InputMask, type InputMaskProps } from '@react-input/mask';
+import { TextField } from '@mui/material';
 
 // Component with InputMask
-function InputMaskComponent({ inputRef, ...props }) {
-  return <InputMask ref={inputRef} mask="___-___" replacement="_" {...props} />;
-}
+const ForwardedInputMask = forwardRef<HTMLInputElement, InputMaskProps>((props, forwardedRef) => {
+  return <InputMask ref={forwardedRef} mask="___-___" replacement="_" {...props} />;
+});
 
 // Component with Material UI
 export default function App() {
   return (
     <TextField
       InputProps={{
-        inputComponent: CustomInputMaskComponent,
+        inputComponent: ForwardedInputMask,
       }}
     />
   );
+}
+```
+
+or using the `useMask` hook:
+
+```tsx
+import { useMask } from '@react-input/mask';
+import { TextField } from '@mui/material';
+
+export default function App() {
+  const inputRef = useMask({ mask: '___-___', replacement: '_' });
+
+  return <TextField inputRef={inputRef} />;
 }
 ```
 
@@ -222,11 +240,10 @@ The `@react-input/mask` package is written in [TypeScript](https://www.typescrip
 ```tsx
 import { useState } from 'react';
 
-import { InputMask } from '@react-input/mask';
-import type { MaskEventDetail, MaskEventHandler, Modify } from '@react-input/mask';
+import { InputMask, type MaskEventDetail, type MaskEventHandler, type Modify } from '@react-input/mask';
 
 export default function App() {
-  const [detail, setDetail] = useState<MaskEventDetail, null>(null);
+  const [detail, setDetail] = useState<MaskEventDetail | null>(null);
 
   // Or `event: MaskEvent`
   const handleMask: MaskEventHandler = (event) => {

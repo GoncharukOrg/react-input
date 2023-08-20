@@ -55,10 +55,11 @@ export default function useInput<D = unknown>({
     if (process.env.NODE_ENV === 'production') return;
 
     if (inputRef.current === null) {
-      console.error(new Error('Input element does not exist.'));
+      console.warn('Warn: Input element does not exist.');
     }
+
     if (inputRef.current !== null && inputRef.current.type !== 'text') {
-      console.error(new Error('The type of the input element does not match the type "text".'));
+      console.warn('Warn: The type of the input element does not match the type "text".');
     }
   }, []);
 

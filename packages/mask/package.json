@@ -1,6 +1,6 @@
 {
   "name": "@react-input/mask",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
   "description": "React input component for masked input.",
   "keywords": [
@@ -91,7 +91,7 @@
     "build": "npm run remove-dist && npm run build-rollup && npm run clear-types && node ../../scripts/restore-dist.js && node ../../scripts/console-success.js"
   },
   "dependencies": {
-    "@react-input/core": ">=1.0.1"
+    "@react-input/core": "^1.0.4"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

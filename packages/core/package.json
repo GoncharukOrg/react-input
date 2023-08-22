@@ -1,8 +1,8 @@
 {
-  "name": "@react-input/core",
-  "version": "1.0.3",
-  "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
-  "description": "The core of the packages included in the `@react-input` scope.",
+  "name": "@react-input2/core",
+  "version": "1.0.0",
+  "author": "Lisandro <lisandro@cobeaga.dev>",
+  "description": "The core of the packages included in the `@react-input2` scope.",
   "keywords": [
     "react",
     "react-hook",
@@ -13,13 +13,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GoncharukBro/react-input.git",
+    "url": "git+https://github.com/lisandro52/react-input.git",
     "directory": "packages/core"
   },
   "bugs": {
-    "url": "https://github.com/GoncharukBro/react-input/issues"
+    "url": "https://github.com/lisandro52/react-input/issues"
   },
-  "homepage": "https://github.com/GoncharukBro/react-input/tree/main/packages/core#readme",
+  "homepage": "https://github.com/lisandro52/react-input/tree/main/packages/core#readme",
   "license": "MIT",
   "module": "dist/module/index.js",
   "main": "dist/node/index.cjs",

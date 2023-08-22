@@ -22,15 +22,15 @@ export default function useDispatchCustomInputEvent<D = unknown>(
 
       dispatched.current = false;
 
-      // Генерируем и отправляем пользовательское событие. Нулевой `setTimeout` необходим для
-      // запуска события в асинхронном режиме, в противном случае возможна ситуация, когда компонент
-      // будет повторно отрисован с предыдущим значением, из-за обновления состояние после события `change`
+      // Generating and dispatching a custom event. The initial `setTimeout` is necessary for
+      // triggering the event in an asynchronous mode; otherwise, there's a possibility that the component
+      // will be re-rendered with the previous value due to state update after the `change` event.
       setTimeout(() => {
         if (inputRef.current === null) return;
 
-        // После изменения состояния при событии `change` мы можем столкнуться с ситуацией,
-        // когда значение `input` элемента не будет равно маскированному значению, что отразится
-        // на данных передаваемых `event.target`. Поэтому устанавливаем предыдущее значение
+        // After changing the state during the `change` event, we might encounter a situation
+        // where the value of the `input` element won't be equal to the masked value, affecting
+        // the data passed through `event.target`. Therefore, we set the previous value.
         setInputAttributes(inputRef.current, {
           value,
           selectionStart: selectionStart ?? value.length,

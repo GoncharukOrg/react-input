@@ -18,8 +18,8 @@ interface UseInputParam<D> {
 }
 
 /**
- * Хук контроля события изменения ввода позволяет выполнять логику и изменять
- * аттрибуты `input` элемента на определённых этапах трекинга события.
+ * The input event control hook allows you to perform logic and modify
+ * input element attributes at certain stages of event tracking.
  * @param param
  * @returns
  */
@@ -72,14 +72,14 @@ export default function useInput<D = unknown>({
     if (inputRef.current === null || !validInputElement(inputRef.current)) return;
 
     const { controlled = false, initialValue = '' } = inputRef.current._wrapperState ?? {};
-    // При создании `input` элемента возможно программное изменение свойства `value`, что может
-    // сказаться на отображении состояния элемента, поэтому важно учесть свойство `value` в приоритете
+    // When creating an `input` element, it is possible to programmatically change the `value` property, which can
+    // affect the display state of the element. Therefore, it's important to consider the `value` property as a priority.
     // ISSUE: https://github.com/GoncharukBro/react-input/issues/3
     const initResult = init({ controlled, initialValue: inputRef.current.value || initialValue });
 
-    // Поскольку в предыдущем шаге возможно изменение инициализированного значения, мы
-    // также должны изменить значение элемента, при этом мы не должны устанавливать
-    // позицию каретки, так как установка позиции здесь приведёт к автофокусу
+    // Since in the previous step the initialized value can be changed, we
+    // also need to modify the value of the element, while not setting the
+    // caret position, as setting the position here will result in autofocus.
     setInputAttributes(inputRef.current, { value: initResult.value });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -99,8 +99,8 @@ export default function useInput<D = unknown>({
           throw new SyntheticChangeError('Reference to input element is not initialized.');
         }
 
-        // Если событие вызывается слишком часто, смена курсора может не поспеть за новым событием,
-        // поэтому сравниваем `requestID` кэшированный и текущий для избежания некорректного поведения маски
+        // If the event is triggered too frequently, the cursor change may not catch up with the new event,
+        // so we compare the cached `requestID` with the current one to avoid incorrect mask behavior.
         if (selection.current.cachedRequestID === selection.current.requestID) {
           throw new SyntheticChangeError('The input selection has not been updated.');
         }
@@ -116,7 +116,7 @@ export default function useInput<D = unknown>({
         const previousValue = inputRef.current._valueTracker?.getValue?.() ?? '';
         let inputType: InputType = 'initial';
 
-        // Определяем тип ввода (ручное определение типа ввода способствует кроссбраузерности)
+        // Determine the input type (manual input type detection promotes cross-browser compatibility)
         if (selectionStart > selection.current.start) {
           inputType = 'insert';
         } else if (selectionStart <= selection.current.start && selectionStart < selection.current.end) {
@@ -141,8 +141,8 @@ export default function useInput<D = unknown>({
           }
           case 'deleteBackward':
           case 'deleteForward': {
-            // Для `delete` нам необходимо определить диапазон удаленных символов, так как
-            // при удалении без выделения позиция каретки "до" и "после" будут совпадать
+            // For `delete`, we need to determine the range of deleted characters, since
+            // when deleting without selection, the "before" and "after" caret positions will be the same
             const countDeleted = previousValue.length - value.length;
 
             changeStart = selectionStart;
@@ -176,13 +176,13 @@ export default function useInput<D = unknown>({
 
         dispatchCustomInputEvent(trackingResult.__detail);
 
-        // После изменения значения в кастомном событии (`dispatchCustomInputEvent`) событие `change`
-        // срабатывать не будет, так как предыдущее и текущее состояние внутри `input` совпадают. Чтобы
-        // обойти эту проблему с версии React 16, устанавливаем предыдущее состояние на отличное от текущего.
+        // After changing the value in the custom event (`dispatchCustomInputEvent`), the `change` event
+        // will not be triggered, since the previous and current states inside the `input` are the same. To
+        // work around this issue from React 16, we set the previous state to be different from the current one.
         inputRef.current._valueTracker?.setValue?.(previousValue);
 
-        // Чтобы гарантировать правильное позиционирование каретки, обновляем
-        // значения `selection` перед последующим вызовом функции обработчика `input`
+        // To ensure correct caret positioning, update
+        // the `selection` values before calling the `input` handler function again
         selection.current.start = trackingResult.selectionStart;
         selection.current.end = trackingResult.selectionEnd;
       } catch (error) {
@@ -196,8 +196,8 @@ export default function useInput<D = unknown>({
           });
         }
 
-        // Чтобы гарантировать правильное позиционирование каретки, обновляем
-        // значения `selection` перед последующим вызовом функции обработчика `input`
+        // To ensure correct caret positioning, update
+        // the `selection` values before calling the `input` handler function again
 
         if (cause?.__attributes?.selectionStart !== undefined) {
           selection.current.start = cause.__attributes.selectionStart;
@@ -236,8 +236,8 @@ export default function useInput<D = unknown>({
       if (!validInputElement(inputRef.current)) return;
 
       const setSelection = () => {
-        // Позиция курсора изменяется после завершения события `change` и к срабатыванию кастомного
-        // события позиция курсора может быть некорректной, что может повлечь за собой ошибки
+        // The cursor position changes after the `change` event is completed and the custom event is triggered,
+        // the cursor position may be incorrect, which can lead to errors
         if (dispatchedCustomInputEvent.current) {
           selection.current.start = inputRef.current?.selectionStart ?? 0;
           selection.current.end = inputRef.current?.selectionEnd ?? 0;
@@ -251,8 +251,8 @@ export default function useInput<D = unknown>({
       selection.current.requestID = requestAnimationFrame(setSelection);
     };
 
-    // Событие `focus` не сработает при рендере, даже если включено свойство `autoFocus`,
-    // поэтому нам необходимо запустить определение позиции курсора вручную при автофокусе
+    // The `focus` event will not fire on render, even if the `autoFocus` property is enabled,
+    // so we need to manually start cursor position detection when autofocus is enabled
     if (inputRef.current !== null && document.activeElement === inputRef.current) {
       handleFocus();
     }

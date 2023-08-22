@@ -1,7 +1,7 @@
 import resolveMinimumFractionDigits from './resolveMinimumFractionDigits';
 
 import type { LocalizedNumberFormatValues, NumberFormatOptions, ResolvedNumberFormatOptions } from '../types';
-import type { InputType } from '@react-input/core';
+import type { InputType } from '@react-input2/core';
 
 interface Options {
   inputType: InputType;

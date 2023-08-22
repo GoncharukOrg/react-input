@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 
 /**
- * Объединяет ссылки на dom-элементы (`ref`). Полезно когда необходимо хранить
- * ссылку на один и тот же элемент с помощью хука `useRef` в разных компонентах.
- * @returns функция объединения ссылок
+ * Combines references to DOM elements (`ref`). Useful when it's necessary to store
+ * a reference to the same element using the `useRef` hook in different components.
+ * @returns function for combining references
  */
 export default function useConnectedInputRef(
   ref: React.MutableRefObject<HTMLInputElement | null>,

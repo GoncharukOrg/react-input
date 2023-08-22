@@ -1,5 +1,5 @@
 import type { LocalizedNumberFormatValues, ResolvedNumberFormatOptions } from '../types';
-import type { InputType } from '@react-input/core';
+import type { InputType } from '@react-input2/core';
 
 interface ResolveSelectionParam {
   localizedValues: LocalizedNumberFormatValues;

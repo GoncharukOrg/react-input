@@ -1,7 +1,7 @@
 {
-  "name": "@react-input/mask",
-  "version": "1.0.15",
-  "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
+  "name": "@react-input2/mask",
+  "version": "1.0.0",
+  "author": "Lisandro <lisandro@cobeaga.dev>",
   "description": "React input component for masked input.",
   "keywords": [
     "react",
@@ -20,13 +20,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GoncharukBro/react-input.git",
+    "url": "git+https://github.com/lisandro52/react-input.git",
     "directory": "packages/mask"
   },
   "bugs": {
-    "url": "https://github.com/GoncharukBro/react-input/issues"
+    "url": "https://github.com/lisandro52/react-input/issues"
   },
-  "homepage": "https://github.com/GoncharukBro/react-input/tree/main/packages/mask#readme",
+  "homepage": "https://github.com/lisandro52/react-input/tree/main/packages/mask#readme",
   "license": "MIT",
   "module": "dist/module/index.js",
   "main": "dist/node/index.cjs",
@@ -91,7 +91,7 @@
     "build": "npm run remove-dist && npm run build-rollup && npm run clear-types && node ../../scripts/restore-dist.js && node ../../scripts/console-success.js"
   },
   "dependencies": {
-    "@react-input/core": "^1.0.1"
+    "@react-input2/core": ">=1.0.0"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

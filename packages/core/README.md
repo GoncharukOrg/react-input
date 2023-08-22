@@ -1,20 +1,20 @@
-# @react-input/core
+# @react-input2/core
 
-✨ A package for the service use of other packages included in the `@react-input` scope:
+✨ A package for the service use of other packages included in the `@react-input2` scope:
 
-- [`@react-input/mask`](https://www.npmjs.com/package/@react-input/mask) - apply any mask to the input using a provided component or a hook bound to the input element;
-- [`@react-input/number-format`](https://www.npmjs.com/package/@react-input/number-format) - apply locale-specific number, currency, and percentage formatting to input using a provided component or hook bound to the input element.
+- [`@react-input2/mask`](https://www.npmjs.com/package/@react-input2/mask) - apply any mask to the input using a provided component or a hook bound to the input element;
+- [`@react-input2/number-format`](https://www.npmjs.com/package/@react-input2/number-format) - apply locale-specific number, currency, and percentage formatting to input using a provided component or hook bound to the input element.
 
 ## Installation
 
 ```bash
-npm i @react-input/core
+npm i @react-input2/core
 ```
 
 or using **yarn**:
 
 ```bash
-yarn add @react-input/core
+yarn add @react-input2/core
 ```
 
 ## Feedback

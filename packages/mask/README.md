@@ -9,13 +9,13 @@
 ## Installation
 
 ```bash
-npm i @react-input/mask
+npm i @react-input2/mask
 ```
 
 or using **yarn**:
 
 ```bash
-yarn add @react-input/mask
+yarn add @react-input2/mask
 ```
 
 ## Unique properties
@@ -310,7 +310,7 @@ The recommended delay time is 15 milliseconds, however, you may need to set a di
 
 ## Other packages from `@react-input`
 
-- [`@react-input/number-format`](https://www.npmjs.com/package/@react-input/number-format) - apply locale-specific number, currency, and percentage formatting to input using a provided component or hook bound to the input element.
+- [`@react-input2/number-format`](https://www.npmjs.com/package/@react-input2/number-format) - apply locale-specific number, currency, and percentage formatting to input using a provided component or hook bound to the input element.
 
 ## Feedback
 

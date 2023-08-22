@@ -4,8 +4,8 @@ export default function setInputAttributes(
   inputElement: HTMLInputElement,
   { value, selectionStart, selectionEnd }: Partial<InputAttributes>
 ) {
-  // Важно установить позицию курсора после установки значения,
-  // так как после установки значения, курсор автоматически уходит в конец значения
+  // It's important to set the cursor position after setting the value,
+  // as after setting the value, the cursor automatically moves to the end of the value.
 
   if (value !== undefined) {
     // eslint-disable-next-line no-param-reassign

@@ -5,8 +5,8 @@ interface SyntheticChangeError {
 }
 
 /**
- * Кастомная ошибка обрабатывается в хуке `useInput` с возможностью
- * передать аттрибуты для установки в `input` элемент.
+ * A custom error is handled in the `useInput` hook with the ability
+ * to pass attributes for setting on the `input` element.
  */
 class SyntheticChangeError extends Error {
   constructor(message: string, cause?: SyntheticChangeError['cause']) {

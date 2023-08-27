@@ -64,7 +64,9 @@ export default function App() {
 
 The `useMask` hook takes the same properties as the `InputMask` component, except for the `component` properties. Both approaches are equivalent, but the use of the `InputMask` component provides additional capabilities, which will be discussed in the section «[Integration with custom components](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#integration-with-custom-components)».
 
-> The `InputMask` component does not change the value passed in the `value` or `defaultValue` property of the `input` element, so specify as the initialized value one that can match the masked value at any stage of input. If you make a mistake, you will see a warning about it in the console.
+> The `InputMask` component does not change the value passed in the `value` or `defaultValue` property of the `input` element, so set the initialized value to something that can match the masked value at any stage of input. If you make a mistake, you will see a warning about it in the console.
+
+> To ensure consistent and correct operation, the `type` property of the `input` element (`InputMask`) must be set to "`text`" (the default). If you use other values, the mask will not be applied and you will see a warning in the console.
 
 ## Replacement
 
@@ -193,7 +195,7 @@ export default function App() {
 
 If you are using [Material UI](https://mui.com/), you need to create a component that returns a `InputMask` and pass it as a value to the `inputComponent` property of the Material UI component.
 
-In this case, the Material UI component will pass an additional `inputRef` property to your component, which you will need to pass as the value for the `ref` property of the element of the `InputMask` component.
+In this case, the Material UI component expects your component to be wrapped in a `forwardRef`, where you will need to pass the reference directly to the `ref` property of the `InputMask` component.
 
 Here's how to do it using the `InputMask` component:
 
@@ -233,6 +235,8 @@ export default function App() {
 }
 ```
 
+> The examples correspond to Material UI version 5. If you are using a different version, please read the [Material UI documentation](https://mui.com/material-ui/).
+
 ## Usage with TypeScript
 
 The `@react-input/mask` package is written in [TypeScript](https://www.typescriptlang.org/), so you have full type support out of the box. In addition, you can import the types you need for your use:
@@ -240,7 +244,9 @@ The `@react-input/mask` package is written in [TypeScript](https://www.typescrip
 ```tsx
 import { useState } from 'react';
 
-import { InputMask, type MaskEventDetail, type MaskEventHandler, type Modify } from '@react-input/mask';
+import { InputMask } from '@react-input/mask';
+
+import type { MaskEventDetail, MaskEvent, MaskEventHandler, Modify } from '@react-input/mask';
 
 export default function App() {
   const [detail, setDetail] = useState<MaskEventDetail | null>(null);
@@ -265,40 +271,40 @@ Since the `InputMask` component supports two use cases (as an `input` element an
 By default, the `InputMask` component is an `input` element and supports all the attributes supported by the `input` element. But if the `component` property was passed, the `InputMask` will additionally support the properties available to the integrated component. This approach allows you to integrate your own component as conveniently as possible, not forcing you to rewrite its logic, but using a mask where necessary.
 
 ```tsx
-import { InputMask } from '@react-input/mask';
+import { InputMask, type InputMaskProps, type MaskProps } from '@react-input/mask';
 
 export default function App() {
   // Here, since no `component` property was passed,
   // `InputMask` returns an `input` element and takes the type:
-  // `InputMaskProps & React.InputHTMLAttributes<HTMLInputElement>`
+  // `MaskProps & React.InputHTMLAttributes<HTMLInputElement>` (the same as `InputMaskProps`)
   return <InputMask mask="___-___" replacement="_" />;
 }
 ```
 
 ```tsx
-import { InputMask } from '@react-input/mask';
+import { InputMask, type InputMaskProps, type MaskProps } from '@react-input/mask';
 
 import { CustomInput, type CustomInputProps } from './CustomInput';
 
 export default function App() {
   // Here, since the `component` property was passed,
-  // `InputMask` returns the integrated component and takes the type:
-  // `InputMaskProps & CustomInputProps` (the same as `InputMaskProps<CustomInputProps>`)
+  // `InputMask` returns the `CustomInput` component and takes the type:
+  // `MaskProps & CustomInputProps` (the same as `InputMaskProps<typeof CustomInput>`)
   return <InputMask component={CustomInput} mask="___-___" replacement="_" />;
 }
 ```
 
 You may run into a situation where you need to pass rest parameters (`...rest`) to the `InputMask` component. If the rest parameters is of type `any`, the `component` property will not be typed correctly, as well as the properties of the component being integrated. this is typical TypeScript behavior for dynamic type inference.
 
-To remedy this situation and help the `InputMask` type correctly the properties of your component, you can pass the property type of your component directly to the `InputMask` component.
+To fix this situation and help the `InputMask` correctly inject your component's properties, you can pass your component's type directly to the `InputMask` component.
 
 ```tsx
 import { InputMask } from '@react-input/mask';
 
-import { CustomInput, type CustomInputProps } from './CustomInput';
+import { CustomInput } from './CustomInput';
 
 export default function Component(props: any) {
-  return <InputMask<CustomInputProps> component={CustomInput} mask="___-___" replacement="_" {...props} />;
+  return <InputMask<typeof CustomInput> component={CustomInput} mask="___-___" replacement="_" {...props} />;
 }
 ```
 

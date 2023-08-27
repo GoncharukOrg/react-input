@@ -75,7 +75,9 @@ export default function App() {
 
 The `useNumberFormat` hook takes the same properties as the `InputNumberFormat` component, except for the `component` properties. Both approaches are equivalent, but the use of the `InputNumberFormat` component provides additional capabilities, which will be discussed in the section «[Integration with custom components](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#integration-with-custom-components)».
 
-> The `InputNumberFormat` component does not change the value passed in the `value` or `defaultValue` property of the `input` element, so specify as the initialized value one that can match the masked value at any stage of input. If you make a mistake, you will see a warning about it in the console.
+> The `InputNumberFormat` component does not change the value passed in the `value` or `defaultValue` property of the `input` element, so set the initialized value to something that can match the formatted value at any stage of input. If you make a mistake, you will see a warning about it in the console.
+
+> To ensure consistent and correct operation, the `type` property of the `input` element (`InputNumberFormat`) must be set to "`text`" (the default). If you use other values, the formatting will not be applied and you will see a warning in the console.
 
 ## Examples of using
 
@@ -209,7 +211,7 @@ export default function App() {
 
 If you are using [Material UI](https://mui.com/), you need to create a component that returns a `InputNumberFormat` and pass it as a value to the `inputComponent` property of the Material UI component.
 
-In this case, the Material UI component will pass an additional `inputRef` property to your component, which you will need to pass as the value for the `ref` property of the element of the `InputNumberFormat` component.
+In this case, the Material UI component expects your component to be wrapped in a `forwardRef`, where you will need to pass the reference directly to the `ref` property of the `InputNumberFormat` component.
 
 Here's how to do it using the `InputNumberFormat` component:
 
@@ -249,6 +251,8 @@ export default function App() {
 }
 ```
 
+> The examples correspond to Material UI version 5. If you are using a different version, please read the [Material UI documentation](https://mui.com/material-ui/).
+
 ## Usage with TypeScript
 
 The `@react-input/number-format` package is written in [TypeScript](https://www.typescriptlang.org/), so you have full type support out of the box. In addition, you can import the types you need for your use:
@@ -256,11 +260,9 @@ The `@react-input/number-format` package is written in [TypeScript](https://www.
 ```tsx
 import { useState } from 'react';
 
-import {
-  InputNumberFormat,
-  type NumberFormatEventDetail,
-  type NumberFormatEventHandler,
-} from '@react-input/number-format';
+import { InputNumberFormat } from '@react-input/number-format';
+
+import type { NumberFormatEventDetail, NumberFormatEvent, NumberFormatEventHandler } from '@react-input/number-format';
 
 export default function App() {
   const [detail, setDetail] = useState<NumberFormatEventDetail | null>(null);
@@ -281,40 +283,40 @@ Since the `InputNumberFormat` component supports two use cases (as an `input` el
 By default, the `InputNumberFormat` component is an `input` element and supports all the attributes supported by the `input` element. But if the `component` property was passed, the `InputNumberFormat` will additionally support the properties available to the integrated component. This approach allows you to integrate your own component as conveniently as possible, not forcing you to rewrite its logic, but using a formatting where necessary.
 
 ```tsx
-import { InputNumberFormat } from '@react-input/number-format';
+import { InputNumberFormat, type InputNumberFormatProps, type NumberFormatProps } from '@react-input/number-format';
 
 export default function App() {
   // Here, since no `component` property was passed,
   // `InputNumberFormat` returns an `input` element and takes the type:
-  // `InputNumberFormatProps & React.InputHTMLAttributes<HTMLInputElement>`
+  // `NumberFormatProps & React.InputHTMLAttributes<HTMLInputElement>` (the same as `InputNumberFormatProps`)
   return <InputNumberFormat />;
 }
 ```
 
 ```tsx
-import { InputNumberFormat } from '@react-input/number-format';
+import { InputNumberFormat, type InputNumberFormatProps, type NumberFormatProps } from '@react-input/number-format';
 
 import { CustomInput, type CustomInputProps } from './CustomInput';
 
 export default function App() {
   // Here, since the `component` property was passed,
-  // `InputNumberFormat` returns the integrated component and takes the type:
-  // `InputNumberFormatProps & CustomInputProps` (the same as `InputNumberFormatProps<CustomInputProps>`)
+  // `InputNumberFormat` returns the CustomInput component and takes the type:
+  // `NumberFormatProps & CustomInputProps` (the same as `InputNumberFormatProps<typeof CustomInput>`)
   return <InputNumberFormat component={CustomInput} />;
 }
 ```
 
 You may run into a situation where you need to pass rest parameters (`...rest`) to the `InputNumberFormat` component. If the rest parameters is of type `any`, the `component` property will not be typed correctly, as well as the properties of the component being integrated. this is typical TypeScript behavior for dynamic type inference.
 
-To remedy this situation and help the `InputNumberFormat` type correctly the properties of your component, you can pass the property type of your component directly to the `InputNumberFormat` component.
+To fix this situation and help the `InputNumberFormat` correctly inject your component's properties, you can pass your component's type directly to the `InputNumberFormat` component.
 
 ```tsx
 import { InputNumberFormat } from '@react-input/number-format';
 
-import { CustomInput, type CustomInputProps } from './CustomInput';
+import { CustomInput } from './CustomInput';
 
 export default function Component(props: any) {
-  return <InputNumberFormat<CustomInputProps> component={CustomInput} {...props} />;
+  return <InputNumberFormat<typeof CustomInput> component={CustomInput} {...props} />;
 }
 ```
 

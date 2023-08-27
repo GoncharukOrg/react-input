@@ -5,20 +5,12 @@ import { useConnectedInputRef } from '@react-input/core';
 import useNumberFormat from './useNumberFormat';
 
 import type { NumberFormatProps } from './types';
-import type { InputComponent, PropsWithComponent, PropsWithoutComponent } from '@react-input/core';
+import type { InputComponent, InputComponentProps } from '@react-input/core';
 
-export type InputNumberFormatProps<P extends object | null = null> = NumberFormatProps &
-  (P extends null ? PropsWithoutComponent : P extends object ? PropsWithComponent<P> : Record<string, never>);
+export type InputNumberFormatProps<C extends React.ComponentType | undefined = undefined> = NumberFormatProps &
+  InputComponentProps<C>;
 
-function ForwardedInputNumberFormat(
-  props: InputNumberFormatProps,
-  forwardedInputRef: React.ForwardedRef<HTMLInputElement>
-): JSX.Element;
-function ForwardedInputNumberFormat<P extends object>(
-  props: InputNumberFormatProps<P>,
-  forwardedInputRef: React.ForwardedRef<HTMLInputElement>
-): JSX.Element;
-function ForwardedInputNumberFormat<P extends object>(
+function ForwardedInputNumberFormat<C extends React.ComponentType | undefined = undefined>(
   {
     component: Component,
     locales,
@@ -35,7 +27,7 @@ function ForwardedInputNumberFormat<P extends object>(
     maximumFractionDigits,
     onNumberFormat,
     ...props
-  }: InputNumberFormatProps | InputNumberFormatProps<P>,
+  }: InputNumberFormatProps<C>,
   forwardedInputRef: React.ForwardedRef<HTMLInputElement>
 ): JSX.Element {
   const inputRef = useNumberFormat({
@@ -57,12 +49,12 @@ function ForwardedInputNumberFormat<P extends object>(
   const connectedInputRef = useConnectedInputRef(inputRef, forwardedInputRef);
 
   if (Component) {
-    return <Component ref={connectedInputRef} {...props} />;
+    return <Component ref={connectedInputRef} {...(props as any)} />;
   }
 
   return <input ref={connectedInputRef} {...props} />;
 }
 
-const InputNumberFormat = forwardRef(ForwardedInputNumberFormat) as unknown as InputComponent<NumberFormatProps>;
+const InputNumberFormat = forwardRef(ForwardedInputNumberFormat) as InputComponent<NumberFormatProps>;
 
 export default InputNumberFormat;

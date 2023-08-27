@@ -5,7 +5,14 @@ import setInputAttributes from '../utils/setInputAttributes';
 
 import useDispatchCustomInputEvent from './useDispatchCustomInputEvent';
 
-import type { CustomInputEventHandler, ExtendedHTMLInputElement, Init, InputType, Tracking } from '../types';
+import type {
+  CustomInputEvent,
+  CustomInputEventHandler,
+  ExtendedHTMLInputElement,
+  Init,
+  InputType,
+  Tracking,
+} from '../types';
 
 const validInputElement = (inputElement: HTMLInputElement | null) =>
   inputElement !== null && inputElement.type === 'text';
@@ -14,7 +21,7 @@ interface UseInputParam<D> {
   init: Init;
   tracking: Tracking<D>;
   customInputEventType?: string;
-  customInputEventHandler?: CustomInputEventHandler<D>;
+  customInputEventHandler?: CustomInputEventHandler<CustomInputEvent<D>>;
 }
 
 /**

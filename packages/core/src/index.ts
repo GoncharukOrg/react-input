@@ -12,7 +12,6 @@ export type {
   Init,
   Tracking,
   ExtendedHTMLInputElement,
-  PropsWithoutComponent,
-  PropsWithComponent,
+  InputComponentProps,
   InputComponent,
 } from './types';

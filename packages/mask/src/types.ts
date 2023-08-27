@@ -1,11 +1,6 @@
 import type { CustomInputEvent, CustomInputEventHandler } from '@react-input/core';
 
 export type MaskPart = {
-  /**
-   * - `replacement` - символ замены
-   * - `mask` - символ маски
-   * - `input` - символ введенный пользователем
-   */
   type: 'replacement' | 'mask' | 'input';
   value: string;
   index: number;
@@ -21,7 +16,7 @@ export interface MaskEventDetail {
 
 export type MaskEvent = CustomInputEvent<MaskEventDetail>;
 
-export type MaskEventHandler = CustomInputEventHandler<MaskEventDetail>;
+export type MaskEventHandler = CustomInputEventHandler<MaskEvent>;
 
 export interface Replacement {
   [key: string]: RegExp;

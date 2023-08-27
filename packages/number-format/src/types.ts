@@ -7,7 +7,7 @@ export interface NumberFormatEventDetail {
 
 export type NumberFormatEvent = CustomInputEvent<NumberFormatEventDetail>;
 
-export type NumberFormatEventHandler = CustomInputEventHandler<NumberFormatEventDetail>;
+export type NumberFormatEventHandler = CustomInputEventHandler<NumberFormatEvent>;
 
 /** 
   ES5

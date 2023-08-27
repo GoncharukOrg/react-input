@@ -2,7 +2,9 @@ export interface CustomInputEvent<D = unknown> extends CustomEvent<D> {
   target: EventTarget & HTMLInputElement;
 }
 
-export type CustomInputEventHandler<D = unknown> = (event: CustomInputEvent<D>) => void;
+export type CustomInputEventHandler<E extends CustomInputEvent> = {
+  bivarianceHack(event: E): void;
+}['bivarianceHack'];
 
 export type InputType = 'initial' | 'insert' | 'deleteBackward' | 'deleteForward';
 
@@ -44,15 +46,10 @@ export interface ExtendedHTMLInputElement extends HTMLInputElement {
   };
 }
 
-export type PropsWithoutComponent = {
-  component?: undefined;
-} & React.InputHTMLAttributes<HTMLInputElement>;
+export type InputComponentProps<C extends React.ComponentType | undefined = undefined> = {
+  component?: C;
+} & (C extends React.ComponentType<infer P> ? P : React.InputHTMLAttributes<HTMLInputElement>);
 
-export type PropsWithComponent<P extends object> = {
-  component: React.ComponentType<P & React.RefAttributes<HTMLInputElement>>;
-} & P;
-
-export type InputComponent<T extends object> = {
-  (props: T & PropsWithoutComponent & React.RefAttributes<HTMLInputElement>): JSX.Element;
-  <P extends object>(props: T & PropsWithComponent<P> & React.RefAttributes<HTMLInputElement>): JSX.Element;
-};
+export type InputComponent<P extends object> = <C extends React.ComponentType | undefined = undefined>(
+  props: P & InputComponentProps<C> & React.RefAttributes<HTMLInputElement>
+) => JSX.Element;

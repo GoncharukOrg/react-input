@@ -9,36 +9,35 @@ export type NumberFormatEvent = CustomInputEvent<NumberFormatEventDetail>;
 
 export type NumberFormatEventHandler = CustomInputEventHandler<NumberFormatEvent>;
 
-/** 
-  ES5
-  - `style`?: "decimal" | "currency" | "percent" | "unit";
-  - `currency`?: string;
-  - `useGrouping`?: boolean; (changed on `groupDisplay`)
-  - `minimumIntegerDigits`?: number;
-  - `minimumFractionDigits`?: number;
-  - `maximumFractionDigits`?: number;
-  
-  ES2020
-  - `signDisplay`?: "auto" | "negative" | "never" | "always" | "exceptZero";
-  - `unit`?: string;
-  - `unitDisplay`?: "short" | "long" | "narrow";
-  - `currencyDisplay`?: "symbol" | "narrowSymbol" | "code" | "name";
+// ES5
+// - `style`?: "decimal" | "currency" | "percent" | "unit";
+// - `currency`?: string;
+// - `useGrouping`?: boolean; (changed on `groupDisplay`)
+// - `minimumIntegerDigits`?: number;
+// - `minimumFractionDigits`?: number;
+// - `maximumFractionDigits`?: number;
 
-  ES5 **excluded**
-  - `localeMatcher`?: string;
-  - `currencySign`?: "standard" | "accounting";
-  - `minimumSignificantDigits`?: number;
-  - `maximumSignificantDigits`?: number;
+// ES2020
+// - `signDisplay`?: "auto" | "negative" | "never" | "always" | "exceptZero";
+// - `unit`?: string;
+// - `unitDisplay`?: "short" | "long" | "narrow";
+// - `currencyDisplay`?: "symbol" | "narrowSymbol" | "code" | "name";
 
-  ES2020 **excluded**
-  - `compactDisplay`?: "short" | "long";
-  - `notation`?: "standard" | "scientific" | "engineering" | "compact";
-  - `numberingSystem`?: string;
-  - `roundingIncrement`?: number;
-  - `roundingMode`?: "ceil" | "floor" | "expand" | "trunc" | "halfCeil" | "halfFloor" | "halfExpand" | "halfTrunc" | "halfEven";
-  - `roundingPriority`?: "auto" | "morePrecision" | "lessPrecision";
-  - `trailingZeroDisplay`?: "auto" | "stripIfInteger";
- */
+// ES5 **excluded**
+// - `localeMatcher`?: string;
+// - `currencySign`?: "standard" | "accounting";
+// - `minimumSignificantDigits`?: number;
+// - `maximumSignificantDigits`?: number;
+
+// ES2020 **excluded**
+// - `compactDisplay`?: "short" | "long";
+// - `notation`?: "standard" | "scientific" | "engineering" | "compact";
+// - `numberingSystem`?: string;
+// - `roundingIncrement`?: number;
+// - `roundingMode`?: "ceil" | "floor" | "expand" | "trunc" | "halfCeil" | "halfFloor" | "halfExpand" | "halfTrunc" | "halfEven";
+// - `roundingPriority`?: "auto" | "morePrecision" | "lessPrecision";
+// - `trailingZeroDisplay`?: "auto" | "stripIfInteger";
+
 type ResolveOptions<T extends { [key: string]: any }> = Pick<
   T,
   | 'currency'

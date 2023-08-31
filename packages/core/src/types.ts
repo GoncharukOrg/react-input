@@ -47,6 +47,7 @@ export interface ExtendedHTMLInputElement extends HTMLInputElement {
 }
 
 export type InputComponentProps<C extends React.ComponentType | undefined = undefined> = {
+  /** **Not used in the hook**. Serves to enable the use of custom components, for example, if you want to use your own styled component with the ability to format the value. */
   component?: C;
 } & (C extends React.ComponentType<infer P> ? P : React.InputHTMLAttributes<HTMLInputElement>);
 

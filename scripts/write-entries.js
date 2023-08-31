@@ -1,5 +1,4 @@
 const fs = require('fs');
-const util = require('util');
 
 const getPaths = require('../utils/getPaths');
 
@@ -30,6 +29,4 @@ const imports = resolvedPaths.map((path) => {
   return `export { default as ${moduleName} } from './${normalizedPath}';\n`;
 });
 
-util.promisify(fs.writeFile)('./src/index.ts', `${imports.join('')}\n${allImportTypes.join('\n')}`, {
-  encoding: 'utf-8',
-});
+fs.writeFileSync('./src/index.ts', `${imports.join('')}\n${allImportTypes.join('\n')}`, { encoding: 'utf-8' });

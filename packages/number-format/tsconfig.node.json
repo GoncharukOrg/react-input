@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declaration": false,
-    "removeComments": true,
     "rootDir": "src",
     "outDir": "dist/node"
   },

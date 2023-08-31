@@ -1,5 +1,4 @@
 const fs = require('fs');
-const util = require('util');
 
 const getPaths = require('../utils/getPaths');
 
@@ -10,8 +9,12 @@ typesPaths.forEach((path) => {
   const normalizedPath = path.replace(/^\.\/dist\/@types/, './dist/node').replace(/d\.ts$/, 'cjs');
 
   if (!nodePaths.includes(normalizedPath) && !/\/types\.d\.ts$/.test(path)) {
-    util
-      .promisify(fs.rm)(path)
-      .then(() => fs.rmdir(path.replace(/\/[^/]*$/gm, ''), () => {}));
+    const dirPath = path.replace(/\/[^/]*$/gm, '');
+
+    fs.rmSync(path);
+
+    if (fs.readdirSync(dirPath).length === 0) {
+      fs.rmdirSync(dirPath);
+    }
   }
 });

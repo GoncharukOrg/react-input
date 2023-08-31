@@ -25,8 +25,8 @@ yarn add @react-input/mask
 | `component`   |     `Component`      |         | **Not used in the useMask hook**. Serves to enable the use of custom components, for example, if you want to use your own styled component with the ability to mask the value (see «[Integration with custom components](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#integration-with-custom-components)»).                                                                                               |
 | `mask`        |       `string`       |  `""`   | Input mask, `replacement` is used to replace characters.                                                                                                                                                                                                                                                                                                                                                                          |
 | `replacement` | `string` \| `object` |  `{}`   | Sets the characters replaced in the mask, where "key" is the replaced character, "value" is the regular expression to which the input character must match (see «[Replacement](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#replacement)»). It is possible to pass the replacement character as a string, then `replacement="_"` will default to `replacement={{ _: /./ }}`. Keys are ignored as you type. |
-| `showMask`    |      `boolean`       | `false` | Controls the display of the mask, for example, `+7 (912) ___-__-__` instead of `+7 (912`.                                                                                                                                                                                                                                                                                                                                         |
-| `separate`    |      `boolean`       | `false` | Stores the position of the entered characters. By default, input characters are non-breaking, which means that if you remove characters in the middle of the value, the characters are shifted to the left, forming a non-breaking value, which is the behavior of `input`. For example, with `true`, the possible value is `+7 (912) ___-67-__`, with `false` - `+7 (912) 67_-__-__`.                                            |
+| `showMask`    |      `boolean`       | `false` | Controls the display of the mask, for example, `+0 (123) ___-__-__` instead of `+0 (123`.                                                                                                                                                                                                                                                                                                                                         |
+| `separate`    |      `boolean`       | `false` | Stores the position of the entered characters. By default, input characters are non-breaking, which means that if you remove characters in the middle of the value, the characters are shifted to the left, forming a non-breaking value, which is the behavior of `input`. For example, with `true`, the possible value is `+0 (123) ___-45-__`, with `false` - `+0 (123) 45_-__-__`.                                            |
 | `modify`      |      `function`      |         | Function triggered before masking. Allows you conditionally change the properties of the component that affect masking. Valid values ​​for modification are `mask`, `replacement`, `showMask` and `separate`. This is useful when you need conditionally tweak the displayed value to improve UX (see «[Modify](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#modify)»).                                    |
 | `onMask`      |      `function`      |         | Handler for the custom event `input-mask`. Called asynchronously after the `change` event, accessing the `detail` property containing additional useful information about the value. (see «[Mask event](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#mask-event)»).                                                                                                                                        |
 
@@ -44,7 +44,7 @@ Let's see how you can easily implement a mask for entering a phone number using 
 import { InputMask } from '@react-input/mask';
 
 export default function App() {
-  return <InputMask mask="+7 (___) ___-__-__" replacement={{ _: /\d/ }} />;
+  return <InputMask mask="+0 (___) ___-__-__" replacement={{ _: /\d/ }} />;
 }
 ```
 
@@ -56,7 +56,7 @@ Now the same thing, but using the `useMask` hook:
 import { useMask } from '@react-input/mask';
 
 export default function App() {
-  const inputRef = useMask({ mask: '+7 (___) ___-__-__', replacement: { _: /\d/ } });
+  const inputRef = useMask({ mask: '+0 (___) ___-__-__', replacement: { _: /\d/ } });
 
   return <input ref={inputRef} />;
 }
@@ -92,7 +92,7 @@ The `modify` function is triggered before masking and allows you conditionally c
 
 The `modify` function expects to return an object containing the data to modify, optionally including `mask`, `replacement`, `showMask` and `separate`, or to return `undefined`. Changes will be only applied to those properties that were returned, so you can change any property as you like, or not change any property by passing `undefined`.
 
-The `modify` function takes a value without mask characters that is valid at the time of input. For example, if the `mask` property has the value `+7 (___) ___-__-__` and the previous value is `+7 (123) ___-__-__` and the user entered the character "4" at the ninth index of the value, then `modify` will take the value "1234". Note that there are no mask characters including "7" as well. Using this value you can modify the properties with the expected result.
+The `modify` function takes a value without mask characters that is valid at the time of input. For example, if the `mask` property has the value `+0 (___) ___-__-__` and the previous value is `+0 (123) ___-__-__` and the user entered the character "4" at the ninth index of the value, then `modify` will take the value "1234". Note that there are no mask characters including "7" as well. Using this value you can modify the properties with the expected result.
 
 Let's consider a possible situation when we need to change the mask depending on the phone city code:
 
@@ -101,7 +101,7 @@ import { InputMask } from '@react-input/mask';
 
 export default function App() {
   const modify = (input: string) => {
-    return { mask: input[0] === '7' ? '+_ (___) ___-__-__' : undefined };
+    return { mask: input[0] === '0' ? '+_ (___) ___-__-__' : undefined };
   };
 
   return <InputMask mask="+_ __________" replacement={{ _: /\d/ }} modify={modify} />;

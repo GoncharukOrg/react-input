@@ -130,7 +130,6 @@ export default function useNumberFormat(props?: NumberFormatProps): React.Mutabl
         });
       };
 
-      // eslint-disable-next-line no-param-reassign
       addedValue = filter(addedValue);
 
       if (inputType === 'insert' && !addedValue) {
@@ -139,7 +138,7 @@ export default function useNumberFormat(props?: NumberFormatProps): React.Mutabl
 
       const regExp$1 = RegExp(
         `[^\\${previousLocalizedValues.minusSign}${previousLocalizedValues.decimal}${previousLocalizedValues.digits}]`,
-        'g'
+        'g',
       );
 
       // Нам важно удалить ненужные символы перед преобразованием в число, так
@@ -181,7 +180,7 @@ export default function useNumberFormat(props?: NumberFormatProps): React.Mutabl
 
       // Для нормализации значения, ставим минус слева.
       // В случае арабской локали он может находиться справа
-      if (normalizedValue[normalizedValue.length - 1] === '-') {
+      if (normalizedValue.endsWith('-')) {
         normalizedValue = `-${normalizedValue.slice(0, -1)}`;
       }
 
@@ -255,7 +254,7 @@ export default function useNumberFormat(props?: NumberFormatProps): React.Mutabl
       };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [stringifiedLocales, stringifiedOptions]
+    [stringifiedLocales, stringifiedOptions],
   );
 
   /**

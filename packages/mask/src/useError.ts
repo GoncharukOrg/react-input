@@ -35,8 +35,8 @@ export default function useError({ inputRef, mask, replacement }: UseErrorParam)
       console.error(
         createError(
           'The initialized value of the `value` or `defaultValue` property is longer than the value specified in the `mask` property. Check the correctness of the initialized value in the specified property.',
-          `Invalid value: "${initialValue}".`
-        )
+          `Invalid value: "${initialValue}".`,
+        ),
       );
     }
 
@@ -48,8 +48,8 @@ export default function useError({ inputRef, mask, replacement }: UseErrorParam)
       console.error(
         createError(
           `Object keys in the \`replacement\` property are longer than one character. Replacement keys must be one character long. Check the correctness of the value in the specified property.`,
-          `Invalid keys: ${invalidReplacementKeys.join(', ')}.`
-        )
+          `Invalid keys: ${invalidReplacementKeys.join(', ')}.`,
+        ),
       );
     }
 
@@ -73,8 +73,8 @@ export default function useError({ inputRef, mask, replacement }: UseErrorParam)
       console.error(
         createError(
           `An invalid character was found in the initialized property value \`value\` or \`defaultValue\` (index: ${invalidCharIndex}). Check the correctness of the initialized value in the specified property.`,
-          `Invalid value: "${initialValue}".`
-        )
+          `Invalid value: "${initialValue}".`,
+        ),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

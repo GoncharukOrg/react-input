@@ -1,7 +1,8 @@
-import React, { forwardRef, useState } from 'react';
+import { forwardRef, useState } from 'react';
 
-import { InputMask, type MaskEventDetail } from '../src';
+import { InputMask } from '../src';
 
+import type { MaskEventDetail } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 export default {
@@ -16,7 +17,7 @@ interface ForwardedCustomComponentProps {
 
 function ForwardedCustomComponent(
   { label, value }: ForwardedCustomComponentProps,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
+  forwardedRef: React.ForwardedRef<HTMLInputElement>,
 ) {
   return (
     <>
@@ -39,7 +40,9 @@ function Component() {
         mask="+7 (___) ___-__-__"
         replacement={{ _: /\d/ }}
         value={detail?.value ?? ''}
-        onMask={(event) => setDetail(event.detail)}
+        onMask={(event) => {
+          setDetail(event.detail);
+        }}
       />
 
       <pre>{JSON.stringify(detail, null, 2)}</pre>

@@ -1,11 +1,15 @@
 const fs = require('fs');
 
-function getPaths(dir, paths = []) {
+/**
+ * @param {fs.PathLike} dir
+ * @param {string[]} paths
+ */
+function readdir(dir, paths = []) {
   fs.readdirSync(dir).forEach((relativePath) => {
     const path = `${dir}/${relativePath}`;
 
     if (fs.statSync(path).isDirectory()) {
-      getPaths(path, paths);
+      readdir(path, paths);
     } else {
       paths.push(path);
     }
@@ -14,4 +18,4 @@ function getPaths(dir, paths = []) {
   return paths;
 }
 
-module.exports = getPaths;
+module.exports = readdir;

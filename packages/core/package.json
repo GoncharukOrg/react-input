@@ -78,11 +78,11 @@
     "access": "public"
   },
   "scripts": {
-    "write:entries": "node ../../scripts/write-entries.js",
-    "remove:dist": "node ../../scripts/remove-dist.js",
-    "restore:dist": "node ../../scripts/restore-dist.js",
+    "write:entries": "ts-node ../../scripts/write-entries.ts",
+    "remove:dist": "ts-node ../../scripts/remove-dist.ts",
+    "restore:dist": "ts-node ../../scripts/restore-dist.ts",
     "build:rollup": "rollup --config rollup.config.js",
-    "build": "npm run write:entries && npm run remove:dist && npm run build:rollup && npm run restore:dist && node ../../scripts/console-success.js"
+    "build": "npm run write:entries && npm run remove:dist && npm run build:rollup && npm run restore:dist && ts-node ../../scripts/console-success.ts"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

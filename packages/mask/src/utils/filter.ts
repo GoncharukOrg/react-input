@@ -17,13 +17,13 @@ export default function filter({ value, replacementChars, replacement, separate 
 
   let filteredValue = '';
 
-  for (let i = 0; i < value.length; i++) {
-    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, value[i]);
-    const isValidChar = !isReplacementKey && replacement[__replacementChars[0]]?.test(value[i]);
+  for (const char of value) {
+    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, char);
+    const isValidChar = !isReplacementKey && replacement[__replacementChars[0]]?.test(char);
 
-    if ((separate && value[i] === __replacementChars[0]) || isValidChar) {
+    if ((separate && char === __replacementChars[0]) || isValidChar) {
       __replacementChars = __replacementChars.slice(1);
-      filteredValue += value[i];
+      filteredValue += char;
     }
   }
 

@@ -1,7 +1,8 @@
-import React, { forwardRef, useState } from 'react';
+import { forwardRef, useState } from 'react';
 
-import { InputMask, type MaskEventDetail, useMask } from '../src';
+import { InputMask, useMask } from '../src';
 
+import type { MaskEventDetail } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 export default {
@@ -15,7 +16,7 @@ interface ForwardedCustomComponentProps extends React.InputHTMLAttributes<HTMLIn
 
 function ForwardedCustomComponent(
   { label, ...props }: ForwardedCustomComponentProps,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
+  forwardedRef: React.ForwardedRef<HTMLInputElement>,
 ) {
   return (
     <>

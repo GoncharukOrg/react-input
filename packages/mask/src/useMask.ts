@@ -11,8 +11,9 @@ import unmask from './utils/unmask';
 import type { MaskEventDetail, MaskProps, Replacement } from './types';
 import type { Init, Tracking } from '@react-input/core';
 
-const convertToReplacementObject = (replacement: string): Replacement =>
-  replacement.length > 0 ? { [replacement]: /./ } : {};
+const convertToReplacementObject = (replacement: string): Replacement => {
+  return replacement.length > 0 ? { [replacement]: /./ } : {};
+};
 
 type CachedMaskProps = Required<Omit<MaskProps, 'modify' | 'onMask'>> & {
   replacement: Replacement;
@@ -40,9 +41,10 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
   const cache = useRef<Cache | null>(null);
 
   // Преобразовываем объект `replacement` в строку для сравнения с зависимостью в `useCallback`
-  const stringifiedReplacement = JSON.stringify(replacement, (key, value) =>
-    value instanceof RegExp ? value.toString() : value
-  );
+  const stringifiedReplacement = JSON.stringify(replacement, (_, value) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value instanceof RegExp ? value.toString() : value;
+  });
 
   /**
    *
@@ -51,7 +53,6 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
    */
 
   const init = useCallback<Init>(({ controlled, initialValue }) => {
-    // eslint-disable-next-line no-param-reassign
     initialValue = controlled || initialValue ? initialValue : showMask ? mask : '';
 
     const cachedProps = { mask, replacement, showMask, separate };
@@ -94,7 +95,7 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
       });
 
       // Регулярное выражение по поиску символов кроме ключей `replacement`
-      const regExp$1 = RegExp(`[^${Object.keys(cache.current.props.replacement)}]`, 'g');
+      const regExp$1 = RegExp(`[^${Object.keys(cache.current.props.replacement).join('')}]`, 'g');
 
       // Находим все заменяемые символы для фильтрации пользовательского значения.
       // Важно определить корректное значение на данном этапе
@@ -110,7 +111,6 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
       }
 
       if (addedValue) {
-        // eslint-disable-next-line no-param-reassign
         addedValue = filter({
           value: addedValue,
           replacementChars: replacementChars.slice(beforeChangeValue.length),
@@ -206,7 +206,7 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
       };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mask, stringifiedReplacement, showMask, separate, modify]
+    [mask, stringifiedReplacement, showMask, separate, modify],
   );
 
   /**

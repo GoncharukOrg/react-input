@@ -2,9 +2,9 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declaration": true,
-    "declarationDir": "dist/@types",
-    "rootDir": "src",
-    "outDir": "dist"
+    "declarationDir": "./dist/@types",
+    "rootDir": "./src",
+    "outDir": "./dist"
   },
   "include": ["src"]
 }

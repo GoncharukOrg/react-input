@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-import { InputMask, type MaskEventDetail, useMask } from '../src';
+import { InputMask, useMask } from '../src';
 
+import type { MaskEventDetail } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 export default {

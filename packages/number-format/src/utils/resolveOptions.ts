@@ -20,7 +20,7 @@ interface TempResolved extends Partial<Intl.ResolvedNumberFormatOptions> {
 
 export default function resolveOptions(
   locales: string | string[] | undefined,
-  options: NumberFormatOptions | undefined = {}
+  options: NumberFormatOptions | undefined = {},
 ) {
   const { format, groupDisplay, maximumIntegerDigits = 21, ...current } = options;
 

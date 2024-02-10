@@ -1,14 +1,14 @@
-const fs = require('fs');
+import fs from 'fs';
 
-const getPaths = require('../utils/getPaths');
+import readdir from '../utils/readdir';
 
-const nodePaths = getPaths('./dist/node');
-const typesPaths = getPaths('./dist/@types');
+const nodePaths = readdir('./dist/node');
+const typesPaths = readdir('./dist/@types');
 
 typesPaths.forEach((path) => {
   const normalizedPath = path.replace(/^\.\/dist\/@types/, './dist/node').replace(/d\.ts$/, 'cjs');
 
-  if (!nodePaths.includes(normalizedPath) && !/\/types\.d\.ts$/.test(path)) {
+  if (!nodePaths.includes(normalizedPath) && !path.endsWith('/types.d.ts')) {
     const dirPath = path.replace(/\/[^/]*$/gm, '');
 
     fs.rmSync(path);

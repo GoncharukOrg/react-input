@@ -8,7 +8,7 @@ import type { CustomInputEvent, CustomInputEventHandler, ExtendedHTMLInputElemen
 export default function useDispatchCustomInputEvent<D = unknown>(
   inputRef: React.MutableRefObject<ExtendedHTMLInputElement | null>,
   customInputEventType: string | undefined,
-  customInputEventHandler: CustomInputEventHandler<CustomInputEvent<D>> | undefined
+  customInputEventHandler: CustomInputEventHandler<CustomInputEvent<D>> | undefined,
 ): [React.MutableRefObject<boolean>, (customInputEventDetail: D) => void] {
   const dispatched = useRef(true);
 
@@ -55,7 +55,7 @@ export default function useDispatchCustomInputEvent<D = unknown>(
         dispatched.current = true;
       });
     },
-    [inputRef, customInputEventType, customInputEventHandler]
+    [inputRef, customInputEventType, customInputEventHandler],
   );
 
   return [dispatched, dispatch];

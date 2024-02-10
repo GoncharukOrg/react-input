@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { InputMask } from '../src';
 
@@ -18,7 +18,9 @@ function Component() {
         mask="+7 (___) ___-__-__"
         replacement={{ _: /\d/ }}
         value={value}
-        onChange={(event) => setValue(event.target.value)}
+        onChange={(event) => {
+          setValue(event.target.value);
+        }}
       />
 
       <pre>{JSON.stringify({ value }, null, 2)}</pre>

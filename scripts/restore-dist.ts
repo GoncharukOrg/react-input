@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 if (fs.existsSync('./dist/module')) {
   throw new Error('The folder "module" already exists!');

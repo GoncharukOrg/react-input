@@ -49,7 +49,7 @@ export default function useInput<D = unknown>({
   const [dispatchedCustomInputEvent, dispatchCustomInputEvent] = useDispatchCustomInputEvent<D>(
     inputRef,
     customInputEventType,
-    customInputEventHandler
+    customInputEventHandler,
   );
 
   /**

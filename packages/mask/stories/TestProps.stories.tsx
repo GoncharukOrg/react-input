@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-import { InputMask, type MaskEventDetail } from '../src';
+import { InputMask } from '../src';
 
+import type { MaskEventDetail } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 export default {
@@ -29,7 +30,9 @@ function Component() {
         separate={state.separate}
         value={value}
         // defaultValue="fegoj0fwfwe"
-        onChange={(event) => setValue(event.target.value)}
+        onChange={(event) => {
+          setValue(event.target.value);
+        }}
         onMask={(event) => {
           setDetail(event.detail);
         }}
@@ -37,12 +40,12 @@ function Component() {
 
       <button
         type="button"
-        onClick={() =>
+        onClick={() => {
           setState((prev) => ({
             ...prev,
             mask: prev.mask === '+7 (___) ___-__-__' ? '___-___' : '+7 (___) ___-__-__',
-          }))
-        }
+          }));
+        }}
       >
         Изменить mask
       </button>
@@ -59,11 +62,21 @@ function Component() {
         Изменить replacement
       </button> */}
 
-      <button type="button" onClick={() => setState((prev) => ({ ...prev, showMask: !prev.showMask }))}>
+      <button
+        type="button"
+        onClick={() => {
+          setState((prev) => ({ ...prev, showMask: !prev.showMask }));
+        }}
+      >
         Изменить showMask
       </button>
 
-      <button type="button" onClick={() => setState((prev) => ({ ...prev, separate: !prev.separate }))}>
+      <button
+        type="button"
+        onClick={() => {
+          setState((prev) => ({ ...prev, separate: !prev.separate }));
+        }}
+      >
         Изменить separate
       </button>
 

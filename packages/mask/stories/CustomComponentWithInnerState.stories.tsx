@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from 'react';
+import { forwardRef, useState } from 'react';
 
 import { InputMask } from '../src';
 
@@ -15,14 +15,21 @@ interface ForwardedCustomComponentProps {
 
 function ForwardedCustomComponent(
   { label }: ForwardedCustomComponentProps,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>
+  forwardedRef: React.ForwardedRef<HTMLInputElement>,
 ) {
   const [value, setValue] = useState('');
 
   return (
     <>
       <label htmlFor="custom-input">{label}</label>
-      <input ref={forwardedRef} id="custom-input" value={value} onChange={(event) => setValue(event.target.value)} />
+      <input
+        ref={forwardedRef}
+        id="custom-input"
+        value={value}
+        onChange={(event) => {
+          setValue(event.target.value);
+        }}
+      />
     </>
   );
 }

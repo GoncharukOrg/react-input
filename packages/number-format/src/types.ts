@@ -38,7 +38,8 @@ export type NumberFormatEventHandler = CustomInputEventHandler<NumberFormatEvent
 // - `roundingPriority`?: "auto" | "morePrecision" | "lessPrecision";
 // - `trailingZeroDisplay`?: "auto" | "stripIfInteger";
 
-type ResolveOptions<T extends { [key: string]: any }> = Pick<
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ResolveOptions<T extends Record<string, any>> = Pick<
   T,
   | 'currency'
   | 'currencyDisplay'

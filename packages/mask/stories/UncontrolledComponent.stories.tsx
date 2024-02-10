@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-import { InputMask, type MaskEventDetail } from '../src';
+import { InputMask } from '../src';
 
+import type { MaskEventDetail } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 export default {
@@ -19,7 +20,9 @@ function Component() {
         replacement={{ _: /\d/ }}
         defaultValue="+7 (___) ___-__-__"
         autoFocus
-        onMask={(event) => setDetail(event.detail)}
+        onMask={(event) => {
+          setDetail(event.detail);
+        }}
       />
 
       <pre>{JSON.stringify(detail, null, 2)}</pre>

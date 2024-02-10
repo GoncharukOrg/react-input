@@ -85,11 +85,11 @@
     "access": "public"
   },
   "scripts": {
-    "remove:dist": "node ../../scripts/remove-dist.js",
-    "clear:types": "node ../../scripts/clear-types.js",
-    "restore:dist": "node ../../scripts/restore-dist.js",
+    "remove:dist": "ts-node ../../scripts/remove-dist.ts",
+    "clear:types": "ts-node ../../scripts/clear-types.ts",
+    "restore:dist": "ts-node ../../scripts/restore-dist.ts",
     "build:rollup": "rollup --config rollup.config.js",
-    "build": "npm run remove:dist && npm run build:rollup && npm run clear:types && npm run restore:dist && node ../../scripts/console-success.js"
+    "build": "npm run remove:dist && npm run build:rollup && npm run clear:types && npm run restore:dist && ts-node ../../scripts/console-success.ts"
   },
   "dependencies": {
     "@react-input/core": "^1.0.5"

@@ -3,8 +3,8 @@
   "compilerOptions": {
     "declaration": false,
     "removeComments": true,
-    "rootDir": "src",
-    "outDir": "dist/node"
+    "rootDir": "./src",
+    "outDir": "./dist/node"
   },
   "include": ["src"]
 }

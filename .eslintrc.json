@@ -1,24 +1,25 @@
 {
   "extends": [
     "eslint:recommended",
-    "airbnb",
-    "react-app",
-    "react-app/jest",
+    "plugin:import/recommended",
+    "plugin:promise/recommended",
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "plugin:react-hooks/recommended",
-    "plugin:import/recommended",
-    "plugin:import/typescript",
-    "prettier"
+    "plugin:jsx-a11y/strict",
+    "plugin:@stylistic/recommended-extends",
+    "plugin:prettier/recommended"
   ],
   "settings": {
     "import/parsers": {
+      "@babel/eslint-parser": [".js", ".jsx"],
       "@typescript-eslint/parser": [".ts", ".tsx"]
     },
     "import/resolver": {
       "typescript": {
         "alwaysTryTypes": true
-      }
+      },
+      "node": true
     },
     "react": {
       "createClass": "createReactClass",
@@ -28,46 +29,123 @@
       "flowVersion": "0.53"
     }
   },
+  "env": {
+    "commonjs": true,
+    "browser": true,
+    "es2021": true,
+    "jest": true,
+    "node": true
+  },
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "project": true,
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": ["import", "promise", "react", "react-hooks", "jsx-a11y", "@stylistic", "prettier"],
   "rules": {
-    "@typescript-eslint/no-unused-vars": [1, { "ignoreRestSiblings": true, "varsIgnorePattern": "^React$" }],
-    "camelcase": 0,
-    "no-console": [2, { "allow": ["info", "warn", "error"] }],
-    "no-nested-ternary": 0,
-    "no-plusplus": 0,
-    "no-underscore-dangle": 0,
-    "import/extensions": [2, "ignorePackages", { "js": "never", "jsx": "never", "ts": "never", "tsx": "never" }],
-    "import/no-extraneous-dependencies": 0,
-    "import/no-anonymous-default-export": [
-      2,
+    "eqeqeq": "error",
+    "no-lone-blocks": "error",
+    "no-restricted-imports": [
+      "error",
       {
-        "allowArray": true,
-        "allowArrowFunction": false,
-        "allowAnonymousClass": false,
-        "allowAnonymousFunction": false,
-        "allowCallExpression": true,
-        "allowNew": false,
-        "allowLiteral": false,
-        "allowObject": true
+        "name": "react-redux",
+        "importNames": ["useSelector", "useDispatch"],
+        "message": "Use the `useDispatch` and `useSelector` typed hooks from the `store` directory."
       }
     ],
+    "no-unused-vars": "off", // https://typescript-eslint.io/rules/no-unused-vars/#how-to-use
+    "object-shorthand": "error",
+    "prefer-template": "error",
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true
+      }
+    ],
+    "@stylistic/arrow-parens": ["error", "always"],
+    "@stylistic/brace-style": ["error", "1tbs"],
+    "@stylistic/jsx-self-closing-comp": "error",
+    // "@stylistic/jsx-sort-props": [
+    //   "error",
+    //   {
+    //     "callbacksLast": true,
+    //     "reservedFirst": true
+    //   }
+    // ],
+    "@stylistic/member-delimiter-style": "off",
+    "@stylistic/operator-linebreak": "off",
+    "@stylistic/semi": ["error", "always"],
+    "import/default": "off", // https://typescript-eslint.io/linting/troubleshooting/performance-troubleshooting#eslint-plugin-import
+    "import/named": "off", // https://typescript-eslint.io/linting/troubleshooting/performance-troubleshooting#eslint-plugin-import
+    "import/namespace": "off", // https://typescript-eslint.io/linting/troubleshooting/performance-troubleshooting#eslint-plugin-import
+    "import/no-named-as-default": "off", // https://typescript-eslint.io/linting/troubleshooting/performance-troubleshooting#eslint-plugin-import
+    "import/no-named-as-default-member": "off", // https://typescript-eslint.io/linting/troubleshooting/performance-troubleshooting#eslint-plugin-import
+    "import/no-unresolved": "off", // https://typescript-eslint.io/linting/troubleshooting/performance-troubleshooting#eslint-plugin-import
     "import/order": [
-      2,
+      "error",
       {
         "newlines-between": "always",
-        "alphabetize": { "order": "asc", "orderImportKind": "asc" },
+        "alphabetize": {
+          "order": "asc",
+          "orderImportKind": "asc"
+        },
         "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "object", "type"],
-        "pathGroups": [{ "pattern": "react?(-dom)", "group": "external", "position": "before" }],
-        "pathGroupsExcludedImportTypes": ["react?(-dom)"]
+        "pathGroups": [
+          {
+            "pattern": "{react,react/**,react-dom,react-dom/**}",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "{@react-input,@react-input/**}",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "{errors,errors/**}",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "{hooks,hooks/**}",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "{utils,utils/**}",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "{types,types/**}",
+            "group": "internal",
+            "position": "after"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["builtin", "object", "type"]
       }
     ],
-    "react/jsx-filename-extension": [2, { "extensions": [".jsx", ".tsx"] }],
-    "react/jsx-props-no-spreading": 0,
-    "react/require-default-props": 0
+    "jsx-a11y/no-autofocus": "off",
+    "react/button-has-type": "error",
+    "react/jsx-no-useless-fragment": "error"
   },
   "overrides": [
     {
       "files": ["**/*.ts?(x)"],
-      "extends": ["plugin:@typescript-eslint/recommended"]
+      "extends": [
+        "plugin:import/typescript",
+        "plugin:@typescript-eslint/strict-type-checked",
+        "plugin:@typescript-eslint/stylistic-type-checked"
+      ],
+      "parser": "@typescript-eslint/parser",
+      "plugins": ["@typescript-eslint"],
+      "rules": {
+        "@typescript-eslint/no-unnecessary-condition": "off"
+      }
     },
     {
       "files": ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"],

@@ -20,7 +20,7 @@ export default function localizeValues(locales: string | string[] | undefined): 
   // справа от чисел, поэтому нам важно определить положение
   // минуса. Если минус расположен справа, то на первой
   // позиции будет юникод `U+061C` (char code 1564)
-  const signBackwards = value[0] === '‎' || value[0] === '؜';
+  const signBackwards = value.startsWith('‎') || value.startsWith('؜');
   const minusSign = signBackwards ? value[1] : value[0];
   const decimal = value[value.length - 2];
 

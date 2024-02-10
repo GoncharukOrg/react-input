@@ -1,8 +1,8 @@
-const babel = require('@rollup/plugin-babel');
-const commonjs = require('@rollup/plugin-commonjs');
-const nodeResolve = require('@rollup/plugin-node-resolve');
-const terser = require('@rollup/plugin-terser');
-const typescript = require('@rollup/plugin-typescript');
+const { babel } = require('@rollup/plugin-babel');
+const commonjs = require('@rollup/plugin-commonjs').default;
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const terser = require('@rollup/plugin-terser').default;
+const typescript = require('@rollup/plugin-typescript').default;
 
 const output = {
   module: {
@@ -17,19 +17,23 @@ const output = {
   },
 };
 
-function createRollupConfig(env, config) {
+/**
+ * @param {'node' | 'module'} env
+ * @param {Record<string, string> | string[]} input
+ */
+function createRollupConfig(env, input) {
   return {
-    ...config,
+    input,
     output: output[env],
-    external: ['react', 'react-dom', /^@react-input\/core.*/],
+    external: [/^react(\/.*)?$/, /^react-dom(\/.*)?$/, /^@react-input\/core(\/.*)?$/],
     plugins: [
       nodeResolve(),
       commonjs(),
-      babel({
-        babelHelpers: 'bundled',
-      }),
       typescript({
         tsconfig: `tsconfig.${env}.json`,
+      }),
+      babel({
+        babelHelpers: 'bundled',
       }),
       terser(),
     ],

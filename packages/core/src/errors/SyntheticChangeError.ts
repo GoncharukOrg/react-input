@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
+
 import type { InputAttributes } from '../types';
 
 interface SyntheticChangeError {

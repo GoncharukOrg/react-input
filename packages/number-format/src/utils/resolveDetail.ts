@@ -19,7 +19,7 @@ interface Options {
  */
 export default function resolveDetail(
   value: string,
-  { inputType, locales, localizedValues, currentOptions, resolvedOptions }: Options
+  { inputType, locales, localizedValues, currentOptions, resolvedOptions }: Options,
 ) {
   if (
     (inputType === 'deleteBackward' || inputType === 'deleteForward') &&
@@ -28,7 +28,7 @@ export default function resolveDetail(
     return { value: '', number: 0 };
   }
 
-  const isNegative = value[0] === '-';
+  const isNegative = value.startsWith('-');
   const absValue = isNegative ? value.slice(1) : value;
 
   // При `fraction` равном `undefined` - разделитель не был введён
@@ -100,6 +100,7 @@ export default function resolveDetail(
     // }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { format, groupDisplay, maximumIntegerDigits, ...options } = currentOptions ?? {};
 
   let nextValue = Intl.NumberFormat(locales, {
@@ -117,8 +118,8 @@ export default function resolveDetail(
   const sign = nextValue.includes('+')
     ? '+'
     : nextValue.includes(localizedValues.minusSign)
-    ? localizedValues.minusSign
-    : undefined;
+      ? localizedValues.minusSign
+      : undefined;
 
   // Арабская локаль содержит юникод, что приводит к неожидаемому
   // сдвигу курсора при смещении через клавиатуру, для предотвращения
@@ -131,7 +132,7 @@ export default function resolveDetail(
     if (lastDigitIndex !== -1) {
       nextValue = nextValue.slice(0, lastDigitIndex + 1) + sign + nextValue.slice(lastDigitIndex + 1);
 
-      if (nextValue[0] !== '‏') {
+      if (!nextValue.startsWith('‏')) {
         nextValue = `‏${nextValue}`;
       }
     }

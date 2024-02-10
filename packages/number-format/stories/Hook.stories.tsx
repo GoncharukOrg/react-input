@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { useNumberFormat } from '../src';
 
 import type { Meta, StoryObj } from '@storybook/react';

@@ -29,8 +29,8 @@ function generatePattern(mask: string, replacement: Replacement, disableReplacem
     pattern += isReplacementKey
       ? lookahead + replacement[mask[i]].toString().slice(1, -1)
       : special.includes(mask[i])
-      ? `\\${mask[i]}`
-      : mask[i];
+        ? `\\${mask[i]}`
+        : mask[i];
 
     if (i === mask.length - 1) {
       pattern += '$';
@@ -60,8 +60,8 @@ function formatToParts(value: string, { mask, replacement }: Options): MaskPart[
     const type = isReplacementKey
       ? ('replacement' as const) // символ замены
       : char === mask[index]
-      ? ('mask' as const) // символ маски
-      : ('input' as const); // символ введенный пользователем
+        ? ('mask' as const) // символ маски
+        : ('input' as const); // символ введенный пользователем
 
     return { type, value: char, index };
   });
@@ -77,13 +77,13 @@ function formatToMask(input: string, { mask, replacement }: Options): string {
   let position = 0;
   let formattedValue = '';
 
-  for (let i = 0; i < mask.length; i++) {
-    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, mask[i]);
+  for (const char of mask) {
+    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, char);
 
     if (isReplacementKey && input[position] !== undefined) {
       formattedValue += input[position++];
     } else {
-      formattedValue += mask[i];
+      formattedValue += char;
     }
   }
 

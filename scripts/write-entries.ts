@@ -1,13 +1,13 @@
-const fs = require('fs');
+import fs from 'fs';
 
-const getPaths = require('../utils/getPaths');
+import readdir from '../utils/readdir';
 
-const paths = getPaths('./src');
+const paths = readdir('./src');
 const resolvedPaths = paths.filter(
-  (path) => !/^\.\/src\/index.tsx?$|\.stories\.tsx?$|\.test\.tsx?$|\.d\.ts$/gm.test(path)
+  (path) => !/^\.\/src\/index.tsx?$|\.stories\.tsx?$|\.test\.tsx?$|\.d\.ts$/gm.test(path),
 );
 
-const allImportTypes = [];
+const allImportTypes: string[] = [];
 
 const imports = resolvedPaths.map((path) => {
   const normalizedPath = path.replace(/^\.\/src\/|\.tsx?$/g, '');
@@ -17,7 +17,7 @@ const imports = resolvedPaths.map((path) => {
     const importTypes = fs
       .readFileSync(path, 'utf8')
       .match(/(?<=export (?:type|interface) )[a-zA-z]+/gm)
-      .reduce((prev, typeName) => `${prev}  ${typeName},\n`, '');
+      ?.reduce((prev, typeName) => `${prev}  ${typeName},\n`, '');
 
     if (importTypes) {
       allImportTypes.push(`export type {\n${importTypes}} from './${normalizedPath}';\n`);

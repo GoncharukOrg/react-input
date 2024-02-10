@@ -1,10 +1,10 @@
-import React from 'react';
-
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import InputNumberFormat, { type InputNumberFormatProps } from '@react-input/number-format/InputNumberFormat';
+import InputNumberFormat from '@react-input/number-format/InputNumberFormat';
+
+import type { InputNumberFormatProps } from '@react-input/number-format/InputNumberFormat';
 
 const user = userEvent.setup({ delay: 15 });
 

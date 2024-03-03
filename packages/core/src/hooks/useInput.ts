@@ -39,9 +39,9 @@ export default function useInput<D = unknown>({
   const inputRef = useRef<ExtendedHTMLInputElement | null>(null);
 
   const selection = useRef({
-    requestID: -1,
-    fallbackRequestID: -1,
-    cachedRequestID: -1,
+    timeoutId: -1,
+    fallbackTimeoutId: -1,
+    cachedTimeoutId: -1,
     start: 0,
     end: 0,
   });
@@ -108,12 +108,12 @@ export default function useInput<D = unknown>({
         }
 
         // Если событие вызывается слишком часто, смена курсора может не поспеть за новым событием,
-        // поэтому сравниваем `requestID` кэшированный и текущий для избежания некорректного поведения маски
-        if (selection.current.cachedRequestID === selection.current.requestID) {
+        // поэтому сравниваем `timeoutId` кэшированный и текущий для избежания некорректного поведения маски
+        if (selection.current.cachedTimeoutId === selection.current.timeoutId) {
           throw new SyntheticChangeError('The input selection has not been updated.');
         }
 
-        selection.current.cachedRequestID = selection.current.requestID;
+        selection.current.cachedTimeoutId = selection.current.timeoutId;
 
         const { value, selectionStart, selectionEnd } = inputRef.current;
 
@@ -250,13 +250,13 @@ export default function useInput<D = unknown>({
           selection.current.start = inputRef.current?.selectionStart ?? 0;
           selection.current.end = inputRef.current?.selectionEnd ?? 0;
 
-          selection.current.requestID = requestAnimationFrame(setSelection);
+          selection.current.timeoutId = window.setTimeout(setSelection);
         } else {
-          selection.current.fallbackRequestID = requestAnimationFrame(setSelection);
+          selection.current.fallbackTimeoutId = window.setTimeout(setSelection);
         }
       };
 
-      selection.current.requestID = requestAnimationFrame(setSelection);
+      selection.current.timeoutId = window.setTimeout(setSelection);
     };
 
     // Событие `focus` не сработает при рендере, даже если включено свойство `autoFocus`,
@@ -285,12 +285,12 @@ export default function useInput<D = unknown>({
     const handleBlur = () => {
       if (!validInputElement(inputRef.current)) return;
 
-      cancelAnimationFrame(selection.current.requestID);
-      cancelAnimationFrame(selection.current.fallbackRequestID);
+      window.clearTimeout(selection.current.timeoutId);
+      window.clearTimeout(selection.current.fallbackTimeoutId);
 
-      selection.current.requestID = -1;
-      selection.current.fallbackRequestID = -1;
-      selection.current.cachedRequestID = -1;
+      selection.current.timeoutId = -1;
+      selection.current.fallbackTimeoutId = -1;
+      selection.current.cachedTimeoutId = -1;
     };
 
     const inputElement = inputRef.current;

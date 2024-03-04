@@ -166,10 +166,10 @@ export default function useInput<D = unknown>({
 
         const trackingResult = tracking({
           inputType,
+          previousValue,
           value,
           addedValue,
           deletedValue,
-          previousValue,
           changeStart,
           changeEnd,
           selectionStart,

@@ -1,7 +1,6 @@
 import type { Replacement } from '../types';
 
-interface UnmaskParam {
-  value: string;
+interface Options {
   start?: number;
   end?: number;
   mask: string;
@@ -9,9 +8,9 @@ interface UnmaskParam {
   separate: boolean;
 }
 
-export default function unmask({ value, start = 0, end, mask, replacement, separate }: UnmaskParam) {
-  const slicedMask = mask.slice(start, end);
+export default function unmask(value: string, { start = 0, end, mask, replacement, separate }: Options) {
   const slicedValue = value.slice(start, end);
+  const slicedMask = mask.slice(start, end);
 
   let unmaskedValue = '';
 

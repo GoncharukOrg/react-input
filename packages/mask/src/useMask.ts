@@ -69,7 +69,7 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
    */
 
   const tracking = useCallback<Tracking<MaskEventDetail>>(
-    ({ inputType, addedValue, previousValue, changeStart, changeEnd }) => {
+    ({ inputType, previousValue, addedValue, changeStart, changeEnd }) => {
       if (cache.current === null) {
         throw new SyntheticChangeError('The state has not been initialized.');
       }
@@ -86,8 +86,7 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
       // Дополнительно нам важно учесть, что немаскированное значение с учетом удаления или добавления символов должно
       // получаться с помощью закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
 
-      let beforeChangeValue = unmask({
-        value: previousValue,
+      let beforeChangeValue = unmask(previousValue, {
         end: changeStart,
         mask: cache.current.props.mask,
         replacement: cache.current.props.replacement,
@@ -102,8 +101,7 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
       const replacementChars = cache.current.props.mask.replace(regExp$1, '');
 
       if (beforeChangeValue) {
-        beforeChangeValue = filter({
-          value: beforeChangeValue,
+        beforeChangeValue = filter(beforeChangeValue, {
           replacementChars,
           replacement: cache.current.props.replacement,
           separate: cache.current.props.separate,
@@ -111,8 +109,7 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
       }
 
       if (addedValue) {
-        addedValue = filter({
-          value: addedValue,
+        addedValue = filter(addedValue, {
           replacementChars: replacementChars.slice(beforeChangeValue.length),
           replacement: cache.current.props.replacement,
           separate: false, // Поскольку нас интересуют только "полезные" символы, фильтруем без учёта заменяемых символов
@@ -123,8 +120,7 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
         throw new SyntheticChangeError('The character does not match the key value of the `replacement` object.');
       }
 
-      let afterChangeValue = unmask({
-        value: previousValue,
+      let afterChangeValue = unmask(previousValue, {
         start: changeEnd,
         mask: cache.current.props.mask,
         replacement: cache.current.props.replacement,
@@ -151,8 +147,7 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
       }
 
       if (afterChangeValue) {
-        afterChangeValue = filter({
-          value: afterChangeValue,
+        afterChangeValue = filter(afterChangeValue, {
           replacementChars: replacementChars.slice(beforeChangeValue.length + addedValue.length),
           replacement: cache.current.props.replacement,
           separate: cache.current.props.separate,

@@ -85,7 +85,7 @@ export default function useNumberFormat(props?: NumberFormatProps): React.Mutabl
    */
 
   const tracking = useCallback<Tracking<NumberFormatEventDetail>>(
-    ({ inputType, addedValue, previousValue, changeStart, changeEnd }) => {
+    ({ inputType, previousValue, addedValue, changeStart, changeEnd }) => {
       if (cache.current === null) {
         throw new SyntheticChangeError('The state has not been initialized.');
       }
@@ -236,8 +236,8 @@ export default function useNumberFormat(props?: NumberFormatProps): React.Mutabl
         previousLocalizedValues,
         resolvedOptions: resolved,
         inputType,
-        addedValue,
         previousValue,
+        addedValue,
         nextValue: detail.value,
         changeStart,
         changeEnd,

@@ -1,7 +1,6 @@
 import type { Replacement } from '../types';
 
-interface FilterParam {
-  value: string;
+interface Options {
   replacementChars: string;
   replacement: Replacement;
   separate: boolean;
@@ -12,7 +11,7 @@ interface FilterParam {
  * @param param
  * @returns
  */
-export default function filter({ value, replacementChars, replacement, separate }: FilterParam): string {
+export default function filter(value: string, { replacementChars, replacement, separate }: Options): string {
   let __replacementChars = replacementChars;
 
   let filteredValue = '';

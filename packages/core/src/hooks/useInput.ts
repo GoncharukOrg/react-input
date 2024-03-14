@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
+import { unstable_batchedUpdates } from 'react-dom';
 
 import SyntheticChangeError from '../errors/SyntheticChangeError';
 import setInputAttributes from '../utils/setInputAttributes';
-
-import useDispatchCustomInputEvent from './useDispatchCustomInputEvent';
 
 import type {
   CustomInputEvent,
@@ -46,11 +45,7 @@ export default function useInput<D = unknown>({
     end: 0,
   });
 
-  const [dispatchedCustomInputEvent, dispatchCustomInputEvent] = useDispatchCustomInputEvent<D>(
-    inputRef,
-    customInputEventType,
-    customInputEventHandler,
-  );
+  const dispatchedCustomInputEvent = useRef(true);
 
   /**
    *
@@ -182,7 +177,46 @@ export default function useInput<D = unknown>({
           selectionEnd: trackingResult.selectionEnd,
         });
 
-        dispatchCustomInputEvent(trackingResult.__detail);
+        if (customInputEventType && customInputEventHandler) {
+          const { value, selectionStart, selectionEnd } = inputRef.current;
+
+          dispatchedCustomInputEvent.current = false;
+
+          // Генерируем и отправляем пользовательское событие. Нулевой `requestAnimationFrame` необходим для
+          // запуска события в асинхронном режиме, в противном случае возможна ситуация, когда компонент
+          // будет повторно отрисован с предыдущим значением, из-за обновления состояние после события `change`.
+          // Важно использовать именно `requestAnimationFrame`, а не `setTimeout` чтобы не было заметно обновление
+          // позиции каретки при вызове `setInputAttributes`
+          requestAnimationFrame(() => {
+            if (inputRef.current === null) return;
+
+            // После изменения состояния при событии `change` мы можем столкнуться с ситуацией,
+            // когда значение `input` элемента не будет равно маскированному значению, что отразится
+            // на данных передаваемых `event.target`. Поэтому устанавливаем предыдущее значение
+            setInputAttributes(inputRef.current, {
+              value,
+              selectionStart: selectionStart ?? value.length,
+              selectionEnd: selectionEnd ?? value.length,
+            });
+
+            const customInputEvent = new CustomEvent(customInputEventType, {
+              bubbles: true,
+              cancelable: false,
+              composed: true,
+              detail: trackingResult.__detail,
+            }) as CustomInputEvent<D>;
+
+            inputRef.current.dispatchEvent(customInputEvent);
+
+            if (unstable_batchedUpdates) {
+              unstable_batchedUpdates(customInputEventHandler, customInputEvent);
+            } else {
+              customInputEventHandler(customInputEvent);
+            }
+
+            dispatchedCustomInputEvent.current = true;
+          });
+        }
 
         // После изменения значения в кастомном событии (`dispatchCustomInputEvent`) событие `change`
         // срабатывать не будет, так как предыдущее и текущее состояние внутри `input` совпадают. Чтобы
@@ -231,7 +265,7 @@ export default function useInput<D = unknown>({
     return () => {
       inputElement?.removeEventListener('input', handleInput);
     };
-  }, [tracking, dispatchCustomInputEvent]);
+  }, [customInputEventType, customInputEventHandler, tracking]);
 
   /**
    *

@@ -1,12 +1,12 @@
-import { useCallback, useRef } from 'react';
+import { useRef } from 'react';
 
 import { SyntheticChangeError, useInput } from '@react-input/core';
 
-import useError from './useError';
 import filter from './utils/filter';
 import resolveDetail from './utils/resolveDetail';
 import resolveSelection from './utils/resolveSelection';
 import unmask from './utils/unmask';
+import validate from './utils/validate';
 
 import type { MaskEventDetail, MaskProps, Replacement } from './types';
 import type { Init, Tracking } from '@react-input/core';
@@ -25,26 +25,18 @@ interface Cache {
   fallbackProps: CachedMaskProps;
 }
 
-export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLInputElement | null> {
-  const {
-    mask = '',
-    replacement: replacementProps = {},
-    showMask = false,
-    separate = false,
-    modify,
-    onMask,
-  } = props ?? {};
-
+export default function useMask({
+  mask = '',
+  replacement: replacementProps = {},
+  showMask = false,
+  separate = false,
+  modify,
+  onMask,
+}: MaskProps = {}): React.MutableRefObject<HTMLInputElement | null> {
   const replacement =
     typeof replacementProps === 'string' ? convertToReplacementObject(replacementProps) : replacementProps;
 
   const cache = useRef<Cache | null>(null);
-
-  // Преобразовываем объект `replacement` в строку для сравнения с зависимостью в `useCallback`
-  const stringifiedReplacement = JSON.stringify(replacement, (_, value) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return value instanceof RegExp ? value.toString() : value;
-  });
 
   /**
    *
@@ -52,15 +44,18 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
    *
    */
 
-  const init = useCallback<Init>(({ controlled, initialValue }) => {
+  const init: Init = ({ controlled, initialValue }) => {
+    if (process.env.NODE_ENV !== 'production') {
+      validate({ initialValue, mask, replacement });
+    }
+
     initialValue = controlled || initialValue ? initialValue : showMask ? mask : '';
 
     const cachedProps = { mask, replacement, showMask, separate };
     cache.current = { value: initialValue, props: cachedProps, fallbackProps: cachedProps };
 
     return { value: initialValue };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
   /**
    *
@@ -68,141 +63,137 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
    *
    */
 
-  const tracking = useCallback<Tracking<MaskEventDetail>>(
-    ({ inputType, previousValue, addedValue, changeStart, changeEnd }) => {
-      if (cache.current === null) {
-        throw new SyntheticChangeError('The state has not been initialized.');
-      }
+  const tracking: Tracking<MaskEventDetail> = ({ inputType, previousValue, addedValue, changeStart, changeEnd }) => {
+    if (cache.current === null) {
+      throw new SyntheticChangeError('The state has not been initialized.');
+    }
 
-      // Предыдущее значение всегда должно соответствовать маскированному значению из кэша. Обратная ситуация может
-      // возникнуть при контроле значения, если значение не было изменено после ввода. Для предотвращения подобных
-      // ситуаций, нам важно синхронизировать предыдущее значение с кэшированным значением, если они различаются
-      if (cache.current.value !== previousValue) {
-        cache.current.props = cache.current.fallbackProps;
-      } else {
-        cache.current.fallbackProps = cache.current.props;
-      }
+    // Предыдущее значение всегда должно соответствовать маскированному значению из кэша. Обратная ситуация может
+    // возникнуть при контроле значения, если значение не было изменено после ввода. Для предотвращения подобных
+    // ситуаций, нам важно синхронизировать предыдущее значение с кэшированным значением, если они различаются
+    if (cache.current.value !== previousValue) {
+      cache.current.props = cache.current.fallbackProps;
+    } else {
+      cache.current.fallbackProps = cache.current.props;
+    }
 
-      // Дополнительно нам важно учесть, что немаскированное значение с учетом удаления или добавления символов должно
-      // получаться с помощью закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
+    // Дополнительно нам важно учесть, что немаскированное значение с учетом удаления или добавления символов должно
+    // получаться с помощью закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
 
-      let beforeChangeValue = unmask(previousValue, {
-        end: changeStart,
-        mask: cache.current.props.mask,
+    let beforeChangeValue = unmask(previousValue, {
+      end: changeStart,
+      mask: cache.current.props.mask,
+      replacement: cache.current.props.replacement,
+      separate: cache.current.props.separate,
+    });
+
+    // Регулярное выражение по поиску символов кроме ключей `replacement`
+    const regExp$1 = RegExp(`[^${Object.keys(cache.current.props.replacement).join('')}]`, 'g');
+
+    // Находим все заменяемые символы для фильтрации пользовательского значения.
+    // Важно определить корректное значение на данном этапе
+    const replacementChars = cache.current.props.mask.replace(regExp$1, '');
+
+    if (beforeChangeValue) {
+      beforeChangeValue = filter(beforeChangeValue, {
+        replacementChars,
         replacement: cache.current.props.replacement,
         separate: cache.current.props.separate,
       });
+    }
 
-      // Регулярное выражение по поиску символов кроме ключей `replacement`
-      const regExp$1 = RegExp(`[^${Object.keys(cache.current.props.replacement).join('')}]`, 'g');
+    if (addedValue) {
+      addedValue = filter(addedValue, {
+        replacementChars: replacementChars.slice(beforeChangeValue.length),
+        replacement: cache.current.props.replacement,
+        separate: false, // Поскольку нас интересуют только "полезные" символы, фильтруем без учёта заменяемых символов
+      });
+    }
 
-      // Находим все заменяемые символы для фильтрации пользовательского значения.
-      // Важно определить корректное значение на данном этапе
-      const replacementChars = cache.current.props.mask.replace(regExp$1, '');
+    if (inputType === 'insert' && addedValue === '') {
+      throw new SyntheticChangeError('The character does not match the key value of the `replacement` object.');
+    }
 
-      if (beforeChangeValue) {
-        beforeChangeValue = filter(beforeChangeValue, {
-          replacementChars,
-          replacement: cache.current.props.replacement,
-          separate: cache.current.props.separate,
-        });
+    let afterChangeValue = unmask(previousValue, {
+      start: changeEnd,
+      mask: cache.current.props.mask,
+      replacement: cache.current.props.replacement,
+      separate: cache.current.props.separate,
+    });
+
+    // Модифицируем `afterChangeValue` чтобы позиция символов не смещалась. Необходимо выполнять
+    // после фильтрации `addedValue` и перед фильтрацией `afterChangeValue`
+    if (cache.current.props.separate) {
+      // Находим заменяемые символы в диапазоне изменяемых символов
+      const separateChars = cache.current.props.mask.slice(changeStart, changeEnd).replace(regExp$1, '');
+
+      // Получаем количество символов для сохранения перед `afterChangeValue`. Возможные значения:
+      // `меньше ноля` - обрезаем значение от начала на количество символов;
+      // `ноль` - не меняем значение;
+      // `больше ноля` - добавляем заменяемые символы к началу значения.
+      const countSeparateChars = separateChars.length - addedValue.length;
+
+      if (countSeparateChars < 0) {
+        afterChangeValue = afterChangeValue.slice(-countSeparateChars);
+      } else if (countSeparateChars > 0) {
+        afterChangeValue = separateChars.slice(-countSeparateChars) + afterChangeValue;
       }
+    }
 
-      if (addedValue) {
-        addedValue = filter(addedValue, {
-          replacementChars: replacementChars.slice(beforeChangeValue.length),
-          replacement: cache.current.props.replacement,
-          separate: false, // Поскольку нас интересуют только "полезные" символы, фильтруем без учёта заменяемых символов
-        });
-      }
-
-      if (inputType === 'insert' && addedValue === '') {
-        throw new SyntheticChangeError('The character does not match the key value of the `replacement` object.');
-      }
-
-      let afterChangeValue = unmask(previousValue, {
-        start: changeEnd,
-        mask: cache.current.props.mask,
+    if (afterChangeValue) {
+      afterChangeValue = filter(afterChangeValue, {
+        replacementChars: replacementChars.slice(beforeChangeValue.length + addedValue.length),
         replacement: cache.current.props.replacement,
         separate: cache.current.props.separate,
       });
+    }
 
-      // Модифицируем `afterChangeValue` чтобы позиция символов не смещалась. Необходимо выполнять
-      // после фильтрации `addedValue` и перед фильтрацией `afterChangeValue`
-      if (cache.current.props.separate) {
-        // Находим заменяемые символы в диапазоне изменяемых символов
-        const separateChars = cache.current.props.mask.slice(changeStart, changeEnd).replace(regExp$1, '');
+    const input = beforeChangeValue + addedValue + afterChangeValue;
 
-        // Получаем количество символов для сохранения перед `afterChangeValue`. Возможные значения:
-        // `меньше ноля` - обрезаем значение от начала на количество символов;
-        // `ноль` - не меняем значение;
-        // `больше ноля` - добавляем заменяемые символы к началу значения.
-        const countSeparateChars = separateChars.length - addedValue.length;
+    /* eslint-disable prefer-const */
+    let {
+      mask: modifiedMask = mask,
+      replacement: modifiedReplacement = replacement,
+      showMask: modifiedShowMask = showMask,
+      separate: modifiedSeparate = separate,
+    } = modify?.(input) ?? {};
 
-        if (countSeparateChars < 0) {
-          afterChangeValue = afterChangeValue.slice(-countSeparateChars);
-        } else if (countSeparateChars > 0) {
-          afterChangeValue = separateChars.slice(-countSeparateChars) + afterChangeValue;
-        }
-      }
+    if (typeof modifiedReplacement === 'string') {
+      modifiedReplacement = convertToReplacementObject(modifiedReplacement);
+    }
 
-      if (afterChangeValue) {
-        afterChangeValue = filter(afterChangeValue, {
-          replacementChars: replacementChars.slice(beforeChangeValue.length + addedValue.length),
-          replacement: cache.current.props.replacement,
-          separate: cache.current.props.separate,
-        });
-      }
+    const detail = resolveDetail(input, {
+      mask: modifiedMask,
+      replacement: modifiedReplacement,
+      showMask: modifiedShowMask,
+    });
 
-      const input = beforeChangeValue + addedValue + afterChangeValue;
+    const selection = resolveSelection({
+      inputType,
+      value: detail.value,
+      addedValue,
+      beforeChangeValue,
+      // afterChangeValue,
+      parts: detail.parts,
+      replacement: modifiedReplacement,
+      separate: modifiedSeparate,
+    });
 
-      /* eslint-disable prefer-const */
-      let {
-        mask: modifiedMask = mask,
-        replacement: modifiedReplacement = replacement,
-        showMask: modifiedShowMask = showMask,
-        separate: modifiedSeparate = separate,
-      } = modify?.(input) ?? {};
+    cache.current.value = detail.value;
+    cache.current.props = {
+      mask: modifiedMask,
+      replacement: modifiedReplacement,
+      showMask: modifiedShowMask,
+      separate: modifiedSeparate,
+    };
 
-      if (typeof modifiedReplacement === 'string') {
-        modifiedReplacement = convertToReplacementObject(modifiedReplacement);
-      }
-
-      const detail = resolveDetail(input, {
-        mask: modifiedMask,
-        replacement: modifiedReplacement,
-        showMask: modifiedShowMask,
-      });
-
-      const selection = resolveSelection({
-        inputType,
-        value: detail.value,
-        addedValue,
-        beforeChangeValue,
-        // afterChangeValue,
-        parts: detail.parts,
-        replacement: modifiedReplacement,
-        separate: modifiedSeparate,
-      });
-
-      cache.current.value = detail.value;
-      cache.current.props = {
-        mask: modifiedMask,
-        replacement: modifiedReplacement,
-        showMask: modifiedShowMask,
-        separate: modifiedSeparate,
-      };
-
-      return {
-        value: detail.value,
-        selectionStart: selection,
-        selectionEnd: selection,
-        __detail: detail,
-      };
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mask, stringifiedReplacement, showMask, separate, modify],
-  );
+    return {
+      value: detail.value,
+      selectionStart: selection,
+      selectionEnd: selection,
+      __detail: detail,
+    };
+  };
 
   /**
    *
@@ -210,16 +201,10 @@ export default function useMask(props?: MaskProps): React.MutableRefObject<HTMLI
    *
    */
 
-  const inputRef = useInput<MaskEventDetail>({
+  return useInput<MaskEventDetail>({
     init,
     tracking,
     customInputEventType: 'input-mask',
     customInputEventHandler: onMask,
   });
-
-  // Чтобы гарантировать что `inputRef.current` будет существовать на момент вызова
-  // `useEffect` внутри `useError`, нам необходимо передать ссылку `inputRef`
-  useError({ inputRef, mask, replacement });
-
-  return inputRef;
 }

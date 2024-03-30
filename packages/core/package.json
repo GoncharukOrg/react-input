@@ -78,6 +78,9 @@
     "access": "public"
   },
   "scripts": {
+    "release:major": "ts-node ../../scripts/release.ts major",
+    "release:minor": "ts-node ../../scripts/release.ts minor",
+    "release:patch": "ts-node ../../scripts/release.ts patch",
     "write:entries": "ts-node ../../scripts/write-entries.ts",
     "remove:dist": "ts-node ../../scripts/remove-dist.ts",
     "restore:dist": "ts-node ../../scripts/restore-dist.ts",

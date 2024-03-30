@@ -85,6 +85,9 @@
     "access": "public"
   },
   "scripts": {
+    "release:major": "ts-node ../../scripts/release.ts major",
+    "release:minor": "ts-node ../../scripts/release.ts minor",
+    "release:patch": "ts-node ../../scripts/release.ts patch",
     "remove:dist": "ts-node ../../scripts/remove-dist.ts",
     "clear:types": "ts-node ../../scripts/clear-types.ts",
     "restore:dist": "ts-node ../../scripts/restore-dist.ts",

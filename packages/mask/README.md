@@ -324,6 +324,12 @@ If you find a bug or want to make a suggestion for improving the package, [open 
 
 Support the project with a star ⭐ on [GitHub](https://github.com/GoncharukBro/react-input).
 
+You can also support the authors by donating 🪙 to the wallet for:
+
+Toncoin (TON): `UQDuf-wr5aKSbnPHd5RW0y9pVymxR-HCUeU_2GuEZQVipbvV`\
+Bitcoin (BTC): `13acJP8hnusuNDuBgiuhcd56Tow5iHuXqK`\
+Dollars (USDT): `TXyeRKKTr9BkhwTG1aCdbU3i84VHiju6r1`
+
 ## License
 
 MIT © [Nikolay Goncharuk](https://github.com/GoncharukBro)

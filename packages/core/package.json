@@ -78,14 +78,11 @@
     "access": "public"
   },
   "scripts": {
+    "write:entries": "ts-node ../../scripts/write-entries.ts",
+    "build": "npm run write:entries && ts-node ../../scripts/build.ts",
     "release:major": "ts-node ../../scripts/release.ts major",
     "release:minor": "ts-node ../../scripts/release.ts minor",
-    "release:patch": "ts-node ../../scripts/release.ts patch",
-    "write:entries": "ts-node ../../scripts/write-entries.ts",
-    "remove:dist": "ts-node ../../scripts/remove-dist.ts",
-    "restore:dist": "ts-node ../../scripts/restore-dist.ts",
-    "build:rollup": "rollup --config rollup.config.js",
-    "build": "npm run write:entries && npm run remove:dist && npm run build:rollup && npm run restore:dist && ts-node ../../scripts/console-success.ts"
+    "release:patch": "ts-node ../../scripts/release.ts patch"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

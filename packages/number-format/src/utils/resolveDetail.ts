@@ -35,7 +35,7 @@ export default function resolveDetail(
   let [integer, fraction = undefined] = absValue.split('.');
 
   // Определяем настройки для применения в `Intl.NumberFormat`
-  let currentMinimumFractionDigits = resolvedOptions.minimumFractionDigits as number | undefined;
+  let currentMinimumFractionDigits = resolvedOptions.minimumFractionDigits;
   const currentMaximumFractionDigits = resolvedOptions.maximumFractionDigits;
   // let currentMinimumSignificantDigits = resolvedOptions.minimumSignificantDigits;
 

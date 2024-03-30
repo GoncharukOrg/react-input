@@ -13,7 +13,7 @@ if (!npm_package_json || !npm_package_name || !npm_package_version) {
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
-rl.question(`Do you want to update the ${npm_package_name} package? `, (answer) => {
+rl.question(`Do you want to update and publish the ${npm_package_name} package? `, (answer) => {
   if (answer.toLowerCase() !== 'y') {
     rl.close();
     process.exit();
@@ -46,7 +46,7 @@ rl.question(`Do you want to update the ${npm_package_name} package? `, (answer) 
   console.log(
     `${style.fg.yellow}The version of the package ${style.fg.blue}${npm_package_name} ${style.fg.yellow}has been updated!`,
     style.reset,
-    `\n${npm_package_version} -> ${newPackageVersion}\n`,
+    `\n${npm_package_version} → ${newPackageVersion}\n`,
   );
 
   rl.close();

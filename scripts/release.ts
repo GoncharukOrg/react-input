@@ -24,7 +24,7 @@ rl.question(`Do you want to update and publish the ${npm_package_name} package? 
       npm_package_json,
       fs
         .readFileSync(npm_package_json, 'utf8')
-        .replace(/"@react-input\/core": "\^\d\.\d\.\d"/, `"@react-input/core": "^${corePackage.version}"`),
+        .replace(/"@react-input\/core": "\^\d+\.\d+\.\d+"/, `"@react-input/core": "^${corePackage.version}"`),
     );
   }
 

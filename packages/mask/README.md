@@ -86,6 +86,57 @@ It is possible to pass the replacement character as a string, then any character
 
 > Do not use entered characters as `replacement` keys. For example, if you only allow numbers to be entered, given that the user can enter "9", then you should not set `replacement` to `{ 9: /\d/ }`, because keys are ignored when typing. Thus, the input of any numbers except "9" will be allowed.
 
+## Track
+
+The `tarck` function is run before masking, allowing the entered value to be conditionally changed.
+
+You can intercept input to change the entered value every time the value in the input element changes. This is useful in cases where you need to provide a uniform data format, but at the same time you do not want to limit the user to the set of valid characters for input.
+
+The `track` function takes the following parameters:
+
+| Name             |                      Type                       | Description                                                                                                                                                                                                                                                                             |
+| ---------------- | :---------------------------------------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `inputType`      | `insert` \| `deleteBackward` \| `deleteForward` | Input type, where `insert` is any event that affects the input of new characters, `deleteBackward` is deleting characters to the left of the cursor, `deleteForward` is deleting characters to the right of the cursor.                                                                 |
+| `value`          |                    `string`                     | Corresponds to the value before modification, that is, the value before the character input or character removal events were raised.                                                                                                                                                    |
+| `data`           |               `string` \| `null`                | In the case of input - the entered characters, in the case of deletion - `null`.                                                                                                                                                                                                        |
+| `selectionStart` |                    `number`                     | The index of the beginning of the range of change in the value, in the case of input corresponds to the initial position of the cursor in `value` at the time the input event is called, in the case of deletion it corresponds to the index of the first deleted character.            |
+| `selectionEnd`   |                    `number`                     | The index of the end of the range of change in the value, in the case of input corresponds to the final position of the cursor in `value` at the time the input event is called, in the case of deletion it corresponds to the index of the character after the last deleted character. |
+
+The `track` function expects to return a string corresponding to the new or current input value, allowing you to change the user's input value. This can be done both when entering and when deleting characters. You can also return `false`, which will allow you to stop the input process and not cause the value and cursor offset to change. `null` will correspond to returning an empty string. `true` or `undefined` will cause the input value to not be changed.
+
+Let's look at a simple example where we need to automatically substitute the country code when entering a phone number:
+
+```tsx
+import { InputMask, type Track } from '@react-input/mask';
+
+export default function App() {
+  const track: Track = ({ inputType, value, data, selectionStart, selectionEnd }) => {
+    if (inputType === 'insert' && !/^\D*1/.test(data) && selectionStart <= 1) {
+      return `1${data}`;
+    }
+
+    if (inputType !== 'insert' && selectionStart <= 1 && selectionEnd < value.length) {
+      if (selectionEnd > 2) {
+        return '1';
+      }
+      if (selectionEnd === 2) {
+        return false;
+      }
+    }
+
+    return data;
+  };
+
+  return <InputMask mask="+_ (___)-___-__-__" replacement={{ _: /\d/ }} track={track} />;
+}
+```
+
+You can insert this example into your project and look at the result!
+
+You don't need to think about creating a separate state, controlling cursor behavior or registering new events, you just need to specify what value will be used for input, and everything else will happen synchronously.
+
+> Of course, this behavior requires you to write a little code yourself, this is because `@react-input/mask` is not intended to provide declarative solutions for a narrow circle of users, instead it allows all users to implement any idea using a simple ` api`.
+
 ## Modify
 
 The `modify` function is triggered before masking and allows you conditionally change the properties of the component that affect the masking.

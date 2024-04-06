@@ -5,6 +5,8 @@ export type { InputMaskProps } from './InputMask';
 export type {
   MaskProps,
   Replacement,
+  TrackParam,
+  Track,
   ModifiedData,
   Modify,
   MaskEvent,

@@ -10,10 +10,10 @@ import type { InputComponent, InputComponentProps } from '@react-input/core';
 export type InputMaskProps<C extends React.ComponentType | undefined = undefined> = MaskProps & InputComponentProps<C>;
 
 function ForwardedInputMask<C extends React.ComponentType | undefined = undefined>(
-  { component: Component, mask, replacement, showMask, separate, modify, onMask, ...props }: InputMaskProps<C>,
+  { component: Component, mask, replacement, showMask, separate, track, modify, onMask, ...props }: InputMaskProps<C>,
   forwardedInputRef: React.ForwardedRef<HTMLInputElement>,
 ): JSX.Element {
-  const inputRef = useMask({ mask, replacement, showMask, separate, modify, onMask });
+  const inputRef = useMask({ mask, replacement, showMask, separate, track, modify, onMask });
 
   const connectedInputRef = useConnectedInputRef(inputRef, forwardedInputRef);
 

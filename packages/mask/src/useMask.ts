@@ -15,7 +15,7 @@ const convertToReplacementObject = (replacement: string): Replacement => {
   return replacement.length > 0 ? { [replacement]: /./ } : {};
 };
 
-type CachedMaskProps = Required<Omit<MaskProps, 'modify' | 'onMask'>> & {
+type CachedMaskProps = Required<Omit<MaskProps, 'track' | 'modify' | 'onMask'>> & {
   replacement: Replacement;
 };
 
@@ -30,6 +30,7 @@ export default function useMask({
   replacement: replacementProps = {},
   showMask = false,
   separate = false,
+  track,
   modify,
   onMask,
 }: MaskProps = {}): React.MutableRefObject<HTMLInputElement | null> {
@@ -100,6 +101,21 @@ export default function useMask({
         replacement: cache.current.props.replacement,
         separate: cache.current.props.separate,
       });
+    }
+
+    const _addedValue = track?.({
+      ...(inputType === 'insert' ? { inputType, data: addedValue } : { inputType, data: null }),
+      value: previousValue,
+      selectionStart: changeStart,
+      selectionEnd: changeEnd,
+    });
+
+    if (_addedValue === false) {
+      throw new SyntheticChangeError('Custom trekking stop.');
+    } else if (_addedValue === null) {
+      addedValue = '';
+    } else if (_addedValue !== true && _addedValue !== undefined) {
+      addedValue = _addedValue;
     }
 
     if (addedValue) {

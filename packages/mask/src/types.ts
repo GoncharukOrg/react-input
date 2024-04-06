@@ -30,6 +30,17 @@ export type MaskEventHandler = CustomInputEventHandler<MaskEvent>;
 
 export type Replacement = Record<string, RegExp>;
 
+export type TrackParam = (
+  | { inputType: 'insert'; data: string }
+  | { inputType: 'deleteBackward' | 'deleteForward'; data: null }
+) & {
+  value: string;
+  selectionStart: number;
+  selectionEnd: number;
+};
+
+export type Track = (param: TrackParam) => string | boolean | null | undefined;
+
 export interface ModifiedData {
   mask?: string;
   replacement?: string | Replacement;
@@ -48,6 +59,8 @@ export interface MaskProps {
   showMask?: boolean;
   /** Stores the position of the entered characters. By default, input characters are non-breaking, which means that if you remove characters in the middle of the value, the characters are shifted to the left, forming a non-breaking value, which is the behavior of `input`. For example, with `true`, the possible value is `+0 (123) ___-45-__`, with `false` - `+0 (123) 45_-__-__`. */
   separate?: boolean;
+  /** The function is activated before masking. Allows you to conditionally change the entered value (see «[Track](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#track)»). */
+  track?: Track;
   /** Function triggered before masking. Allows you conditionally change the properties of the component that affect masking. Valid values for modification are `mask`, `replacement`, `showMask` and `separate`. This is useful when you need conditionally tweak the displayed value to improve UX (see «[Modify](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#modify)»). */
   modify?: Modify;
   /** Handler for the custom event `input-mask`. Called asynchronously after the `change` event, accessing the `detail` property containing additional useful information about the value. (see «[Mask event](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#mask-event)»). */

@@ -190,7 +190,7 @@ export default function useInput<D = unknown>({
           }
 
           const previousValue = inputElement._valueTracker?.getValue?.() ?? '';
-          let inputType: InputType = 'initial';
+          let inputType: InputType | undefined;
 
           // Определяем тип ввода (ручное определение типа ввода способствует кроссбраузерности)
           if (selectionStart > selection.current.start) {
@@ -202,8 +202,8 @@ export default function useInput<D = unknown>({
           }
 
           if (
-            (inputType === 'deleteBackward' || inputType === 'deleteForward') &&
-            value.length > previousValue.length
+            inputType === undefined ||
+            ((inputType === 'deleteBackward' || inputType === 'deleteForward') && value.length > previousValue.length)
           ) {
             throw new SyntheticChangeError('Input type detection error.');
           }
@@ -213,26 +213,17 @@ export default function useInput<D = unknown>({
           let changeStart = selection.current.start;
           let changeEnd = selection.current.end;
 
-          switch (inputType) {
-            case 'insert': {
-              addedValue = value.slice(selection.current.start, selectionStart);
-              break;
-            }
-            case 'deleteBackward':
-            case 'deleteForward': {
-              // Для `delete` нам необходимо определить диапазон удаленных символов, так как
-              // при удалении без выделения позиция каретки "до" и "после" будут совпадать
-              const countDeleted = previousValue.length - value.length;
+          if (inputType === 'insert') {
+            addedValue = value.slice(selection.current.start, selectionStart);
+          } else {
+            // Для `delete` нам необходимо определить диапазон удаленных символов, так как
+            // при удалении без выделения позиция каретки "до" и "после" будут совпадать
+            const countDeleted = previousValue.length - value.length;
 
-              changeStart = selectionStart;
-              changeEnd = selectionStart + countDeleted;
+            changeStart = selectionStart;
+            changeEnd = selectionStart + countDeleted;
 
-              deletedValue = previousValue.slice(changeStart, changeEnd);
-              break;
-            }
-            default: {
-              throw new SyntheticChangeError('The input type is undefined.');
-            }
+            deletedValue = previousValue.slice(changeStart, changeEnd);
           }
 
           const trackingResult = props.current.tracking({

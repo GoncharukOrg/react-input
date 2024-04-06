@@ -6,7 +6,7 @@ export type CustomInputEventHandler<E extends CustomInputEvent> = {
   bivarianceHack(event: E): void;
 }['bivarianceHack'];
 
-export type InputType = 'initial' | 'insert' | 'deleteBackward' | 'deleteForward';
+export type InputType = 'insert' | 'deleteBackward' | 'deleteForward';
 
 export interface InputAttributes {
   value: string;

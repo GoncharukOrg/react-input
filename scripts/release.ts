@@ -39,9 +39,8 @@ rl.question(`Do you want to update and publish the ${npm_package_name} package? 
 
   const commit = `${packageName}/v${newPackageVersion}`;
 
-  execSync(
-    `git add ../../ && git commit -m "${commit}" && git tag ${commit} && git push && git push origin --tags && npm publish`,
-  );
+  execSync('npm publish');
+  execSync(`git add ../../ && git commit -m "${commit}" && git push && git tag ${commit} && git push origin --tags`);
 
   console.log(
     `${style.fg.yellow}The version of the package ${style.fg.blue}${npm_package_name} ${style.fg.yellow}has been updated!`,

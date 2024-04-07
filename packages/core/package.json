@@ -80,9 +80,9 @@
   "scripts": {
     "write:entries": "ts-node ../../scripts/write-entries.ts",
     "build": "npm run write:entries && ts-node ../../scripts/build.ts",
-    "release:major": "npm run build && ts-node ../../scripts/release.ts major",
-    "release:minor": "npm run build && ts-node ../../scripts/release.ts minor",
-    "release:patch": "npm run build && ts-node ../../scripts/release.ts patch"
+    "release:major": "ts-node ../../scripts/release.ts major",
+    "release:minor": "ts-node ../../scripts/release.ts minor",
+    "release:patch": "ts-node ../../scripts/release.ts patch"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

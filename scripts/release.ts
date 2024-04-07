@@ -27,7 +27,7 @@ rl.question(`Do you want to update and publish the ${npm_package_name} package? 
         .replace(/"@react-input\/core": "\^\d+\.\d+\.\d+"/, `"@react-input/core": "^${corePackage.version}"`),
     );
   }
-
+  execSync('npm run build');
   const output = execSync(`npm version ${process.argv[2]}`, { encoding: 'utf8' });
 
   const packageName = npm_package_name.replace(/^.+\/(.+)/, '$1');

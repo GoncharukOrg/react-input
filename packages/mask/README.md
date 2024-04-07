@@ -136,7 +136,7 @@ You can insert this example into your project and look at the result!
 
 You don't need to think about creating a separate state, controlling cursor behavior or registering new events, you just need to specify what value will be used for input, and everything else will happen synchronously.
 
-> Of course, this behavior requires you to write a little code yourself, this is because `@react-input/mask` is not intended to provide declarative solutions for a narrow circle of users, instead it allows all users to implement any idea using a simple ` api`.
+> Of course, this behavior requires you to write a little code yourself, this is because `@react-input/mask` is not intended to provide declarative solutions for a narrow circle of users, instead it allows all users to implement any idea using a simple api.
 
 ## Modify
 

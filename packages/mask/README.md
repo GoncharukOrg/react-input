@@ -366,6 +366,8 @@ Because each input performs the necessary calculations to set the formatting of 
 
 The recommended delay time is 15 milliseconds, however, you may need to set a different time, which can be found experimentally.
 
+When testing a component with `showMask`, make sure that you set the initial cursor position (`selectionStart`). Value entry in testing tools starts from the end of the value, and without specifying `selectionStart` the entry will be made from a position equal to the length of the mask, since the `showMask` property actually inserts the value into the input element.
+
 ## Other packages from `@react-input`
 
 - [`@react-input/number-format`](https://www.npmjs.com/package/@react-input/number-format) - apply locale-specific number, currency, and percentage formatting to input using a provided component or hook bound to the input element.

@@ -31,8 +31,8 @@ function Component() {
       <InputMask
         mask="+_ (___) ___-__-__"
         replacement={{ _: /\d/ }}
-        value={detail?.value}
         track={track}
+        value={detail?.value}
         onMask={(event) => {
           setDetail(event.detail);
         }}

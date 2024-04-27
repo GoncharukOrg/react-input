@@ -16,10 +16,10 @@ function Component() {
   return (
     <>
       <InputMask
+        autoFocus
+        defaultValue="+7 (___) ___-__-__"
         mask="+7 (___) ___-__-__"
         replacement={{ _: /\d/ }}
-        defaultValue="+7 (___) ___-__-__"
-        autoFocus
         onMask={(event) => {
           setDetail(event.detail);
         }}

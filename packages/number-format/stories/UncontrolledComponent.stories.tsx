@@ -25,14 +25,14 @@ function Component() {
 
       <>
         {/* request a currency format */}
-        <InputNumberFormat locales="de-DE" format="currency" currency="EUR" />
+        <InputNumberFormat currency="EUR" format="currency" locales="de-DE" />
         {/* the Japanese yen doesn't use a minor unit */}
-        <InputNumberFormat locales="ja-JP" format="currency" currency="JPY" />
+        <InputNumberFormat currency="JPY" format="currency" locales="ja-JP" />
         {/* limit to three significant digits */}
         <InputNumberFormat locales="en-IN" maximumIntegerDigits={3} />
         {/* Formatting with units */}
-        <InputNumberFormat locales="pt-PT" format="unit" unit="kilometer-per-hour" />
-        <InputNumberFormat locales="en-GB" format="unit" unit="liter" unitDisplay="long" />
+        <InputNumberFormat format="unit" locales="pt-PT" unit="kilometer-per-hour" />
+        <InputNumberFormat format="unit" locales="en-GB" unit="liter" unitDisplay="long" />
       </>
     </>
   );

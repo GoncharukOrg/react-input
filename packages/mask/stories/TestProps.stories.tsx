@@ -24,12 +24,12 @@ function Component() {
   return (
     <>
       <InputMask
+        // defaultValue="fegoj0fwfwe"
         mask={state.mask}
         replacement={state.replacement}
-        showMask={state.showMask}
         separate={state.separate}
+        showMask={state.showMask}
         value={value}
-        // defaultValue="fegoj0fwfwe"
         onChange={(event) => {
           setValue(event.target.value);
         }}

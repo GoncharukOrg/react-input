@@ -69,14 +69,27 @@
     "@stylistic/arrow-parens": ["error", "always"],
     "@stylistic/brace-style": ["error", "1tbs"],
     "@stylistic/jsx-self-closing-comp": "error",
-    // "@stylistic/jsx-sort-props": [
-    //   "error",
-    //   {
-    //     "callbacksLast": true,
-    //     "reservedFirst": true
-    //   }
-    // ],
-    "@stylistic/member-delimiter-style": "off",
+    "@stylistic/jsx-sort-props": [
+      "error",
+      {
+        "reservedFirst": true,
+        "callbacksLast": true
+      }
+    ],
+    "@stylistic/member-delimiter-style": [
+      "error",
+      {
+        "multiline": {
+          "delimiter": "semi",
+          "requireLast": true
+        },
+        "singleline": {
+          "delimiter": "semi",
+          "requireLast": false
+        },
+        "multilineDetection": "brackets"
+      }
+    ],
     "@stylistic/operator-linebreak": "off",
     "@stylistic/semi": ["error", "always"],
     "import/default": "off", // https://typescript-eslint.io/linting/troubleshooting/performance-troubleshooting#eslint-plugin-import
@@ -144,6 +157,7 @@
       "parser": "@typescript-eslint/parser",
       "plugins": ["@typescript-eslint"],
       "rules": {
+        "@typescript-eslint/consistent-type-imports": "error",
         "@typescript-eslint/no-unnecessary-condition": "off"
       }
     },

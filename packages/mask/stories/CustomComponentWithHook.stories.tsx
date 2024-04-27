@@ -43,7 +43,7 @@ function Component() {
 
   return (
     <>
-      <CustomComponent ref={ref} label="Мой заголовок" id="custom-input" value={detail?.value} />
+      <CustomComponent ref={ref} id="custom-input" label="Мой заголовок" value={detail?.value} />
 
       <pre>{JSON.stringify(detail, null, 2)}</pre>
     </>

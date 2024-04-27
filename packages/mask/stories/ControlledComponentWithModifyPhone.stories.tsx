@@ -22,9 +22,9 @@ function Component() {
     <>
       <InputMask
         mask="+_ (___) ___-__-__"
+        modify={modify}
         replacement={{ _: /\d/ }}
         value={detail?.value}
-        modify={modify}
         onMask={(event) => {
           setDetail(event.detail);
         }}

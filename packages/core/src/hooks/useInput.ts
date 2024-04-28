@@ -78,8 +78,8 @@ function proxy(
 interface UseInputParam<D> {
   init: Init;
   tracking: Tracking<D>;
-  customInputEventType: string;
-  customInputEventHandler: CustomInputEventHandler<CustomInputEvent<D>> | undefined;
+  eventType?: string;
+  eventHandler?: CustomInputEventHandler<CustomInputEvent<D>>;
 }
 
 /**
@@ -91,8 +91,8 @@ interface UseInputParam<D> {
 export default function useInput<D = unknown>({
   init,
   tracking,
-  customInputEventType,
-  customInputEventHandler,
+  eventType,
+  eventHandler,
 }: UseInputParam<D>): React.MutableRefObject<HTMLInputElement | null> {
   const selection = useRef({
     timeoutId: -1,
@@ -109,14 +109,14 @@ export default function useInput<D = unknown>({
   const props = useRef({
     init,
     tracking,
-    customInputEventType,
-    customInputEventHandler,
+    eventType,
+    eventHandler,
   });
 
   props.current.init = init;
   props.current.tracking = tracking;
-  props.current.customInputEventType = customInputEventType;
-  props.current.customInputEventHandler = customInputEventHandler;
+  props.current.eventType = eventType;
+  props.current.eventHandler = eventHandler;
 
   return useMemo(() => {
     return proxy(inputRef, props.current.init, {
@@ -238,9 +238,10 @@ export default function useInput<D = unknown>({
             selectionEnd: trackingResult.selectionEnd,
           });
 
-          const handler = props.current.customInputEventHandler;
+          const customEventType = props.current.eventType;
+          const customEventHandler = props.current.eventHandler;
 
-          if (handler) {
+          if (typeof customEventType === 'string' && customEventHandler) {
             const { value, selectionStart, selectionEnd } = inputElement;
 
             dispatchedCustomInputEvent.current = false;
@@ -260,7 +261,7 @@ export default function useInput<D = unknown>({
                 selectionEnd: selectionEnd ?? value.length,
               });
 
-              const customInputEvent = new CustomEvent(props.current.customInputEventType, {
+              const customInputEvent = new CustomEvent(customEventType, {
                 bubbles: true,
                 cancelable: false,
                 composed: true,
@@ -270,9 +271,9 @@ export default function useInput<D = unknown>({
               inputElement.dispatchEvent(customInputEvent);
 
               if (unstable_batchedUpdates) {
-                unstable_batchedUpdates(handler, customInputEvent);
+                unstable_batchedUpdates(customEventHandler, customInputEvent);
               } else {
-                handler(customInputEvent);
+                customEventHandler(customInputEvent);
               }
 
               dispatchedCustomInputEvent.current = true;

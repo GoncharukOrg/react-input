@@ -220,7 +220,7 @@ export default function useMask({
   return useInput<MaskEventDetail>({
     init,
     tracking,
-    customInputEventType: 'input-mask',
-    customInputEventHandler: onMask,
+    eventType: 'input-mask',
+    eventHandler: onMask,
   });
 }

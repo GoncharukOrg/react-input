@@ -270,7 +270,7 @@ export default function useNumberFormat({
   return useInput<NumberFormatEventDetail>({
     init,
     tracking,
-    customInputEventType: 'input-number-format',
-    customInputEventHandler: onNumberFormat,
+    eventType: 'input-number-format',
+    eventHandler: onNumberFormat,
   });
 }

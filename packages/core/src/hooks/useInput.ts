@@ -126,18 +126,12 @@ export default function useInput<D = unknown>({
        *
        */
       onFocus() {
-        const inputElement = inputRef.current;
-
-        if (inputElement === null) {
-          return;
-        }
-
         const setSelection = () => {
           // Позиция курсора изменяется после завершения события `change` и к срабатыванию кастомного
           // события позиция курсора может быть некорректной, что может повлечь за собой ошибки
           if (dispatchedCustomInputEvent.current) {
-            selection.current.start = inputElement.selectionStart ?? 0;
-            selection.current.end = inputElement.selectionEnd ?? 0;
+            selection.current.start = inputRef.current?.selectionStart ?? 0;
+            selection.current.end = inputRef.current?.selectionEnd ?? 0;
 
             selection.current.timeoutId = window.setTimeout(setSelection);
           } else {

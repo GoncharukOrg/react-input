@@ -7,8 +7,6 @@ import type { InputNumberFormatProps } from '@react-input/number-format/InputNum
 
 import '@testing-library/jest-dom';
 
-userEvent.setup({ delay: 15 });
-
 const init = (props: InputNumberFormatProps = {}) => {
   render(<InputNumberFormat {...props} data-testid="input-number-format" />);
   return screen.getByTestId<HTMLInputElement>('input-number-format');

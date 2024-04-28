@@ -8,8 +8,6 @@ import type { InputMaskProps } from '@react-input/mask/InputMask';
 
 import '@testing-library/jest-dom';
 
-userEvent.setup({ delay: 15 });
-
 const init = (props: InputMaskProps = {}) => {
   render(<InputMask mask="+7 (___) ___-__-__" replacement="_" {...props} data-testid="input-mask" />);
   return screen.getByTestId<HTMLInputElement>('input-mask');

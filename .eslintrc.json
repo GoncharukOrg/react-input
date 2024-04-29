@@ -158,7 +158,13 @@
       "plugins": ["@typescript-eslint"],
       "rules": {
         "@typescript-eslint/consistent-type-imports": "error",
-        "@typescript-eslint/no-unnecessary-condition": "off"
+        "@typescript-eslint/no-unnecessary-condition": "off",
+        "@typescript-eslint/restrict-template-expressions": [
+          "error",
+          {
+            "allowNumber": true
+          }
+        ]
       }
     },
     {

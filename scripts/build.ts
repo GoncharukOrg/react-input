@@ -4,6 +4,12 @@ import fs from 'fs';
 import readdir from '../utils/readdir';
 import style from '../utils/style';
 
+const { npm_package_name } = process.env;
+
+if (!npm_package_name) {
+  throw new Error('');
+}
+
 /**
  * Remove `dist`
  */
@@ -15,6 +21,14 @@ fs.rmSync('./dist', { recursive: true, force: true });
  */
 
 execSync('rollup --config rollup.config.js');
+
+/**
+ * Declare types
+ */
+
+execSync(
+  `tsc src/index.ts ${npm_package_name === '@react-input/core' ? '--removeComments' : ''} --declaration --emitDeclarationOnly --jsx react-jsx --rootDir src --outDir dist/@types`,
+);
 
 /**
  * Clear types
@@ -34,22 +48,6 @@ typesPaths.forEach((path) => {
     if (fs.readdirSync(dirPath).length === 0) {
       fs.rmdirSync(dirPath);
     }
-  }
-});
-
-/**
- * Restore `dist`
- */
-
-if (fs.existsSync('./dist/module')) {
-  throw new Error('The folder "module" already exists!');
-}
-
-fs.mkdirSync('./dist/module');
-
-fs.readdirSync('./dist').forEach((relativePath) => {
-  if (relativePath !== 'module' && relativePath !== 'node' && relativePath !== '@types') {
-    fs.renameSync(`./dist/${relativePath}`, `./dist/module/${relativePath}`);
   }
 });
 

@@ -1,39 +1,54 @@
-const { babel } = require('@rollup/plugin-babel');
+const babel = require('@rollup/plugin-babel').default;
 const commonjs = require('@rollup/plugin-commonjs').default;
-const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const nodeResolve = require('@rollup/plugin-node-resolve').default;
 const terser = require('@rollup/plugin-terser').default;
-const typescript = require('@rollup/plugin-typescript').default;
 
-const output = {
-  module: {
-    format: 'es',
-    dir: 'dist',
-  },
-  node: {
-    format: 'cjs',
-    dir: 'dist/node',
-    entryFileNames: '[name].cjs',
-    chunkFileNames: '[name]-[hash].cjs',
-  },
+const readdir = require('./readdir.js');
+
+const EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.es6', '.es', '.mjs'];
+
+const reduceFromDir = (/** @type {import("fs").PathLike} */ dir) => {
+  return readdir(dir)
+    .filter((path) => !/\.stories\.[^/]+$|\.test\.[^/]+$|types.ts$|\.d\.ts$/gm.test(path))
+    .reduce((prev, path) => {
+      return { ...prev, [path.replace(/^\.\/src\/|\.[^/]+$/g, '')]: path };
+    }, {});
 };
 
 /**
- * @param {'node' | 'module'} env
- * @param {Record<string, string> | string[]} input
+ * @param {string[]} entries
  */
-function createRollupConfig(env, input) {
+function createRollupConfig(...entries) {
+  const input = entries.reduce((prev, path) => {
+    const _entries = /\.[^/]+$/.test(path) ? { [path.replace(/^src\/|\.[^/]+$/g, '')]: path } : reduceFromDir(path);
+
+    return { ...prev, ..._entries };
+  }, {});
+
   return {
     input,
-    output: output[env],
+    output: [
+      {
+        format: 'es',
+        dir: 'dist/module',
+        entryFileNames: '[name].js',
+      },
+      {
+        format: 'cjs',
+        dir: 'dist/node',
+        entryFileNames: '[name].cjs',
+      },
+    ],
     external: [/^react(\/.*)?$/, /^react-dom(\/.*)?$/, /^@react-input\/core(\/.*)?$/],
     plugins: [
-      nodeResolve(),
-      commonjs(),
-      typescript({
-        tsconfig: `tsconfig.${env}.json`,
+      nodeResolve({
+        extensions: EXTENSIONS,
       }),
+      commonjs(),
       babel({
+        root: '../..',
         babelHelpers: 'bundled',
+        extensions: EXTENSIONS,
       }),
       terser(),
     ],

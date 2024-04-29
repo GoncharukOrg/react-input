@@ -429,7 +429,7 @@ Generates a regular expression to match a masked value.
 
 Takes two parameters, where the first is an object with the `mask` and `replacement` properties, the values of which you use when masking, the second is a flag (`boolean`), indicating to the utility exactly how you want to generate the regular expression.
 
-If the second parameter is omitted or `false`, then the regular expression search will not take into account the `replacement` parameter key, that is, the character at the index of the replacement character in the value can be any character corresponding to the `replacement` value except the `replacement` key itself.
+If the second parameter is `true`, then the regular expression search will not take into account the `replacement` parameter key, that is, the character at the index of the replacement character in the value can be any character corresponding to the `replacement` value except the `replacement` key itself.
 
 So, if `mask: '_'` and `replacement: { _: /\D/ }` then:
 

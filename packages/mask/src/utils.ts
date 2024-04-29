@@ -54,7 +54,7 @@ export function unformat(formattedValue: string, { mask, replacement }: Options)
 }
 
 /**
- * Specifies the parts of the masked value (see «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#formatToParts)»).
+ * Specifies the parts of the masked value (see «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#formattoparts)»).
  *
  * The masked value parts are an array of objects, where each object contains the
  * necessary information about each character of the value. Parts of the masked value
@@ -83,7 +83,7 @@ export function formatToParts(value: string, { mask, replacement }: Options): Ma
 }
 
 /**
- * Generates a regular expression to match a masked value (see «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#generatePattern)»).
+ * Generates a regular expression to match a masked value (see «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#generatepattern)»).
  *
  * If `takeReplacementKey: true`, then the regular expression search will not take into account the
  * `replacement` parameter key, that is, the character at the index of the replacement character in the

@@ -368,6 +368,86 @@ The recommended delay time is 15 milliseconds, however, you may need to set a di
 
 When testing a component with `showMask`, make sure that you set the initial cursor position (`selectionStart`). Value entry in testing tools starts from the end of the value, and without specifying `selectionStart` the entry will be made from a position equal to the length of the mask, since the `showMask` property actually inserts the value into the input element.
 
+## Utils
+
+`@react-input/mask` provides utilities to make things easier when processing a value. You can use them regardless of using the `InputMask` component or the `useMask` hook.
+
+### `format`
+
+Masks a value using the specified mask.
+
+Takes two parameters, where the first is the unmasked value, the second is an object with the `mask` and `replacement` properties, the values of which you use when masking.
+
+The result fully corresponds to the value obtained when entering. Useful when you need to get a masked value without calling an input event.
+
+Since the principle of operation of `InputMask` is fully consistent with the operation of the `input` element, `InputMask` will not change the value outside the input event, so you may find yourself in a situation where the `input` element will have a value that does not correspond to the mask, for example when initializing the value of the received from the backend.
+
+```ts
+format('1', { mask: '+__', replacement: { _: /\d/ } });
+// returns: "+1_"
+```
+
+### `unformat`
+
+Unmasks the value using the specified mask.
+
+Takes two parameters, where the first is the masked value, the second is an object with the `mask` and `replacement` properties, the values of which you use when masking.
+
+Returns all characters entered by the user. Essentially does the opposite of the `format` utility. It is important to note that characters that do not match the replacement characters will also be deleted.
+
+```ts
+unformat('+1_', { mask: '+__', replacement: { _: /\d/ } });
+// returns: "1"
+```
+
+### `formatToParts`
+
+Specifies the parts of the masked value.
+
+Takes two parameters, where the first is the unmasked value, the second is an object with the `mask` and `replacement` properties, the values of which you use when masking.
+
+The masked value parts are an array of objects, where each object contains the necessary information about each character of the value. Parts of the masked value are used to manipulate a character or group of characters in a point-by-point manner.
+
+Parts of the masked value, where each object contains the character type:
+
+- `replacement` - the replacement character;
+- `mask` - the mask character;
+- `input` - the character entered by the user.
+
+```ts
+formatToParts('1', { mask: '+__', replacement: { _: /\d/ } });
+// returns: [
+//   { index: 0, value: '+', type: 'mask' },
+//   { index: 1, value: '1', type: 'input' },
+//   { index: 2, value: '_', type: 'replacement' },
+// ]
+```
+
+### `generatePattern`
+
+Generates a regular expression to match a masked value.
+
+Takes two parameters, where the first is an object with the `mask` and `replacement` properties, the values of which you use when masking, the second is a flag (`boolean`), indicating to the utility exactly how you want to generate the regular expression.
+
+If the second parameter is omitted or `false`, then the regular expression search will not take into account the `replacement` parameter key, that is, the character at the index of the replacement character in the value can be any character corresponding to the `replacement` value except the `replacement` key itself.
+
+So, if `mask: '_'` and `replacement: { _: /\D/ }` then:
+
+if the second parameter is omitted or `false`, the regular expression (pattern) will match `/^\D$/` and `RegExp(pattern).test(mask)` will return `true`:
+
+```ts
+const pattern = generatePattern({ mask, replacement }); // "^\D$"
+RegExp(pattern).test('_'); // true
+```
+
+if the second parameter is `true`, the regular expression (pattern) will match `/^(?!_)\D$/` and `RegExp(pattern).test(mask)` will return `false`, but any a valid character, in addition to the replacement character, will contribute to the return of `true`:
+
+```ts
+const pattern = generatePattern({ mask, replacement }, true); // "^(?!_)\D$"
+RegExp(pattern).test('_'); // false
+RegExp(pattern).test('a'); // true
+```
+
 ## Other packages from `@react-input`
 
 - [`@react-input/number-format`](https://www.npmjs.com/package/@react-input/number-format) - apply locale-specific number, currency, and percentage formatting to input using a provided component or hook bound to the input element.

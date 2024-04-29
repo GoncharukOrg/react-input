@@ -6,7 +6,7 @@ const createError = (ErrorType: ErrorConstructor) => {
   };
 };
 
-interface Options {
+interface ValidateParam {
   initialValue: string;
   mask: string;
   replacement: Replacement;
@@ -17,7 +17,7 @@ interface Options {
  * Сообщения выводятся на этапе инициализации элеменета.
  * @param param
  */
-export default function validate({ initialValue, mask, replacement }: Options) {
+export default function validate({ initialValue, mask, replacement }: ValidateParam) {
   if (initialValue.length > mask.length) {
     console.error(
       createError(Error)(

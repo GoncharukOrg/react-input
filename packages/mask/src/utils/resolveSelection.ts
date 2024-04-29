@@ -15,7 +15,7 @@ interface ResolveSelectionParam {
 /**
  * Определяет позицию курсора для последующей установки
  * @param param
- * @returns позиция курсора
+ * @returns
  */
 export default function resolveSelection({
   inputType,
@@ -27,11 +27,11 @@ export default function resolveSelection({
   replacement,
   separate,
 }: ResolveSelectionParam): number {
-  const unmaskedChars = parts.filter(({ type }) => type === 'input' || (separate && type === 'replacement'));
+  const unformattedChars = parts.filter(({ type }) => type === 'input' || (separate && type === 'replacement'));
 
-  const lastAddedValueIndex = unmaskedChars[beforeChangeValue.length + addedValue.length - 1]?.index;
-  const lastBeforeChangeValueIndex = unmaskedChars[beforeChangeValue.length - 1]?.index;
-  const firstAfterChangeValueIndex = unmaskedChars[beforeChangeValue.length + addedValue.length]?.index;
+  const lastAddedValueIndex = unformattedChars[beforeChangeValue.length + addedValue.length - 1]?.index;
+  const lastBeforeChangeValueIndex = unformattedChars[beforeChangeValue.length - 1]?.index;
+  const firstAfterChangeValueIndex = unformattedChars[beforeChangeValue.length + addedValue.length]?.index;
 
   if (inputType === 'insert') {
     if (lastAddedValueIndex !== undefined) return lastAddedValueIndex + 1;

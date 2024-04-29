@@ -14,8 +14,8 @@ export interface MaskEventDetail {
   /**
    * Parts of the masked value, where each object contains the character type:
    * - `replacement` - the replacement character;
-   * - `mask` - mask character;
-   * - `input` is the character entered by the user.
+   * - `mask` - the mask character;
+   * - `input` - the character entered by the user.
    */
   parts: MaskPart[];
   /** A regular expression of type `string` that the masked value must match. */

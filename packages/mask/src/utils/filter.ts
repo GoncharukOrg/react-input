@@ -7,8 +7,9 @@ interface Options {
 }
 
 /**
- * Фильтруем символы для соответствия значениям `replacement`
- * @param param
+ * Фильтрует символы для соответствия значениям `replacement`
+ * @param value
+ * @param options
  * @returns
  */
 export default function filter(value: string, { replacementChars, replacement, separate }: Options): string {

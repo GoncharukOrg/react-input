@@ -3,17 +3,14 @@ import { useRef } from 'react';
 import { SyntheticChangeError, useInput } from '@react-input/core';
 
 import filter from './utils/filter';
+import formatToReplacementObject from './utils/formatToReplacementObject';
 import resolveDetail from './utils/resolveDetail';
 import resolveSelection from './utils/resolveSelection';
-import unmask from './utils/unmask';
+import unformat from './utils/unformat';
 import validate from './utils/validate';
 
 import type { MaskEventDetail, MaskProps, Replacement } from './types';
 import type { Init, Tracking } from '@react-input/core';
-
-const convertToReplacementObject = (replacement: string): Replacement => {
-  return replacement.length > 0 ? { [replacement]: /./ } : {};
-};
 
 type CachedMaskProps = Required<Omit<MaskProps, 'track' | 'modify' | 'onMask'>> & {
   replacement: Replacement;
@@ -27,15 +24,14 @@ interface Cache {
 
 export default function useMask({
   mask = '',
-  replacement: replacementProps = {},
+  replacement = {},
   showMask = false,
   separate = false,
   track,
   modify,
   onMask,
 }: MaskProps = {}): React.MutableRefObject<HTMLInputElement | null> {
-  const replacement =
-    typeof replacementProps === 'string' ? convertToReplacementObject(replacementProps) : replacementProps;
+  const replacementObject = typeof replacement === 'string' ? formatToReplacementObject(replacement) : replacement;
 
   const cache = useRef<Cache | null>(null);
 
@@ -47,12 +43,12 @@ export default function useMask({
 
   const init: Init = ({ controlled, initialValue }) => {
     if (process.env.NODE_ENV !== 'production') {
-      validate({ initialValue, mask, replacement });
+      validate({ initialValue, mask, replacement: replacementObject });
     }
 
     initialValue = controlled || initialValue ? initialValue : showMask ? mask : '';
 
-    const cachedProps = { mask, replacement, showMask, separate };
+    const cachedProps = { mask, replacement: replacementObject, showMask, separate };
     cache.current = { value: initialValue, props: cachedProps, fallbackProps: cachedProps };
 
     return { value: initialValue };
@@ -81,7 +77,7 @@ export default function useMask({
     // Дополнительно нам важно учесть, что немаскированное значение с учетом удаления или добавления символов должно
     // получаться с помощью закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
 
-    let beforeChangeValue = unmask(previousValue, {
+    let beforeChangeValue = unformat(previousValue, {
       end: changeStart,
       mask: cache.current.props.mask,
       replacement: cache.current.props.replacement,
@@ -130,7 +126,7 @@ export default function useMask({
       throw new SyntheticChangeError('The character does not match the key value of the `replacement` object.');
     }
 
-    let afterChangeValue = unmask(previousValue, {
+    let afterChangeValue = unformat(previousValue, {
       start: changeEnd,
       mask: cache.current.props.mask,
       replacement: cache.current.props.replacement,
@@ -169,13 +165,13 @@ export default function useMask({
     /* eslint-disable prefer-const */
     let {
       mask: modifiedMask = mask,
-      replacement: modifiedReplacement = replacement,
+      replacement: modifiedReplacement = replacementObject,
       showMask: modifiedShowMask = showMask,
       separate: modifiedSeparate = separate,
     } = modify?.(input) ?? {};
 
     if (typeof modifiedReplacement === 'string') {
-      modifiedReplacement = convertToReplacementObject(modifiedReplacement);
+      modifiedReplacement = formatToReplacementObject(modifiedReplacement);
     }
 
     const detail = resolveDetail(input, {

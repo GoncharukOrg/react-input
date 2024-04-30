@@ -1,6 +1,6 @@
 {
   "name": "@react-input/core",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
   "description": "The core of the packages included in the `@react-input` scope.",
   "keywords": [

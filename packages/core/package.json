@@ -37,29 +37,29 @@
     "./*": {
       "import": [
         "./dist/module/*.js",
-        "./dist/module/*"
+        "./dist/module/*/index.js"
       ],
       "require": [
         "./dist/node/*.cjs",
-        "./dist/node/*"
+        "./dist/node/*/index.cjs"
       ],
       "types": [
         "./dist/@types/*.d.ts",
-        "./dist/@types/*"
+        "./dist/@types/*/index.d.ts"
       ]
     },
     "./*.js": {
       "import": [
         "./dist/module/*.js",
-        "./dist/module/*"
+        "./dist/module/*/index.js"
       ],
       "require": [
         "./dist/node/*.cjs",
-        "./dist/node/*"
+        "./dist/node/*/index.cjs"
       ],
       "types": [
         "./dist/@types/*.d.ts",
-        "./dist/@types/*"
+        "./dist/@types/*/index.d.ts"
       ]
     }
   },

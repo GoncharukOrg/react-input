@@ -6,6 +6,8 @@
 ![npm](https://img.shields.io/npm/v/@react-input/mask?style=flat-square)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/@react-input/mask?style=flat-square)
 
+[![Edit @react-input/mask](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/react-input-mask-r5jmmm?file=%2Fsrc%2FInput.tsx)
+
 ## Installation
 
 ```bash

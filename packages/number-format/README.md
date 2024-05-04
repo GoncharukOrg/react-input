@@ -6,6 +6,8 @@
 ![npm](https://img.shields.io/npm/v/@react-input/number-format?style=flat-square)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/@react-input/number-format?style=flat-square)
 
+[![Edit @react-input/number-format](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/react-input-number-format-r234d9?file=%2Fsrc%2FInput.tsx)
+
 ## Installation
 
 ```bash

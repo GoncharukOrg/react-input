@@ -1,6 +1,6 @@
 {
   "name": "@react-input/mask",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
   "description": "React input component for masked input.",
   "keywords": [

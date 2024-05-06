@@ -386,7 +386,7 @@ Since the principle of operation of `InputMask` is fully consistent with the ope
 
 ```ts
 format('1', { mask: '+__', replacement: { _: /\d/ } });
-// returns: "+1_"
+// returns: "+1"
 ```
 
 ### `unformat`

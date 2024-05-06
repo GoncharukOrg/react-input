@@ -22,7 +22,7 @@ interface Options {
  * you may find yourself in a situation where the `input` element will have a value that does not
  * correspond to the mask, for example when initializing the value of the received from the backend.
  *
- * `format('1', { mask: '+__', replacement: { _: /\d/ } })` → "+1_"
+ * `format('1', { mask: '+__', replacement: { _: /\d/ } })` → "+1"
  */
 export function format(value: string, { mask, replacement }: Options): string {
   const replacementObject = typeof replacement === 'string' ? formatToReplacementObject(replacement) : replacement;

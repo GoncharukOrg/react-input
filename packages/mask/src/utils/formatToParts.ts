@@ -16,15 +16,20 @@ interface Options {
  * @returns
  */
 export default function formatToParts(formattedValue: string, { mask, replacement }: Options): MaskPart[] {
-  return formattedValue.split('').map((char, index) => {
-    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, char);
+  const result: MaskPart[] = [];
 
-    const type = isReplacementKey
-      ? ('replacement' as const)
-      : char === mask[index]
-        ? ('mask' as const)
-        : ('input' as const);
+  for (let i = 0; i < mask.length; i++) {
+    const value = formattedValue[i] ?? mask[i];
 
-    return { type, value: char, index };
-  });
+    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacement, value);
+    const type: MaskPart['type'] = isReplacementKey
+      ? 'replacement'
+      : formattedValue[i] !== undefined && formattedValue[i] !== mask[i]
+        ? 'input'
+        : 'mask';
+
+    result.push({ type, value, index: i });
+  }
+
+  return result;
 }

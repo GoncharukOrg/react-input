@@ -18,24 +18,8 @@ interface Options {
  * @returns
  */
 export default function resolveDetail(input: string, { mask, replacement, showMask }: Options): MaskEventDetail {
-  let formattedValue = format(input, { mask, replacement });
-
+  const formattedValue = format(input, { mask, replacement, showMask });
   const parts = formatToParts(formattedValue, { mask, replacement });
-
-  // Обрезаем значение по последний пользовательский символ,
-  // если символ не найден, получится пустая строка
-  if (!showMask) {
-    let lastChangedCharIndex = -1;
-
-    for (let i = parts.length - 1; i >= 0; i--) {
-      if (parts[i].type === 'input') {
-        lastChangedCharIndex = parts[i].index;
-        break;
-      }
-    }
-
-    formattedValue = formattedValue.slice(0, lastChangedCharIndex + 1);
-  }
 
   const pattern = generatePattern({ mask, replacement });
   const patternWithDisableReplacementKey = generatePattern({ mask, replacement }, true);

@@ -90,8 +90,8 @@ export function formatToParts(value: string, { mask, replacement }: Options): Ma
  * value can be any character corresponding to the `replacement` value except the `replacement` key itself.
  *
  * So, if `mask: '_'` and `replacement: { _: /\D/ }` then:
- * - if `takeReplacementKey: false`, the regular expression (pattern) will match `/^\D$/` and `RegExp(pattern).test(mask)` will return `true`;
- * - if `takeReplacementKey: true`, the regular expression (pattern) will match `/^(?!_)\D$/` and `RegExp(pattern).test(mask)` will return `false`,
+ * - if `takeReplacementKey: false`, the regular expression (pattern) will match `/^(\D)$/` and `RegExp(pattern).test(mask)` will return `true`;
+ * - if `takeReplacementKey: true`, the regular expression (pattern) will match `/^(?!_)(\D)$/` and `RegExp(pattern).test(mask)` will return `false`,
  * but any a valid character, in addition to the replacement character, will contribute to the return of `true`.
  */
 export function generatePattern({ mask, replacement }: Options, takeReplacementKey = false): string {
@@ -110,7 +110,7 @@ export function generatePattern({ mask, replacement }: Options, takeReplacementK
     }
 
     pattern += isReplacementKey
-      ? lookahead + replacementObject[mask[i]].toString().slice(1, -1)
+      ? `${lookahead}(${replacementObject[mask[i]].toString().slice(1, -1)})`
       : special.includes(mask[i])
         ? `\\${mask[i]}`
         : mask[i];

@@ -435,17 +435,17 @@ If the second parameter is `true`, then the regular expression search will not t
 
 So, if `mask: '_'` and `replacement: { _: /\D/ }` then:
 
-if the second parameter is omitted or `false`, the regular expression (pattern) will match `/^\D$/` and `RegExp(pattern).test(mask)` will return `true`:
+if the second parameter is omitted or `false`, the regular expression (pattern) will match `/^(\D)$/` and `RegExp(pattern).test(mask)` will return `true`:
 
 ```ts
-const pattern = generatePattern({ mask, replacement }); // "^\D$"
+const pattern = generatePattern({ mask, replacement }); // "^(\\D)$"
 RegExp(pattern).test('_'); // true
 ```
 
-if the second parameter is `true`, the regular expression (pattern) will match `/^(?!_)\D$/` and `RegExp(pattern).test(mask)` will return `false`, but any a valid character, in addition to the replacement character, will contribute to the return of `true`:
+if the second parameter is `true`, the regular expression (pattern) will match `/^(?!_)(\D)$/` and `RegExp(pattern).test(mask)` will return `false`, but any a valid character, in addition to the replacement character, will contribute to the return of `true`:
 
 ```ts
-const pattern = generatePattern({ mask, replacement }, true); // "^(?!_)\D$"
+const pattern = generatePattern({ mask, replacement }, true); // "^(?!_)(\\D)$"
 RegExp(pattern).test('_'); // false
 RegExp(pattern).test('a'); // true
 ```

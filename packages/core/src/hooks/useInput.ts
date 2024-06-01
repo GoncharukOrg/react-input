@@ -186,6 +186,18 @@ export default function useInput<D = unknown>({
           const previousValue = inputElement._valueTracker?.getValue?.() ?? '';
           let inputType: InputType | undefined;
 
+          // При автоподстановке значения браузер заменяет значение полностью, как если бы мы
+          // выделили значение и вставили новое, однако `selection.current.start` и `selection.current.end`
+          // не изменятся что приведёт к не правильному определению типа ввода, например, при
+          // автоподстановке значения меньше чем предыдущее, тип ввода будет определён как `deleteBackward`.
+          // Учитывая что при автоподстановке `inputType` не определён и значение заменяется полностью,
+          // нам надо имитировать выделение всего значения, для этого переопределяем позиции выделения
+          // @ts-expect-error
+          if (event.inputType === undefined) {
+            selection.current.start = 0;
+            selection.current.end = previousValue.length;
+          }
+
           // Определяем тип ввода (ручное определение типа ввода способствует кроссбраузерности)
           if (selectionStart > selection.current.start) {
             inputType = 'insert';

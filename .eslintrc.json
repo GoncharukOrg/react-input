@@ -157,6 +157,7 @@
       "parser": "@typescript-eslint/parser",
       "plugins": ["@typescript-eslint"],
       "rules": {
+        "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/consistent-type-imports": "error",
         "@typescript-eslint/no-unnecessary-condition": "off",
         "@typescript-eslint/restrict-template-expressions": [

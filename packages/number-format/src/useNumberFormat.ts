@@ -77,7 +77,7 @@ export default function useNumberFormat({
     const cachedProps = { locales, options };
     cache.current = { value: initialValue, props: cachedProps, fallbackProps: cachedProps };
 
-    return { value: initialValue };
+    return initialValue;
   };
 
   /**

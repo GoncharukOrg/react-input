@@ -7,7 +7,7 @@ import '@testing-library/jest-dom';
 
 function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   const ref = useInput({
-    init: ({ initialValue }) => ({ value: initialValue }),
+    init: ({ initialValue }) => initialValue,
     tracking: ({ value, selectionStart, selectionEnd }) => ({ value, selectionStart, selectionEnd }),
   });
 

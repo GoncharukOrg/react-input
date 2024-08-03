@@ -41,7 +41,7 @@ export default function useMask({
    *
    */
 
-  const init: Init = ({ controlled, initialValue }) => {
+  const init: Init = ({ initialValue, controlled }) => {
     if (process.env.NODE_ENV !== 'production') {
       validate({ initialValue, mask, replacement: replacementObject });
     }
@@ -51,7 +51,7 @@ export default function useMask({
     const cachedProps = { mask, replacement: replacementObject, showMask, separate };
     cache.current = { value: initialValue, props: cachedProps, fallbackProps: cachedProps };
 
-    return { value: initialValue };
+    return initialValue;
   };
 
   /**

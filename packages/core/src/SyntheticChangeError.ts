@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 
-import type { InputAttributes } from '../types';
+import type { InputAttributes } from './types';
 
 interface SyntheticChangeError {
   cause?: { __attributes?: Partial<InputAttributes> };

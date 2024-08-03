@@ -15,11 +15,11 @@ export interface InputAttributes {
 }
 
 interface InitParam {
-  controlled: boolean;
   initialValue: string;
+  controlled: boolean;
 }
 
-export type Init = (param: InitParam) => Pick<InputAttributes, 'value'>;
+export type Init = (param: InitParam) => string;
 
 interface TrackingParam {
   inputType: InputType;
@@ -34,17 +34,6 @@ interface TrackingParam {
 }
 
 export type Tracking<D = unknown> = (param: TrackingParam) => InputAttributes & { __detail?: D };
-
-export interface ExtendedHTMLInputElement extends HTMLInputElement {
-  _wrapperState?: {
-    controlled?: boolean;
-    initialValue?: string;
-  };
-  _valueTracker?: {
-    getValue?: () => string;
-    setValue?: (value: string) => void;
-  };
-}
 
 export type InputComponentProps<C extends React.ComponentType | undefined = undefined> = {
   /** **Not used in the hook**. Serves to enable the use of custom components, for example, if you want to use your own styled component with the ability to format the value. */

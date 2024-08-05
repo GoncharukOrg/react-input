@@ -35,6 +35,13 @@ interface TrackingParam {
 
 export type Tracking<D = unknown> = (param: TrackingParam) => InputAttributes & { __detail?: D };
 
+export interface InputOptions<D> {
+  init: Init;
+  tracking: Tracking<D>;
+  eventType?: string;
+  eventHandler?: CustomInputEventHandler<CustomInputEvent<D>>;
+}
+
 export type InputComponentProps<C extends React.ComponentType | undefined = undefined> = {
   /** **Not used in the hook**. Serves to enable the use of custom components, for example, if you want to use your own styled component with the ability to format the value. */
   component?: C;

@@ -31,6 +31,6 @@
       "module": "CommonJS"
     }
   },
-  "include": ["packages", "scripts", "utils"],
+  "include": ["packages", "scripts", "utils", "rollup.config.js"],
   "exclude": ["**/node_modules", "**/dist"]
 }

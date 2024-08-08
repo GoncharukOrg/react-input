@@ -3,9 +3,14 @@ const commonjs = require('@rollup/plugin-commonjs').default;
 const nodeResolve = require('@rollup/plugin-node-resolve').default;
 const terser = require('@rollup/plugin-terser').default;
 
-const readdir = require('./readdir.js');
+const readdir = require('./utils/readdir.js');
 
 const EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.es6', '.es', '.mjs'];
+const ENTRIES = {
+  '@react-input/core': ['./src'],
+  '@react-input/mask': ['src/index.ts', 'src/InputMask.tsx', 'src/Mask.ts', 'src/useMask.ts', 'src/utils.ts'],
+  '@react-input/number-format': ['src/index.ts', 'src/InputNumberFormat.tsx', 'src/useNumberFormat.ts'],
+};
 
 const reduceFromDir = (/** @type {import("fs").PathLike} */ dir) => {
   return readdir(dir)
@@ -15,14 +20,20 @@ const reduceFromDir = (/** @type {import("fs").PathLike} */ dir) => {
     }, {});
 };
 
-/**
- * @param {string[]} entries
- */
-function createRollupConfig(...entries) {
-  const input = entries.reduce((prev, path) => {
-    const _entries = /\.[^/]+$/.test(path) ? { [path.replace(/^src\/|\.[^/]+$/g, '')]: path } : reduceFromDir(path);
+function config() {
+  const { npm_package_name } = process.env;
 
-    return { ...prev, ..._entries };
+  if (!npm_package_name) {
+    throw new Error('');
+  }
+
+  // @ts-ignore
+  const input = ENTRIES[npm_package_name].reduce((prev, path) => {
+    if (/\.[^/]+$/.test(path)) {
+      return { ...prev, [path.replace(/^src\/|\.[^/]+$/g, '')]: path };
+    }
+
+    return { ...prev, ...reduceFromDir(path) };
   }, {});
 
   return {
@@ -55,4 +66,4 @@ function createRollupConfig(...entries) {
   };
 }
 
-module.exports = createRollupConfig;
+module.exports = config;

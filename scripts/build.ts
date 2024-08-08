@@ -20,7 +20,7 @@ fs.rmSync('./dist', { recursive: true, force: true });
  * Rollup build
  */
 
-execSync('rollup --config rollup.config.js');
+execSync('rollup --config ../../rollup.config.js');
 
 /**
  * Declare types

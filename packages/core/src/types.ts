@@ -14,14 +14,9 @@ export interface InputAttributes {
   selectionEnd: number;
 }
 
-interface InitParam {
-  initialValue: string;
-  controlled: boolean;
-}
+export type InitFunction = (param: { initialValue: string; controlled: boolean }) => string;
 
-export type Init = (param: InitParam) => string;
-
-interface TrackingParam {
+export type TrackingFunction<D = unknown> = (param: {
   inputType: InputType;
   value: string;
   addedValue: string;
@@ -31,13 +26,11 @@ interface TrackingParam {
   changeEnd: number;
   selectionStart: number;
   selectionEnd: number;
-}
-
-export type Tracking<D = unknown> = (param: TrackingParam) => InputAttributes & { __detail?: D };
+}) => InputAttributes & { __detail?: D };
 
 export interface InputOptions<D> {
-  init: Init;
-  tracking: Tracking<D>;
+  init: InitFunction;
+  tracking: TrackingFunction<D>;
   eventType?: string;
   eventHandler?: CustomInputEventHandler<CustomInputEvent<D>>;
 }

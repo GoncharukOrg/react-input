@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react';
 
 import Input from './Input';
+import createProxy from './createProxy';
 
 import type { InputOptions } from './types';
 
@@ -33,26 +34,6 @@ export default function useInput<D = unknown>({
   return useMemo(() => {
     const input = new Input(options.current);
 
-    return new Proxy(inputRef, {
-      set(target, property, inputElement: HTMLInputElement | null) {
-        if (property !== 'current') {
-          return false;
-        }
-
-        if (inputElement !== inputRef.current) {
-          if (inputRef.current !== null) {
-            input.unregister(inputRef.current);
-          }
-
-          if (inputElement !== null) {
-            input.register(inputElement);
-          }
-        }
-
-        target[property] = inputElement;
-
-        return true;
-      },
-    });
+    return createProxy(inputRef, input);
   }, []);
 }

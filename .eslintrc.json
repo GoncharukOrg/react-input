@@ -159,6 +159,7 @@
       "rules": {
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/consistent-type-imports": "error",
+        "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-unnecessary-condition": "off",
         "@typescript-eslint/restrict-template-expressions": [
           "error",

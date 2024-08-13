@@ -1,5 +1,6 @@
 import SyntheticChangeError from './SyntheticChangeError';
 import createContext from './createContext';
+import definePrototype from './definePrototype';
 
 import type { CustomInputEvent, InitFunction, InputAttributes, InputOptions, InputType } from './types';
 
@@ -206,6 +207,7 @@ function Input<D = unknown>(this: Input, options: InputOptions<D>) {
         // Генерируем и отправляем пользовательское событие. Событие сработает до вызовов `onInput` и `onChange`,
         // при этом если в момент вызова `eventHandler` изменить состояние компонента (что приведёт к ререндеру)
         // без изменения значения `value`, то `onChange` вызван не будет.
+        // TODO: проверить нативные события `input`
         queueMicrotask(() => {
           // TODO: если customEventHandler определён раньше чем пописка, то он вызывается раньше
           element.dispatchEvent(customInputEvent);
@@ -246,84 +248,64 @@ function Input<D = unknown>(this: Input, options: InputOptions<D>) {
   context.set(this, { tracker, onInit, onFocus, onBlur, onInput });
 }
 
-Object.defineProperty(Input, 'prototype', {
-  writable: false,
-  enumerable: false,
-  configurable: false,
-  value: {
-    register(this: Input | undefined, element: HTMLInputElement) {
-      const _this = context.get(this);
+definePrototype(Input, {
+  register(this: Input | undefined, element: HTMLInputElement) {
+    const _this = context.get(this);
 
-      if (!ALLOWED_TYPES.includes(element.type)) {
-        // TODO: мы не должны отображать ошибки в `production`, учесть при CDN (отсутствие переменной `NODE_ENV`)
-        if (process.env.NODE_ENV !== 'production') {
-          console.warn(`Warn: The input element type does not match one of the types: ${ALLOWED_TYPES.join(', ')}.`);
-        }
-
-        return;
+    if (!ALLOWED_TYPES.includes(element.type)) {
+      // TODO: мы не должны отображать ошибки в `production`, учесть при CDN (отсутствие переменной `NODE_ENV`)
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(`Warn: The input element type does not match one of the types: ${ALLOWED_TYPES.join(', ')}.`);
       }
 
-      const descriptor = Object.getOwnPropertyDescriptor(element, 'value');
+      return;
+    }
 
-      // Поскольку значение элемента может быть изменено вне текущей логики,
-      // нам важно перехватывать каждое изменение для обновления `_tracker.value`.
-      // `_tracker.value` служит заменой `_valueTracker.getValue()` предоставляемый React.
-      Object.defineProperty(element, 'value', {
-        ...descriptor,
-        set: (value: string) => {
-          _this.tracker.value = value;
-          descriptor?.set?.call(element, value);
-        },
-      });
+    const descriptor = Object.getOwnPropertyDescriptor(element, 'value');
 
-      const value = element.getAttribute('value');
-      const defaultValue = element.getAttribute('defaultValue');
+    // Поскольку значение элемента может быть изменено вне текущей логики,
+    // нам важно перехватывать каждое изменение для обновления `tracker.value`.
+    // `tracker.value` служит заменой `_valueTracker.getValue()` предоставляемый React.
+    Object.defineProperty(element, 'value', {
+      ...descriptor,
+      set: (value: string) => {
+        _this.tracker.value = value;
+        descriptor?.set?.call(element, value);
+      },
+    });
 
-      // При создании `input` элемента возможно программное изменение свойства `value`, что может
-      // сказаться на отображении состояния элемента, поэтому важно учесть свойство `value` в приоритете.
-      // ISSUE: https://github.com/GoncharukBro/react-input/issues/3
-      const initialValue = element.value || (value ?? defaultValue ?? '');
-      const controlled = value !== null && value !== undefined;
+    const value = element.getAttribute('value');
+    const defaultValue = element.getAttribute('defaultValue');
 
-      // Поскольку в `init` возможно изменение инициализированного значения, мы
-      // также должны изменить значение элемента, при этом мы не должны устанавливать
-      // позицию каретки, так как установка позиции здесь приведёт к автофокусу.
-      setInputAttributes(element, {
-        value: _this.onInit({ initialValue, controlled }),
-      });
+    // При создании `input` элемента возможно программное изменение свойства `value`, что может
+    // сказаться на отображении состояния элемента, поэтому важно учесть свойство `value` в приоритете.
+    // ISSUE: https://github.com/GoncharukBro/react-input/issues/3
+    const initialValue = element.value || (value ?? defaultValue ?? '');
+    const controlled = value !== null && value !== undefined;
 
-      // Событие `focus` не сработает при рендере, даже если включено свойство `autoFocus`,
-      // поэтому нам необходимо запустить определение позиции курсора вручную при автофокусе.
-      if (document.activeElement === element) {
-        _this.onFocus({ target: element } as unknown as FocusEvent);
-      }
+    // Поскольку в `init` возможно изменение инициализированного значения, мы
+    // также должны изменить значение элемента, при этом мы не должны устанавливать
+    // позицию каретки, так как установка позиции здесь приведёт к автофокусу.
+    setInputAttributes(element, {
+      value: _this.onInit({ initialValue, controlled }),
+    });
 
-      element.addEventListener('focus', _this.onFocus);
-      element.addEventListener('blur', _this.onBlur);
-      element.addEventListener('input', _this.onInput);
-    },
-    unregister(this: Input | undefined, element: HTMLInputElement) {
-      const _this = context.get(this);
+    // Событие `focus` не сработает при рендере, даже если включено свойство `autoFocus`,
+    // поэтому нам необходимо запустить определение позиции курсора вручную при автофокусе.
+    if (document.activeElement === element) {
+      _this.onFocus({ target: element } as unknown as FocusEvent);
+    }
 
-      element.removeEventListener('focus', _this.onFocus);
-      element.removeEventListener('blur', _this.onBlur);
-      element.removeEventListener('input', _this.onInput);
-    },
+    element.addEventListener('focus', _this.onFocus);
+    element.addEventListener('blur', _this.onBlur);
+    element.addEventListener('input', _this.onInput);
   },
-});
+  unregister(this: Input | undefined, element: HTMLInputElement) {
+    const _this = context.get(this);
 
-Object.defineProperties(Input.prototype, {
-  [Symbol.toStringTag]: {
-    writable: false,
-    enumerable: false,
-    configurable: true,
-    value: 'Input',
-  },
-  constructor: {
-    writable: true,
-    enumerable: false,
-    configurable: true,
-    value: Input,
+    element.removeEventListener('focus', _this.onFocus);
+    element.removeEventListener('blur', _this.onBlur);
+    element.removeEventListener('input', _this.onInput);
   },
 });
 

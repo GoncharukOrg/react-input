@@ -6,7 +6,7 @@ export default function createContext<T extends WeakKey, V>() {
       map.set(that, value);
     },
     get(that: T | undefined) {
-      if (that === undefined || !map.has(that)) {
+      if (that === undefined) {
         throw new TypeError('Illegal invocation');
       }
 

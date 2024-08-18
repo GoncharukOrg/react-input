@@ -50,7 +50,7 @@ export interface ModifiedData {
 
 export type Modify = (input: string) => ModifiedData | undefined;
 
-export interface MaskProps {
+export interface MaskOptions {
   /** Input mask, `replacement` is used to replace characters. */
   mask?: string;
   /** Sets the characters replaced in the mask, where "key" is the replaced character, "value" is the regular expression to which the input character must match (see «[Replacement](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#replacement)»). It is possible to pass the replacement character as a string, then `replacement="_"` will default to `replacement={{ _: /./ }}`. Keys are ignored as you type. */
@@ -63,6 +63,9 @@ export interface MaskProps {
   track?: Track;
   /** Function triggered before masking. Allows you conditionally change the properties of the component that affect masking. Valid values for modification are `mask`, `replacement`, `showMask` and `separate`. This is useful when you need conditionally tweak the displayed value to improve UX (see «[Modify](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#modify)»). */
   modify?: Modify;
-  /** Handler for the custom event `input-mask`. Called asynchronously after the `change` event, accessing the `detail` property containing additional useful information about the value. (see «[Mask event](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#mask-event)»). */
+}
+
+export interface MaskProps extends MaskOptions {
+  /** Handler for the custom event `mask`. Called asynchronously after the `change` event, accessing the `detail` property containing additional useful information about the value. (see «[Mask event](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#mask-event)»). */
   onMask?: MaskEventHandler;
 }

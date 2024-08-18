@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 
-import { useConnectedInputRef } from '@react-input/core';
+import useConnectedInputRef from '@react-input/core/useConnectedInputRef';
 
 import useMask from './useMask';
 

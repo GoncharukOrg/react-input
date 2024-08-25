@@ -68,6 +68,7 @@
     ],
     "@stylistic/arrow-parens": ["error", "always"],
     "@stylistic/brace-style": ["error", "1tbs"],
+    "@stylistic/indent-binary-ops": "off",
     "@stylistic/jsx-self-closing-comp": "error",
     "@stylistic/jsx-sort-props": [
       "error",

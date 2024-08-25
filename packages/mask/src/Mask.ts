@@ -12,14 +12,14 @@ import validate from './utils/validate';
 import type { MaskEventDetail, MaskOptions, Replacement } from './types';
 import type { InitFunction, TrackingFunction } from '@react-input/core';
 
-type CachedMaskProps = Required<Omit<MaskOptions, 'track' | 'modify' | 'onMask'>> & {
+type CachedProps = Required<Omit<MaskOptions, 'track' | 'modify' | 'onMask'>> & {
   replacement: Replacement;
 };
 
 interface Cache {
   value: string;
-  props: CachedMaskProps;
-  fallbackProps: CachedMaskProps;
+  props: CachedProps;
+  fallbackProps: CachedProps;
 }
 
 function normalizeOptions(options: MaskOptions) {

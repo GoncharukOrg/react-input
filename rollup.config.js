@@ -15,14 +15,33 @@ if (!npm_package_name) {
 const EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.es6', '.es', '.mjs'];
 const ENTRIES = {
   '@react-input/core': {
-    react: ['./src'],
+    react: {
+      input: ['./src'],
+    },
   },
   '@react-input/mask': {
-    cdn: 'src/Mask.ts',
-    react: ['src/index.ts', 'src/InputMask.tsx', 'src/Mask.ts', 'src/useMask.ts', 'src/utils.ts'],
+    cdn: {
+      input: 'src/Mask.ts',
+      output: {
+        file: 'mask',
+        name: 'Mask',
+      },
+    },
+    react: {
+      input: ['src/index.ts', 'src/InputMask.tsx', 'src/Mask.ts', 'src/useMask.ts', 'src/utils.ts'],
+    },
   },
   '@react-input/number-format': {
-    react: ['src/index.ts', 'src/InputNumberFormat.tsx', 'src/useNumberFormat.ts'],
+    cdn: {
+      input: 'src/NumberFormat.ts',
+      output: {
+        file: 'number-format',
+        name: 'NumberFormat',
+      },
+    },
+    react: {
+      input: ['src/index.ts', 'src/InputNumberFormat.tsx', 'src/useNumberFormat.ts'],
+    },
   },
 };
 
@@ -71,21 +90,19 @@ function rollup() {
 
   if (entries.cdn) {
     config.push({
-      input: entries.cdn,
-      output: [
-        {
-          format: 'umd',
-          file: 'dist/mask.js',
-          name: 'Mask',
-        },
-      ],
+      input: entries.cdn.input,
+      output: {
+        format: 'umd',
+        file: `dist/${entries.cdn.output.file}.js`,
+        name: entries.cdn.output.name,
+      },
       plugins: plugins('cdn'),
     });
   }
 
   if (entries.react) {
     config.push({
-      input: reduceEntries(entries.react),
+      input: reduceEntries(entries.react.input),
       output: [
         {
           format: 'es',

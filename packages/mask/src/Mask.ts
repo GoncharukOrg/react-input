@@ -1,6 +1,5 @@
 import Input from '@react-input/core/Input';
 import SyntheticChangeError from '@react-input/core/SyntheticChangeError';
-import createContext from '@react-input/core/createContext';
 import definePrototype from '@react-input/core/definePrototype';
 
 import filter from './utils/filter';
@@ -10,7 +9,7 @@ import resolveSelection from './utils/resolveSelection';
 import unformat from './utils/unformat';
 import validate from './utils/validate';
 
-import type { MaskEventDetail, MaskEventHandler, MaskOptions, Replacement } from './types';
+import type { MaskEventDetail, MaskOptions, Replacement } from './types';
 import type { InitFunction, TrackingFunction } from '@react-input/core';
 
 type CachedMaskProps = Required<Omit<MaskOptions, 'track' | 'modify' | 'onMask'>> & {
@@ -22,12 +21,6 @@ interface Cache {
   props: CachedMaskProps;
   fallbackProps: CachedMaskProps;
 }
-
-interface ContextValue {
-  onmask: MaskEventHandler | null;
-}
-
-const context = createContext<Mask, ContextValue>();
 
 function normalizeOptions(options: MaskOptions) {
   return {
@@ -45,23 +38,15 @@ function normalizeOptions(options: MaskOptions) {
 
 declare class Mask extends Input<MaskEventDetail> {
   constructor(options?: MaskOptions);
-  get onmask(): MaskEventHandler | null;
-  set onmask(value: MaskEventHandler | null);
 }
 
-// TODO: проверить будет ли инициализация пустового объекта предотвращать доступ по ссылке
 function Mask(this: Mask, options: MaskOptions = {}) {
   if (!(this instanceof Mask)) {
     // eslint-disable-next-line @stylistic/quotes
     throw new TypeError("Failed to construct 'Mask': Please use the 'new' operator.");
   }
 
-  // TODO: проверить будет ли null кэшировать данные
   let cache: Cache | null = null;
-
-  const eventHandler: MaskEventHandler = (event) => {
-    _this.onmask?.(event);
-  };
 
   /**
    * Init
@@ -235,26 +220,17 @@ function Mask(this: Mask, options: MaskOptions = {}) {
       value: detail.value,
       selectionStart: selection,
       selectionEnd: selection,
-      __detail: detail,
+      detail,
     };
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const _this: Mask = Reflect.construct(Input, [{ eventType: 'mask', eventHandler, init, tracking }], this.constructor);
-
-  context.set(_this, { onmask: null });
+  const _this: Mask = Reflect.construct(Input, [{ type: 'mask', init, tracking }], this.constructor);
 
   return _this;
 }
 
-definePrototype(Mask, {
-  get onmask() {
-    return context.get(this as Mask).onmask ?? null;
-  },
-  set onmask(value) {
-    context.get(this as Mask).onmask = value ?? null;
-  },
-});
+definePrototype(Mask, {});
 
 Object.setPrototypeOf(Mask.prototype, Input.prototype);
 Object.setPrototypeOf(Mask, Input);

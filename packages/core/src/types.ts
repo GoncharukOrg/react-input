@@ -26,13 +26,12 @@ export type TrackingFunction<D = unknown> = (param: {
   changeEnd: number;
   selectionStart: number;
   selectionEnd: number;
-}) => InputAttributes & { __detail?: D };
+}) => InputAttributes & { detail?: D };
 
 export interface InputOptions<D> {
+  type?: string;
   init: InitFunction;
   tracking: TrackingFunction<D>;
-  eventType?: string;
-  eventHandler?: CustomInputEventHandler<CustomInputEvent<D>>;
 }
 
 export type InputComponentProps<C extends React.ComponentType | undefined = undefined> = {

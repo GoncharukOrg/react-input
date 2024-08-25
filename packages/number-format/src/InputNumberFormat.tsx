@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 
-import { useConnectedInputRef } from '@react-input/core';
+import useConnectedRef from '@react-input/core/useConnectedRef';
 
 import useNumberFormat from './useNumberFormat';
 
@@ -28,9 +28,9 @@ function ForwardedInputNumberFormat<C extends React.ComponentType | undefined = 
     onNumberFormat,
     ...props
   }: InputNumberFormatProps<C>,
-  forwardedInputRef: React.ForwardedRef<HTMLInputElement>,
+  forwardedRef: React.ForwardedRef<HTMLInputElement>,
 ): JSX.Element {
-  const inputRef = useNumberFormat({
+  const ref = useNumberFormat({
     locales,
     format,
     currency,
@@ -46,14 +46,14 @@ function ForwardedInputNumberFormat<C extends React.ComponentType | undefined = 
     onNumberFormat,
   });
 
-  const connectedInputRef = useConnectedInputRef(inputRef, forwardedInputRef);
+  const connectedRef = useConnectedRef(ref, forwardedRef);
 
   if (Component) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return <Component ref={connectedInputRef} {...(props as any)} />;
+    return <Component ref={connectedRef} {...(props as any)} />;
   }
 
-  return <input ref={connectedInputRef} {...props} />;
+  return <input ref={connectedRef} {...props} />;
 }
 
 const InputNumberFormat = forwardRef(ForwardedInputNumberFormat) as InputComponent<NumberFormatProps>;

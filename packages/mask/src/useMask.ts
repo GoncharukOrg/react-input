@@ -4,10 +4,10 @@ import createProxy from '@react-input/core/createProxy';
 
 import Mask from './Mask';
 
-import type { MaskProps } from './types';
+import type { MaskEvent, MaskProps } from './types';
 
 export default function useMask({ mask, replacement, showMask, separate, track, modify, onMask }: MaskProps = {}) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const ref = useRef<HTMLInputElement | null>(null);
 
   const props = useRef({
     options: { mask, replacement, showMask, separate, track, modify },
@@ -25,10 +25,11 @@ export default function useMask({ mask, replacement, showMask, separate, track, 
   return useMemo(() => {
     const mask = new Mask(props.current.options);
 
-    mask.onmask = (event) => {
-      props.current.handler?.(event);
-    };
-
-    return createProxy(inputRef, mask);
+    return createProxy(ref, mask, {
+      type: 'mask',
+      handler: (event) => {
+        props.current.handler?.(event as MaskEvent);
+      },
+    });
   }, []);
 }

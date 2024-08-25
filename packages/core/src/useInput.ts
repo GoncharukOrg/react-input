@@ -12,28 +12,19 @@ import type { InputOptions } from './types';
  * @returns
  */
 export default function useInput<D = unknown>({
+  type,
   init,
   tracking,
-  eventType,
-  eventHandler,
 }: InputOptions<D>): React.MutableRefObject<HTMLInputElement | null> {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const ref = useRef<HTMLInputElement | null>(null);
 
-  const options = useRef({
-    init,
-    tracking,
-    eventType,
-    eventHandler,
-  });
+  const options = useRef({ type, init, tracking });
 
+  options.current.type = type;
   options.current.init = init;
   options.current.tracking = tracking;
-  options.current.eventType = eventType;
-  options.current.eventHandler = eventHandler;
 
   return useMemo(() => {
-    const input = new Input(options.current);
-
-    return createProxy(inputRef, input);
+    return createProxy(ref, new Input(options.current));
   }, []);
 }

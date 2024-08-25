@@ -1,8 +1,7 @@
 import SyntheticChangeError from './SyntheticChangeError';
-import createContext from './createContext';
 import definePrototype from './definePrototype';
 
-import type { CustomInputEvent, InitFunction, InputAttributes, InputOptions, InputType } from './types';
+import type { InitFunction, InputAttributes, InputOptions, InputType } from './types';
 
 const ALLOWED_TYPES = ['text', 'email', 'tel', 'search', 'url'];
 
@@ -30,7 +29,7 @@ interface ContextValue {
   onInput: (event: Event) => void;
 }
 
-const context = createContext<Input, ContextValue>();
+const context = new WeakMap<Input, ContextValue>();
 
 declare class Input<D = unknown> {
   constructor(options?: InputOptions<D>);
@@ -100,8 +99,6 @@ function Input<D = unknown>(this: Input, options: InputOptions<D>) {
    *
    */
   const onInput = (event: Event) => {
-    const { tracking, eventType, eventHandler } = options;
-
     const element = event.target as HTMLInputElement | null;
 
     if (element === null) {
@@ -172,7 +169,7 @@ function Input<D = unknown>(this: Input, options: InputOptions<D>) {
         deletedValue = previousValue.slice(changeStart, changeEnd);
       }
 
-      const trackingResult = tracking({
+      const trackingResult = options.tracking({
         inputType,
         previousValue,
         value,
@@ -190,30 +187,27 @@ function Input<D = unknown>(this: Input, options: InputOptions<D>) {
         selectionEnd: trackingResult.selectionEnd,
       });
 
+      // Генерируем и отправляем пользовательское событие. Событие сработает до вызовов `onInput` и `onChange`,
+      // при этом если в момент вызова `eventHandler` изменить состояние компонента (что приведёт к ререндеру)
+      // без изменения значения `value`, то `onChange` вызван не будет.
+      if (typeof options.type === 'string') {
+        const event = new CustomEvent(options.type, {
+          bubbles: true,
+          cancelable: false,
+          composed: true,
+          detail: trackingResult.detail,
+        });
+
+        queueMicrotask(() => {
+          element.dispatchEvent(event);
+        });
+      }
+
       // После изменения значения с помощью `setInputAttributes` значение `value` фактически изменится, что делает `input`
       // неконтролируемым, а событие `change` срабатывать не будет, так как предыдущее и текущее состояние внутри `input`
       // совпадают. Чтобы обойти эту проблему с версии React 16, устанавливаем предыдущее состояние на отличное от текущего.
       // Действие необходимо только при работе React, для правильной работы события `change`.
       (element as { _valueTracker?: { setValue?: (value: string) => void } })._valueTracker?.setValue?.(previousValue);
-
-      if (typeof eventType === 'string') {
-        const customInputEvent = new CustomEvent(eventType, {
-          bubbles: true,
-          cancelable: false,
-          composed: true,
-          detail: trackingResult.__detail,
-        });
-
-        // Генерируем и отправляем пользовательское событие. Событие сработает до вызовов `onInput` и `onChange`,
-        // при этом если в момент вызова `eventHandler` изменить состояние компонента (что приведёт к ререндеру)
-        // без изменения значения `value`, то `onChange` вызван не будет.
-        // TODO: проверить нативные события `input`
-        queueMicrotask(() => {
-          // TODO: если customEventHandler определён раньше чем пописка, то он вызывается раньше
-          element.dispatchEvent(customInputEvent);
-          eventHandler?.(customInputEvent as CustomInputEvent<D>);
-        });
-      }
 
       // Чтобы гарантировать правильное позиционирование каретки, обновляем
       // значения `_selection` перед последующим вызовом функции обработчика `input`
@@ -250,10 +244,13 @@ function Input<D = unknown>(this: Input, options: InputOptions<D>) {
 
 definePrototype(Input, {
   register(this: Input | undefined, element: HTMLInputElement) {
-    const _this = context.get(this);
+    if (this === undefined) {
+      throw new TypeError('Illegal invocation');
+    }
+
+    const _this = context.get(this)!;
 
     if (!ALLOWED_TYPES.includes(element.type)) {
-      // TODO: мы не должны отображать ошибки в `production`, учесть при CDN (отсутствие переменной `NODE_ENV`)
       if (process.env.NODE_ENV !== 'production') {
         console.warn(`Warn: The input element type does not match one of the types: ${ALLOWED_TYPES.join(', ')}.`);
       }
@@ -301,7 +298,11 @@ definePrototype(Input, {
     element.addEventListener('input', _this.onInput);
   },
   unregister(this: Input | undefined, element: HTMLInputElement) {
-    const _this = context.get(this);
+    if (this === undefined) {
+      throw new TypeError('Illegal invocation');
+    }
+
+    const _this = context.get(this)!;
 
     element.removeEventListener('focus', _this.onFocus);
     element.removeEventListener('blur', _this.onBlur);

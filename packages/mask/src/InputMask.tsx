@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 
-import useConnectedInputRef from '@react-input/core/useConnectedInputRef';
+import useConnectedRef from '@react-input/core/useConnectedRef';
 
 import useMask from './useMask';
 
@@ -11,18 +11,18 @@ export type InputMaskProps<C extends React.ComponentType | undefined = undefined
 
 function ForwardedInputMask<C extends React.ComponentType | undefined = undefined>(
   { component: Component, mask, replacement, showMask, separate, track, modify, onMask, ...props }: InputMaskProps<C>,
-  forwardedInputRef: React.ForwardedRef<HTMLInputElement>,
+  forwardedRef: React.ForwardedRef<HTMLInputElement>,
 ): JSX.Element {
-  const inputRef = useMask({ mask, replacement, showMask, separate, track, modify, onMask });
+  const ref = useMask({ mask, replacement, showMask, separate, track, modify, onMask });
 
-  const connectedInputRef = useConnectedInputRef(inputRef, forwardedInputRef);
+  const connectedRef = useConnectedRef(ref, forwardedRef);
 
   if (Component) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return <Component ref={connectedInputRef} {...(props as any)} />;
+    return <Component ref={connectedRef} {...(props as any)} />;
   }
 
-  return <input ref={connectedInputRef} {...props} />;
+  return <input ref={connectedRef} {...props} />;
 }
 
 const InputMask = forwardRef(ForwardedInputMask) as InputComponent<MaskProps>;

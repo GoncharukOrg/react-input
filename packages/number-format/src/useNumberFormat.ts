@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 
-import { SyntheticChangeError, useInput } from '@react-input/core';
+import SyntheticChangeError from '@react-input/core/SyntheticChangeError';
+import useInput from '@react-input/core/useInput';
 
 import localizeValues from './utils/localizeValues';
 import resolveDetail from './utils/resolveDetail';
@@ -9,7 +10,7 @@ import resolveOptions from './utils/resolveOptions';
 import resolveSelection from './utils/resolveSelection';
 
 import type { NumberFormatEventDetail, NumberFormatOptions, NumberFormatProps } from './types';
-import type { Init, Tracking } from '@react-input/core';
+import type { InitFunction, TrackingFunction } from '@react-input/core';
 
 interface CachedNumberFormatProps {
   locales: NumberFormatProps['locales'];
@@ -63,7 +64,7 @@ export default function useNumberFormat({
    *
    */
 
-  const init: Init = ({ initialValue }) => {
+  const init: InitFunction = ({ initialValue }) => {
     const { current, resolved } = resolveOptions(locales, options);
 
     const invalidType = current.maximumIntegerDigits !== undefined && typeof current.maximumIntegerDigits !== 'number';
@@ -86,7 +87,7 @@ export default function useNumberFormat({
    *
    */
 
-  const tracking: Tracking<NumberFormatEventDetail> = ({
+  const tracking: TrackingFunction<NumberFormatEventDetail> = ({
     inputType,
     previousValue,
     addedValue,
@@ -257,7 +258,7 @@ export default function useNumberFormat({
       value: detail.value,
       selectionStart: selection.start,
       selectionEnd: selection.end,
-      __detail: detail,
+      detail,
     };
   };
 
@@ -268,9 +269,8 @@ export default function useNumberFormat({
    */
 
   return useInput<NumberFormatEventDetail>({
+    type: 'number-format',
     init,
     tracking,
-    eventType: 'input-number-format',
-    eventHandler: onNumberFormat,
   });
 }

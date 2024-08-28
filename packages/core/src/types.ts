@@ -16,7 +16,7 @@ export interface InputAttributes {
 
 export type InitFunction = (param: { initialValue: string; controlled: boolean }) => string;
 
-export type TrackingFunction<D = unknown> = (param: {
+export type TrackingFunction = (param: {
   inputType: InputType;
   value: string;
   addedValue: string;
@@ -26,12 +26,12 @@ export type TrackingFunction<D = unknown> = (param: {
   changeEnd: number;
   selectionStart: number;
   selectionEnd: number;
-}) => InputAttributes & { detail?: D };
+}) => InputAttributes & { detail?: unknown };
 
-export interface InputOptions<D> {
-  type?: string;
+export interface InputOptions {
+  type: string;
   init: InitFunction;
-  tracking: TrackingFunction<D>;
+  tracking: TrackingFunction;
 }
 
 export type InputComponentProps<C extends React.ComponentType | undefined = undefined> = {

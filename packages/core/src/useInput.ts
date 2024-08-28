@@ -11,11 +11,7 @@ import type { InputOptions } from './types';
  * @param param
  * @returns
  */
-export default function useInput<D = unknown>({
-  type,
-  init,
-  tracking,
-}: InputOptions<D>): React.MutableRefObject<HTMLInputElement | null> {
+export default function useInput({ type, init, tracking }: InputOptions) {
   const ref = useRef<HTMLInputElement | null>(null);
 
   const options = useRef({ type, init, tracking });

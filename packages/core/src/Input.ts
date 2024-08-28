@@ -1,7 +1,6 @@
 import SyntheticChangeError from './SyntheticChangeError';
-import definePrototype from './definePrototype';
 
-import type { InitFunction, InputAttributes, InputOptions, InputType } from './types';
+import type { InputAttributes, InputOptions, InputType } from './types';
 
 const ALLOWED_TYPES = ['text', 'email', 'tel', 'search', 'url'];
 
@@ -22,233 +21,213 @@ function setInputAttributes(
 }
 
 interface ContextValue {
-  tracker: { value: string };
-  onInit: InitFunction;
   onFocus: (event: FocusEvent) => void;
   onBlur: (event: FocusEvent) => void;
   onInput: (event: Event) => void;
 }
 
-const context = new WeakMap<Input, ContextValue>();
+const handlersMap = new WeakMap<HTMLInputElement, ContextValue>();
+const optionsMap = new WeakMap<Input, InputOptions>();
 
-declare class Input<D = unknown> {
-  constructor(options?: InputOptions<D>);
-  register(element: HTMLInputElement): void;
-  unregister(element: HTMLInputElement): void;
-}
-
-function Input<D = unknown>(this: Input, options: InputOptions<D>) {
-  if (!(this instanceof Input)) {
-    // eslint-disable-next-line @stylistic/quotes
-    throw new TypeError("Failed to construct 'Input': Please use the 'new' operator.");
+export default class Input {
+  static {
+    Object.defineProperty(this.prototype, Symbol.toStringTag, {
+      writable: false,
+      enumerable: false,
+      configurable: true,
+      value: 'Input',
+    });
   }
 
-  const selection = {
-    timeoutId: -1,
-    cachedTimeoutId: -1,
-    start: 0,
-    end: 0,
-  };
+  constructor(options: InputOptions) {
+    optionsMap.set(this, options);
+  }
 
-  const tracker = {
-    value: '',
-  };
+  register(element: HTMLInputElement) {
+    const options = optionsMap.get(this);
 
-  /**
-   *
-   * Handle init
-   *
-   */
-  const onInit: InitFunction = ({ initialValue, controlled }) => {
-    return options.init({ initialValue, controlled });
-  };
+    const selection = {
+      timeoutId: -1,
+      cachedTimeoutId: -1,
+      start: 0,
+      end: 0,
+    };
 
-  /**
-   *
-   * Handle focus
-   *
-   */
-  const onFocus = (event: FocusEvent) => {
-    const setSelection = () => {
-      const element = event.target as HTMLInputElement | null;
+    const tracker = {
+      value: '',
+    };
 
-      selection.start = element?.selectionStart ?? 0;
-      selection.end = element?.selectionEnd ?? 0;
+    /**
+     * Handle focus
+     */
+    const onFocus = (event: FocusEvent) => {
+      const setSelection = () => {
+        const element = event.target as HTMLInputElement | null;
+
+        selection.start = element?.selectionStart ?? 0;
+        selection.end = element?.selectionEnd ?? 0;
+
+        selection.timeoutId = window.setTimeout(setSelection);
+      };
 
       selection.timeoutId = window.setTimeout(setSelection);
     };
 
-    selection.timeoutId = window.setTimeout(setSelection);
-  };
+    /**
+     * Handle blur
+     */
+    const onBlur = () => {
+      window.clearTimeout(selection.timeoutId);
 
-  /**
-   *
-   * Handle blur
-   *
-   */
-  const onBlur = () => {
-    window.clearTimeout(selection.timeoutId);
+      selection.timeoutId = -1;
+      selection.cachedTimeoutId = -1;
+    };
 
-    selection.timeoutId = -1;
-    selection.cachedTimeoutId = -1;
-  };
+    /**
+     * Handle input
+     */
+    const onInput = (event: Event) => {
+      const element = event.target as HTMLInputElement | null;
 
-  /**
-   *
-   * Handle input
-   *
-   */
-  const onInput = (event: Event) => {
-    const element = event.target as HTMLInputElement | null;
-
-    if (element === null) {
-      return;
-    }
-
-    try {
-      // Если событие вызывается слишком часто, смена курсора может не поспеть за новым событием,
-      // поэтому сравниваем `timeoutId` кэшированный и текущий для избежания некорректного поведения маски
-      if (selection.cachedTimeoutId === selection.timeoutId) {
-        throw new SyntheticChangeError('The input selection has not been updated.');
+      if (element === null) {
+        return;
       }
 
-      selection.cachedTimeoutId = selection.timeoutId;
+      try {
+        // Если событие вызывается слишком часто, смена курсора может не поспеть за новым событием,
+        // поэтому сравниваем `timeoutId` кэшированный и текущий для избежания некорректного поведения маски
+        if (selection.cachedTimeoutId === selection.timeoutId) {
+          throw new SyntheticChangeError('The input selection has not been updated.');
+        }
 
-      const { value, selectionStart, selectionEnd } = element;
+        selection.cachedTimeoutId = selection.timeoutId;
 
-      if (selectionStart === null || selectionEnd === null) {
-        throw new SyntheticChangeError('The selection attributes have not been initialized.');
-      }
+        const { value, selectionStart, selectionEnd } = element;
 
-      const previousValue = tracker.value;
-      let inputType: InputType | undefined;
+        if (selectionStart === null || selectionEnd === null) {
+          throw new SyntheticChangeError('The selection attributes have not been initialized.');
+        }
 
-      // При автоподстановке значения браузер заменяет значение полностью, как если бы мы
-      // выделили значение и вставили новое, однако `_selection.start` и `_selection.end`
-      // не изменятся что приведёт к не правильному определению типа ввода, например, при
-      // автоподстановке значения меньше чем предыдущее, тип ввода будет определён как `deleteBackward`.
-      // Учитывая что при автоподстановке `inputType` не определён и значение заменяется полностью,
-      // нам надо имитировать выделение всего значения, для этого переопределяем позиции выделения
-      // @ts-expect-error
-      if (event.inputType === undefined) {
-        selection.start = 0;
-        selection.end = previousValue.length;
-      }
+        const previousValue = tracker.value;
+        let inputType: InputType | undefined;
 
-      // Определяем тип ввода (ручное определение типа ввода способствует кроссбраузерности)
-      if (selectionStart > selection.start) {
-        inputType = 'insert';
-      } else if (selectionStart <= selection.start && selectionStart < selection.end) {
-        inputType = 'deleteBackward';
-      } else if (selectionStart === selection.end && value.length < previousValue.length) {
-        inputType = 'deleteForward';
-      }
+        // При автоподстановке значения браузер заменяет значение полностью, как если бы мы
+        // выделили значение и вставили новое, однако `_selection.start` и `_selection.end`
+        // не изменятся что приведёт к не правильному определению типа ввода, например, при
+        // автоподстановке значения меньше чем предыдущее, тип ввода будет определён как `deleteBackward`.
+        // Учитывая что при автоподстановке `inputType` не определён и значение заменяется полностью,
+        // нам надо имитировать выделение всего значения, для этого переопределяем позиции выделения
+        // @ts-expect-error
+        if (event.inputType === undefined) {
+          selection.start = 0;
+          selection.end = previousValue.length;
+        }
 
-      if (
-        inputType === undefined ||
-        ((inputType === 'deleteBackward' || inputType === 'deleteForward') && value.length > previousValue.length)
-      ) {
-        throw new SyntheticChangeError('Input type detection error.');
-      }
+        // Определяем тип ввода (ручное определение типа ввода способствует кроссбраузерности)
+        if (selectionStart > selection.start) {
+          inputType = 'insert';
+        } else if (selectionStart <= selection.start && selectionStart < selection.end) {
+          inputType = 'deleteBackward';
+        } else if (selectionStart === selection.end && value.length < previousValue.length) {
+          inputType = 'deleteForward';
+        }
 
-      let addedValue = '';
-      let deletedValue = '';
-      let changeStart = selection.start;
-      let changeEnd = selection.end;
+        if (
+          inputType === undefined ||
+          ((inputType === 'deleteBackward' || inputType === 'deleteForward') && value.length > previousValue.length)
+        ) {
+          throw new SyntheticChangeError('Input type detection error.');
+        }
 
-      if (inputType === 'insert') {
-        addedValue = value.slice(selection.start, selectionStart);
-      } else {
-        // Для `delete` нам необходимо определить диапазон удаленных символов, так как
-        // при удалении без выделения позиция каретки "до" и "после" будут совпадать
-        const countDeleted = previousValue.length - value.length;
+        let addedValue = '';
+        let deletedValue = '';
+        let changeStart = selection.start;
+        let changeEnd = selection.end;
 
-        changeStart = selectionStart;
-        changeEnd = selectionStart + countDeleted;
+        if (inputType === 'insert') {
+          addedValue = value.slice(selection.start, selectionStart);
+        } else {
+          // Для `delete` нам необходимо определить диапазон удаленных символов, так как
+          // при удалении без выделения позиция каретки "до" и "после" будут совпадать
+          const countDeleted = previousValue.length - value.length;
 
-        deletedValue = previousValue.slice(changeStart, changeEnd);
-      }
+          changeStart = selectionStart;
+          changeEnd = selectionStart + countDeleted;
 
-      const trackingResult = options.tracking({
-        inputType,
-        previousValue,
-        value,
-        addedValue,
-        deletedValue,
-        changeStart,
-        changeEnd,
-        selectionStart,
-        selectionEnd,
-      });
+          deletedValue = previousValue.slice(changeStart, changeEnd);
+        }
 
-      setInputAttributes(element, {
-        value: trackingResult.value,
-        selectionStart: trackingResult.selectionStart,
-        selectionEnd: trackingResult.selectionEnd,
-      });
-
-      // Генерируем и отправляем пользовательское событие. Событие сработает до вызовов `onInput` и `onChange`,
-      // при этом если в момент вызова `eventHandler` изменить состояние компонента (что приведёт к ререндеру)
-      // без изменения значения `value`, то `onChange` вызван не будет.
-      if (typeof options.type === 'string') {
-        const event = new CustomEvent(options.type, {
-          bubbles: true,
-          cancelable: false,
-          composed: true,
-          detail: trackingResult.detail,
+        const trackingResult = options?.tracking({
+          inputType,
+          previousValue,
+          value,
+          addedValue,
+          deletedValue,
+          changeStart,
+          changeEnd,
+          selectionStart,
+          selectionEnd,
         });
 
-        queueMicrotask(() => {
-          element.dispatchEvent(event);
+        setInputAttributes(element, {
+          value: trackingResult?.value,
+          selectionStart: trackingResult?.selectionStart,
+          selectionEnd: trackingResult?.selectionEnd,
         });
+
+        // Генерируем и отправляем пользовательское событие. Событие сработает до вызовов `onInput` и `onChange`,
+        // при этом если в момент вызова `eventHandler` изменить состояние компонента (что приведёт к ререндеру)
+        // без изменения значения `value`, то `onChange` вызван не будет.
+        if (options !== undefined) {
+          const event = new CustomEvent(options.type, {
+            bubbles: true,
+            cancelable: false,
+            composed: true,
+            detail: trackingResult?.detail,
+          });
+
+          queueMicrotask(() => {
+            element.dispatchEvent(event);
+          });
+        }
+
+        // После изменения значения с помощью `setInputAttributes` значение `value` фактически изменится, что делает `input`
+        // неконтролируемым, а событие `change` срабатывать не будет, так как предыдущее и текущее состояние внутри `input`
+        // совпадают. Чтобы обойти эту проблему с версии React 16, устанавливаем предыдущее состояние на отличное от текущего.
+        // Действие необходимо только при работе React, для правильной работы события `change`.
+        (element as { _valueTracker?: { setValue?: (value: string) => void } })._valueTracker?.setValue?.(
+          previousValue,
+        );
+
+        // Чтобы гарантировать правильное позиционирование каретки, обновляем
+        // значения `_selection` перед последующим вызовом функции обработчика `input`
+        selection.start = trackingResult?.selectionStart ?? 0;
+        selection.end = trackingResult?.selectionEnd ?? 0;
+      } catch (error) {
+        const { name, cause } = error as SyntheticChangeError;
+
+        setInputAttributes(element, {
+          value: cause?.__attributes?.value ?? tracker.value,
+          selectionStart: cause?.__attributes?.selectionStart ?? selection.start,
+          selectionEnd: cause?.__attributes?.selectionEnd ?? selection.end,
+        });
+
+        if (cause?.__attributes?.selectionStart !== undefined) {
+          selection.start = cause.__attributes.selectionStart;
+        }
+
+        if (cause?.__attributes?.selectionEnd !== undefined) {
+          selection.end = cause.__attributes.selectionEnd;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (name !== 'SyntheticChangeError') {
+          throw error;
+        }
       }
-
-      // После изменения значения с помощью `setInputAttributes` значение `value` фактически изменится, что делает `input`
-      // неконтролируемым, а событие `change` срабатывать не будет, так как предыдущее и текущее состояние внутри `input`
-      // совпадают. Чтобы обойти эту проблему с версии React 16, устанавливаем предыдущее состояние на отличное от текущего.
-      // Действие необходимо только при работе React, для правильной работы события `change`.
-      (element as { _valueTracker?: { setValue?: (value: string) => void } })._valueTracker?.setValue?.(previousValue);
-
-      // Чтобы гарантировать правильное позиционирование каретки, обновляем
-      // значения `_selection` перед последующим вызовом функции обработчика `input`
-      selection.start = trackingResult.selectionStart;
-      selection.end = trackingResult.selectionEnd;
-    } catch (error) {
-      const { name, cause } = error as SyntheticChangeError;
-
-      setInputAttributes(element, {
-        value: cause?.__attributes?.value ?? tracker.value,
-        selectionStart: cause?.__attributes?.selectionStart ?? selection.start,
-        selectionEnd: cause?.__attributes?.selectionEnd ?? selection.end,
-      });
-
-      if (cause?.__attributes?.selectionStart !== undefined) {
-        selection.start = cause.__attributes.selectionStart;
-      }
-
-      if (cause?.__attributes?.selectionEnd !== undefined) {
-        selection.end = cause.__attributes.selectionEnd;
-      }
-
-      event.preventDefault();
-      event.stopPropagation();
-
-      if (name !== 'SyntheticChangeError') {
-        throw error;
-      }
-    }
-  };
-
-  context.set(this, { tracker, onInit, onFocus, onBlur, onInput });
-}
-
-definePrototype(Input, {
-  register(this: Input | undefined, element: HTMLInputElement) {
-    if (this === undefined) {
-      throw new TypeError('Illegal invocation');
-    }
-
-    const _this = context.get(this)!;
+    };
 
     if (!ALLOWED_TYPES.includes(element.type)) {
       if (process.env.NODE_ENV !== 'production') {
@@ -266,7 +245,7 @@ definePrototype(Input, {
     Object.defineProperty(element, 'value', {
       ...descriptor,
       set: (value: string) => {
-        _this.tracker.value = value;
+        tracker.value = value;
         descriptor?.set?.call(element, value);
       },
     });
@@ -284,30 +263,31 @@ definePrototype(Input, {
     // также должны изменить значение элемента, при этом мы не должны устанавливать
     // позицию каретки, так как установка позиции здесь приведёт к автофокусу.
     setInputAttributes(element, {
-      value: _this.onInit({ initialValue, controlled }),
+      value: options?.init({ initialValue, controlled }),
     });
 
     // Событие `focus` не сработает при рендере, даже если включено свойство `autoFocus`,
     // поэтому нам необходимо запустить определение позиции курсора вручную при автофокусе.
     if (document.activeElement === element) {
-      _this.onFocus({ target: element } as unknown as FocusEvent);
+      onFocus({ target: element } as unknown as FocusEvent);
     }
 
-    element.addEventListener('focus', _this.onFocus);
-    element.addEventListener('blur', _this.onBlur);
-    element.addEventListener('input', _this.onInput);
-  },
-  unregister(this: Input | undefined, element: HTMLInputElement) {
-    if (this === undefined) {
-      throw new TypeError('Illegal invocation');
+    element.addEventListener('focus', onFocus);
+    element.addEventListener('blur', onBlur);
+    element.addEventListener('input', onInput);
+
+    handlersMap.set(element, { onFocus, onBlur, onInput });
+  }
+
+  unregister(element: HTMLInputElement) {
+    const handlers = handlersMap.get(element);
+
+    if (handlers !== undefined) {
+      element.removeEventListener('focus', handlers.onFocus);
+      element.removeEventListener('blur', handlers.onBlur);
+      element.removeEventListener('input', handlers.onInput);
+
+      handlersMap.delete(element);
     }
-
-    const _this = context.get(this)!;
-
-    element.removeEventListener('focus', _this.onFocus);
-    element.removeEventListener('blur', _this.onBlur);
-    element.removeEventListener('input', _this.onInput);
-  },
-});
-
-export default Input;
+  }
+}

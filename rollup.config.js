@@ -23,7 +23,6 @@ const ENTRIES = {
     cdn: {
       input: 'src/Mask.ts',
       output: {
-        file: 'mask',
         name: 'Mask',
       },
     },
@@ -35,12 +34,11 @@ const ENTRIES = {
     cdn: {
       input: 'src/NumberFormat.ts',
       output: {
-        file: 'number-format',
         name: 'NumberFormat',
       },
     },
     react: {
-      input: ['src/index.ts', 'src/InputNumberFormat.tsx', 'src/useNumberFormat.ts'],
+      input: ['src/index.ts', 'src/InputNumberFormat.tsx', 'src/NumberFormat.ts', 'src/useNumberFormat.ts'],
     },
   },
 };
@@ -69,6 +67,7 @@ const plugins = (/** @type {'cdn'|'react'} */ output) => [
       preventAssignment: true,
       values: {
         'process.env.NODE_ENV': JSON.stringify('production'),
+        'process.env.FORMAT': JSON.stringify('umd'),
       },
     }),
   nodeResolve({
@@ -93,8 +92,8 @@ function rollup() {
       input: entries.cdn.input,
       output: {
         format: 'umd',
-        file: `dist/${entries.cdn.output.file}.js`,
-        name: entries.cdn.output.name,
+        file: `dist/${entries.cdn.output.name}.min.js`,
+        name: `ReactInput.${entries.cdn.output.name}`,
       },
       plugins: plugins('cdn'),
     });

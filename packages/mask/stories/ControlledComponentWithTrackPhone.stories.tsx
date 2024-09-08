@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { InputMask } from '../src';
 
-import type { MaskEventDetail, Track } from '../src';
+import type { Track } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 export default {
@@ -11,7 +11,7 @@ export default {
 } satisfies Meta<typeof InputMask>;
 
 function Component() {
-  const [detail, setDetail] = useState<MaskEventDetail | null>(null);
+  const [value, setValue] = useState('');
 
   const track: Track = ({ inputType, value, data, selectionStart, selectionEnd }) => {
     if (inputType === 'insert' && selectionStart <= 1) {
@@ -27,19 +27,15 @@ function Component() {
   };
 
   return (
-    <>
-      <InputMask
-        mask="+_ (___) ___-__-__"
-        replacement={{ _: /\d/ }}
-        track={track}
-        value={detail?.value}
-        onMask={(event) => {
-          setDetail(event.detail);
-        }}
-      />
-
-      <pre>{JSON.stringify(detail, null, 2)}</pre>
-    </>
+    <InputMask
+      mask="+_ (___) ___-__-__"
+      replacement={{ _: /\d/ }}
+      track={track}
+      value={value}
+      onChange={(event) => {
+        setValue(event.target.value);
+      }}
+    />
   );
 }
 

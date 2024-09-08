@@ -1,21 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
-
-import type { InputAttributes } from './types';
-
-interface SyntheticChangeError {
-  cause?: { __attributes?: Partial<InputAttributes> };
-}
-
 /**
- * Кастомная ошибка обрабатывается в хуке `useInput` с возможностью
- * передать аттрибуты для установки в `input` элемент.
+ * Кастомная ошибка обрабатывается в хуке `useInput`.
  */
-class SyntheticChangeError extends Error {
-  constructor(message: string, cause?: SyntheticChangeError['cause']) {
+export default class SyntheticChangeError extends Error {
+  constructor(message: string) {
     super(message);
     this.name = 'SyntheticChangeError';
-    this.cause = cause;
   }
 }
-
-export default SyntheticChangeError;

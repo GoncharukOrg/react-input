@@ -20,6 +20,12 @@ or using **yarn**:
 yarn add @react-input/number-format
 ```
 
+or using **CDN**:
+
+```html
+<script src="https://unpkg.com/@react-input/number-format/NumberFormat.min.js" type="text/javascript" />
+```
+
 ## Unique properties
 
 | Name                    |                          Type                          |   Default   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -37,7 +43,6 @@ yarn add @react-input/number-format
 | `maximumIntegerDigits`  |                        `number`                        |    `21`     | The maximum number of integer digits to use. Possible values are from `1` to `21`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `minimumFractionDigits` |                        `number`                        |             | The minimum number of fraction digits to use. Possible values are from `0` to `20`. The default for plain number and percent formatting is `0`. The default for currency formatting is the number of minor unit digits provided by the [ISO 4217 currency code list](https://www.six-group.com/dam/download/financial-information/data-center/iso-currrency/lists/list-one.xml) (`2` if the list doesn't provide that information).                                                                                                                                                              |
 | `maximumFractionDigits` |                        `number`                        |             | The maximum number of fraction digits to use. Possible values are from `0` to `20`. The default for plain number formatting is the larger of `minimumFractionDigits` and `3`. The default for currency formatting is the larger of `minimumFractionDigits` and the number of minor unit digits provided by the [ISO 4217 currency code list](https://www.six-group.com/dam/download/financial-information/data-center/iso-currrency/lists/list-one.xml) (`2` if the list doesn't provide that information). The default for percent formatting is the larger of `minimumFractionDigits` and `0`. |
-| `onNumberFormat`        |                       `function`                       |             | Handler for the custom event `input-number-format`. Called asynchronously after the `change` event, accessing the `detail` property containing additional useful information about the value. (see «[Number format event](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#format-event)»).                                                                                                                                                                                                                                                                          |
 
 > Since the package is based on the `Intl.NumberFormat` constructor, it is important to consider that the functionality of both the package itself and its properties will depend on your browser versions. You can view support for browser versions [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat).
 >
@@ -45,7 +50,7 @@ yarn add @react-input/number-format
 >
 > You can also pass other properties available element `input` default or your own components, when integrated across the property `component`.
 
-## Usage
+## Usage with React
 
 The `@react-input/number-format` package provides two options for using formatting. The first is the `InputNumberFormat` component, which is a standard input element with additional logic to handle the input. The second is using the `useNumberFormat` hook, which needs to be linked to the `input` element through the `ref` property.
 
@@ -69,7 +74,10 @@ Now the same thing, but using the `useNumberFormat` hook:
 import { useNumberFormat } from '@react-input/number-format';
 
 export default function App() {
-  const inputRef = useNumberFormat({ locales: 'en', maximumFractionDigits: 2 });
+  const inputRef = useNumberFormat({
+    locales: 'en',
+    maximumFractionDigits: 2,
+  });
 
   return <input ref={inputRef} />;
 }
@@ -77,9 +85,39 @@ export default function App() {
 
 The `useNumberFormat` hook takes the same properties as the `InputNumberFormat` component, except for the `component` properties. Both approaches are equivalent, but the use of the `InputNumberFormat` component provides additional capabilities, which will be discussed in the section «[Integration with custom components](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#integration-with-custom-components)».
 
-> The `InputNumberFormat` component does not change the value passed in the `value` or `defaultValue` property of the `input` element, so set the initialized value to something that can match the formatted value at any stage of input. If you make a mistake, you will see a warning about it in the console.
+## Usage with CDN
 
-> To ensure consistent and correct operation, the `type` property of the `input` element (`InputNumberFormat`) must be set to "`text`" (the default). If you use other values, the formatting will not be applied and you will see a warning in the console.
+To use the library's capabilities, you can also load it via CDN.
+
+When loaded, you get a global `ReactInput.NumberFormat` class, calling it with the specified formatting parameters will create a new object with two methods, the first one is `register`, which applies the formatting when typing into the specified element, and the second one is `unregister`, which undoes the previous action. The following example illustrates this usage:
+
+```js
+const numberFormat = new ReactInput.NumberFormat({
+  locales: 'en',
+  maximumFractionDigits: 2,
+});
+
+const elements = document.getElementsByName('amount');
+
+elements.forEach((element) => {
+  numberFormat.register(element);
+});
+
+// If necessary, you can turn off formatting while typing.
+// elements.forEach((element) => {
+//   numberFormat.unregister(element);
+// });
+```
+
+Note that this way you can register multiple elements to which input formatting will be applied.
+
+To use the utilities described in the "[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#utils)" section, access them via the `ReactInput.NumberFormat` class, for example `ReactInput.NumberFormat.unformat(...`.
+
+> While you can use a class to format input, using a hook or component in the React environment is preferable due to the optimizations applied, where you don't have to think about when to call `register` and `unregister` for input formatting to work.
+
+> `@react-input/number-format` does not change the value passed in the `value` or `defaultValue` properties of the `input` element, so set the initialized value to something that can match the formatted value at any point in the input. If you make a mistake, you will see a warning in the console about it.
+
+> For consistent and correct behavior, the `type` property of the `input` element or the `InputNumberFormat` component must be set to `"text"` (the default). If you use other values, the formatting will not be applied and you will see a warning in the console.
 
 ## Examples of using
 
@@ -140,35 +178,6 @@ export default function App() {
       />
     </>
   );
-}
-```
-
-## Number format event
-
-It can be useful to have additional data about the value at hand, for this you can use the `input-number-format` event.
-
-The `input-number-format` event is fired asynchronously after the `change` event, in addition, the `input-number-format` event object has a `detail` property that contains additional useful information about the value:
-
-| Name     |   Type   | Description                                     |
-| -------- | :------: | ----------------------------------------------- |
-| `value`  | `string` | Formatted value (same as `event.target.value`). |
-| `number` | `number` | The number used for formatting.                 |
-
-By itself, the `input-number-format` event can completely replace the `change` event, but you should not use it if it is not necessary, since the `input-number-format` event is called asynchronously after the `change` event has completed, which may lead to additional rendering of the component. Consider the `input-number-format` event as an optional feature, not a required feature.
-
-> You can use both the `input-number-format` event and the `change` event to save the state, however, if you don't need additional parameters in the `detail` property, prefer the `change` event.
-
-An example of using the `input-number-format` event:
-
-```tsx
-import { useState } from 'react';
-
-import { InputNumberFormat, type NumberFormatEventDetail } from '@react-input/number-format';
-
-export default function App() {
-  const [detail, setDetail] = useState<NumberFormatEventDetail | null>(null);
-
-  return <InputNumberFormat value={detail?.value ?? ''} onNumberFormat={(event) => setDetail(event.detail)} />;
 }
 ```
 
@@ -257,26 +266,7 @@ export default function App() {
 
 ## Usage with TypeScript
 
-The `@react-input/number-format` package is written in [TypeScript](https://www.typescriptlang.org/), so you have full type support out of the box. In addition, you can import the types you need for your use:
-
-```tsx
-import { useState } from 'react';
-
-import { InputNumberFormat } from '@react-input/number-format';
-
-import type { NumberFormatEventDetail, NumberFormatEvent, NumberFormatEventHandler } from '@react-input/number-format';
-
-export default function App() {
-  const [detail, setDetail] = useState<NumberFormatEventDetail | null>(null);
-
-  // Or `event: NumberFormatEvent`
-  const handleNumberFormat: NumberFormatEventHandler = (event) => {
-    setDetail(event.detail);
-  };
-
-  return <InputNumberFormat onNumberFormat={handleNumberFormat} />;
-}
-```
+The `@react-input/number-format` package is written in [TypeScript](https://www.typescriptlang.org/), so you have full type support out of the box. Additionally, you can import the types you need via `@react-input/number-format` or `@react-input/number-format/types`.
 
 ### Property type support
 
@@ -285,25 +275,25 @@ Since the `InputNumberFormat` component supports two use cases (as an `input` el
 By default, the `InputNumberFormat` component is an `input` element and supports all the attributes supported by the `input` element. But if the `component` property was passed, the `InputNumberFormat` will additionally support the properties available to the integrated component. This approach allows you to integrate your own component as conveniently as possible, not forcing you to rewrite its logic, but using a formatting where necessary.
 
 ```tsx
-import { InputNumberFormat, type InputNumberFormatProps, type NumberFormatProps } from '@react-input/number-format';
+import { InputNumberFormat, type InputNumberFormatProps, type NumberFormatOptions } from '@react-input/number-format';
 
 export default function App() {
   // Here, since no `component` property was passed,
   // `InputNumberFormat` returns an `input` element and takes the type:
-  // `NumberFormatProps & React.InputHTMLAttributes<HTMLInputElement>` (the same as `InputNumberFormatProps`)
+  // `NumberFormatOptions & { locales?: Intl.LocalesArgument } & React.InputHTMLAttributes<HTMLInputElement>` (the same as `InputNumberFormatProps`)
   return <InputNumberFormat />;
 }
 ```
 
 ```tsx
-import { InputNumberFormat, type InputNumberFormatProps, type NumberFormatProps } from '@react-input/number-format';
+import { InputNumberFormat, type InputNumberFormatProps, type NumberFormatOptions } from '@react-input/number-format';
 
 import { CustomInput, type CustomInputProps } from './CustomInput';
 
 export default function App() {
   // Here, since the `component` property was passed,
   // `InputNumberFormat` returns the CustomInput component and takes the type:
-  // `NumberFormatProps & CustomInputProps` (the same as `InputNumberFormatProps<typeof CustomInput>`)
+  // `NumberFormatOptions & { locales?: Intl.LocalesArgument } & CustomInputProps` (the same as `InputNumberFormatProps<typeof CustomInput>`)
   return <InputNumberFormat component={CustomInput} />;
 }
 ```
@@ -322,11 +312,32 @@ export default function Component(props: any) {
 }
 ```
 
-## Testing
+## Testing and development
 
-Because each input performs the necessary calculations to set the formatting of the value, you need to set a delay between character inputs when testing the input in your application, otherwise the test may not succeed due to the necessary changes between inputs not taking effect.
+To make it easier to work with the library, you will receive corresponding messages in the console when errors occur, which is good during development, but not needed in a production application. To avoid receiving error messages in a production application, make sure that the `NODE_ENV` variable is set to `"production"` when building the application.
 
-The recommended delay time is 15 milliseconds, however, you may need to set a different time, which can be found experimentally.
+## Utils
+
+`@react-input/number-format` provides utilities to make things easier when processing a value. You can use them regardless of using the `InputNumberFormat` component or the `useNumberFormat` hook.
+
+### `unformat`
+
+Unformats the value using the specified locales.
+
+Takes two parameters, where the first is the value to format, and the second is the locale you are using when formatting. Specifying the locale is required to recognize digits, decimal separator, and minus signs, as they may differ across locales.
+
+Returns a number corresponding to the formatted value.
+
+```ts
+unformat('$1,23,456.78', 'en-IN');
+// returns: 123456.78
+```
+
+## What's new?
+
+Starting with `@react-input/number-format@2.0.0`, we have removed the use of the `input-number-format` event and the `onNumberFormat` method call, focusing only on using native and React events, due to the fact that a native event cannot be explicitly coordinated with React events, making such use non-obvious, as well as the order of event firing.
+
+To use useful data from the `detail` property of the `input-number-format` event object, you can use the utilities described in the "[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#utils)" section.
 
 ## Other packages from `@react-input`
 

@@ -38,7 +38,13 @@ const ENTRIES = {
       },
     },
     react: {
-      input: ['src/index.ts', 'src/InputNumberFormat.tsx', 'src/NumberFormat.ts', 'src/useNumberFormat.ts'],
+      input: [
+        'src/index.ts',
+        'src/InputNumberFormat.tsx',
+        'src/NumberFormat.ts',
+        'src/useNumberFormat.ts',
+        'src/utils.ts',
+      ],
     },
   },
 };
@@ -62,14 +68,13 @@ const reduceEntries = (/** @type {string[]} */ entries) => {
 };
 
 const plugins = (/** @type {'cdn'|'react'} */ output) => [
-  output === 'cdn' &&
-    replace({
-      preventAssignment: true,
-      values: {
-        'process.env.NODE_ENV': JSON.stringify('production'),
-        'process.env.FORMAT': JSON.stringify('umd'),
-      },
-    }),
+  replace({
+    preventAssignment: true,
+    values: {
+      'process.env.__OUTPUT__': JSON.stringify(output),
+      ...(output === 'cdn' ? { 'process.env.NODE_ENV': JSON.stringify('production') } : {}),
+    },
+  }),
   nodeResolve({
     extensions: EXTENSIONS,
   }),

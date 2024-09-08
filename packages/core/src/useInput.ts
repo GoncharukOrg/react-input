@@ -11,16 +11,16 @@ import type { InputOptions } from './types';
  * @param param
  * @returns
  */
-export default function useInput({ type, init, tracking }: InputOptions) {
-  const ref = useRef<HTMLInputElement | null>(null);
+export default function useInput({ init, tracking }: InputOptions) {
+  const $ref = useRef<HTMLInputElement | null>(null);
+  const $options = useRef({ init, tracking });
 
-  const options = useRef({ type, init, tracking });
+  $options.current.init = init;
+  $options.current.tracking = tracking;
 
-  options.current.type = type;
-  options.current.init = init;
-  options.current.tracking = tracking;
-
+  // TODO: доступ по ссылке больше не имеет значения
+  // TODO: useProxy
   return useMemo(() => {
-    return createProxy(ref, new Input(options.current));
+    return createProxy($ref, new Input($options.current));
   }, []);
 }

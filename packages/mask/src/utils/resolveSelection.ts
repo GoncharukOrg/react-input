@@ -1,4 +1,6 @@
-import type { MaskPart, Replacement } from '../types';
+import formatToParts from './formatToParts';
+
+import type { Replacement } from '../types';
 import type { InputType } from '@react-input/core';
 
 interface ResolveSelectionParam {
@@ -6,8 +8,7 @@ interface ResolveSelectionParam {
   value: string;
   addedValue: string;
   beforeChangeValue: string;
-  // afterChangeValue: string;
-  parts: MaskPart[];
+  mask: string;
   replacement: Replacement;
   separate: boolean;
 }
@@ -22,11 +23,11 @@ export default function resolveSelection({
   value,
   addedValue,
   beforeChangeValue,
-  // afterChangeValue,
-  parts,
+  mask,
   replacement,
   separate,
 }: ResolveSelectionParam): number {
+  const parts = formatToParts(value, { mask, replacement });
   const unformattedChars = parts.filter(({ type }) => type === 'input' || (separate && type === 'replacement'));
 
   const lastAddedValueIndex = unformattedChars[beforeChangeValue.length + addedValue.length - 1]?.index;

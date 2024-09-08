@@ -18,9 +18,8 @@ export default function resolveMinimumFractionDigits({
 }: ResolveMinimumFractionDigitsParam) {
   const { minimumFractionDigits = 0 } = resolvedOptions;
 
-  // if (resolvedOptions.minimumSignificantDigits !== undefined) {
-  //   minimumFractionDigits =
-  //     resolvedOptions.minimumSignificantDigits - integer.replace(/^0+/g, '').length;
+  // if (minimumSignificantDigits !== undefined) {
+  //   minimumFractionDigits = minimumSignificantDigits - integer.replace(/^0+/g, '').length;
 
   //   if (/^0*$/.test(integer)) {
   //     if (/^0*$/.test(fraction)) {

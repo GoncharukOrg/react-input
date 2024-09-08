@@ -1,8 +1,5 @@
-import { useState } from 'react';
-
 import { InputNumberFormat } from '../src';
 
-import type { NumberFormatEventDetail } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 export default {
@@ -11,17 +8,9 @@ export default {
 } satisfies Meta<typeof InputNumberFormat>;
 
 function Component() {
-  const [detail, setDetail] = useState<NumberFormatEventDetail | null>(null);
-
   return (
     <>
-      <InputNumberFormat
-        onNumberFormat={(event) => {
-          setDetail(event.detail);
-        }}
-      />
-
-      <pre>{JSON.stringify(detail, null, 2)}</pre>
+      <InputNumberFormat />
 
       <>
         {/* request a currency format */}

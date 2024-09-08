@@ -6,9 +6,9 @@ interface ResolveSelectionParam {
   previousLocalizedValues: LocalizedNumberFormatValues;
   resolvedOptions: ResolvedNumberFormatOptions;
   inputType: InputType;
+  value: string;
   addedValue: string;
   previousValue: string;
-  nextValue: string;
   changeStart: number;
   changeEnd: number;
 }
@@ -28,14 +28,14 @@ export default function resolveSelection({
   previousLocalizedValues,
   resolvedOptions,
   inputType,
+  value,
   previousValue,
   addedValue,
-  nextValue,
   changeStart,
   changeEnd,
 }: ResolveSelectionParam): ResolveSelectionReturn {
   if (RegExp(`^[.,${localizedValues.decimal}]$`).test(addedValue) && previousValue.includes(localizedValues.decimal)) {
-    const decimalIndex = nextValue.indexOf(localizedValues.decimal);
+    const decimalIndex = value.indexOf(localizedValues.decimal);
 
     if (decimalIndex !== -1) {
       const position = decimalIndex + 1;
@@ -47,7 +47,7 @@ export default function resolveSelection({
     RegExp(`^[\\-\\${localizedValues.minusSign}]$`).test(addedValue) &&
     previousValue.includes(localizedValues.minusSign)
   ) {
-    const minusSignIndex = nextValue.indexOf(localizedValues.minusSign);
+    const minusSignIndex = value.indexOf(localizedValues.minusSign);
     if (minusSignIndex !== -1) {
       const position = minusSignIndex + (localizedValues.signBackwards ? 0 : 1);
       return { start: position, end: position };
@@ -85,7 +85,7 @@ export default function resolveSelection({
     }
   }
 
-  let selection = nextValue.length;
+  let selection = value.length;
 
   // Поскольку длина значения способна меняться, за счёт добавления/удаления
   // символов разрядности, гарантированным способом получить точную позицию
@@ -168,11 +168,8 @@ export default function resolveSelection({
   // значения до первой цифры не равной нулю в `integer`)
   // `countDigits` - количество найденных символов после начала "устойчивого" числа\
   // Порядок инструкций имеет значение!
-  for (let i = 0, start = false, countDigits = 0; i < nextValue.length; i++) {
-    if (
-      !start &&
-      (localizedValues.decimal === nextValue[i] || localizedValues.digits.slice(1).includes(nextValue[i]))
-    ) {
+  for (let i = 0, start = false, countDigits = 0; i < value.length; i++) {
+    if (!start && (localizedValues.decimal === value[i] || localizedValues.digits.slice(1).includes(value[i]))) {
       start = true;
     }
 
@@ -181,7 +178,7 @@ export default function resolveSelection({
       break;
     }
 
-    if (start && localizedValues.digits.includes(nextValue[i])) {
+    if (start && localizedValues.digits.includes(value[i])) {
       countDigits += 1;
     }
   }
@@ -189,7 +186,7 @@ export default function resolveSelection({
   // Сдвигаем каретку к ближайшей цифре
   if (inputType === 'deleteForward') {
     const p$1 = `^.{${selection}}[^${localizedValues.digits}]*[\\${localizedValues.minusSign}${localizedValues.digits}]`;
-    const nextDigitIndex = nextValue.match(RegExp(p$1))?.[0].length;
+    const nextDigitIndex = value.match(RegExp(p$1))?.[0].length;
 
     if (nextDigitIndex !== undefined) {
       selection = nextDigitIndex - 1;
@@ -198,15 +195,15 @@ export default function resolveSelection({
     // При `deleteBackward` нам важно поставить каретку после знака минуса, если такой существует
     const p$1 = `[${inputType === 'deleteBackward' ? `\\${localizedValues.minusSign}` : ''}${
       localizedValues.digits
-    }][^${localizedValues.digits}]*.{${nextValue.length - selection}}$`;
-    const previousDigitIndex = nextValue.match(RegExp(p$1))?.index;
+    }][^${localizedValues.digits}]*.{${value.length - selection}}$`;
+    const previousDigitIndex = value.match(RegExp(p$1))?.index;
 
     if (previousDigitIndex !== undefined) {
       selection = previousDigitIndex + 1;
     }
 
     if (
-      nextValue[selection] === localizedValues.decimal &&
+      value[selection] === localizedValues.decimal &&
       RegExp(`[.,${localizedValues.decimal}]`).test(addedValue[addedValue.length - 1] ?? '')
     ) {
       selection += 1;
@@ -218,8 +215,8 @@ export default function resolveSelection({
     const p$1 = `[\\${localizedValues.minusSign}${localizedValues.decimal}${localizedValues.digits.slice(1)}]`;
     const p$2 = `[\\${localizedValues.minusSign}${localizedValues.digits}][^${localizedValues.digits}]*$`;
 
-    const firstStableDigitIndex = nextValue.search(RegExp(p$1));
-    const lastDigitIndex = nextValue.search(RegExp(p$2));
+    const firstStableDigitIndex = value.search(RegExp(p$1));
+    const lastDigitIndex = value.search(RegExp(p$2));
 
     if (firstStableDigitIndex !== -1 && selection < firstStableDigitIndex) {
       selection = firstStableDigitIndex;

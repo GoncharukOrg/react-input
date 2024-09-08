@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import { InputMask } from '../src';
 
-import type { MaskEventDetail } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 export default {
@@ -11,10 +10,9 @@ export default {
 } satisfies Meta<typeof InputMask>;
 
 function Component() {
-  const [detail, setDetail] = useState<MaskEventDetail | null>(null);
   const [state, setState] = useState({
     mask: '+7 (___) ___-__-__',
-    replacement: { _: /\d/ },
+    replacement: 'd',
     showMask: true,
     separate: false,
   });
@@ -26,15 +24,12 @@ function Component() {
       <InputMask
         // defaultValue="fegoj0fwfwe"
         mask={state.mask}
-        replacement={state.replacement}
+        replacement={{ _: new RegExp(`\\${state.replacement}`) }}
         separate={state.separate}
         showMask={state.showMask}
         value={value}
         onChange={(event) => {
           setValue(event.target.value);
-        }}
-        onMask={(event) => {
-          setDetail(event.detail);
         }}
       />
 
@@ -50,17 +45,14 @@ function Component() {
         Изменить mask
       </button>
 
-      {/* <button
+      <button
         type="button"
-        onClick={() =>
-          setState((prev) => ({
-            ...prev,
-            replacement: prev.replacement === { _: /\d/ } ? '0' : '_',
-          }))
-        }
+        onClick={() => {
+          setState((prev) => ({ ...prev, replacement: prev.replacement === 'd' ? 'w' : 'd' }));
+        }}
       >
         Изменить replacement
-      </button> */}
+      </button>
 
       <button
         type="button"
@@ -80,7 +72,7 @@ function Component() {
         Изменить separate
       </button>
 
-      <pre>{JSON.stringify({ state, detail }, null, 2)}</pre>
+      <pre>{JSON.stringify({ state }, null, 2)}</pre>
     </>
   );
 }

@@ -1,18 +1,20 @@
 import Input from '@react-input/core/Input';
 import SyntheticChangeError from '@react-input/core/SyntheticChangeError';
 
+import * as utils from './utils';
 import filter from './utils/filter';
+import format from './utils/format';
 import formatToReplacementObject from './utils/formatToReplacementObject';
-import resolveDetail from './utils/resolveDetail';
 import resolveSelection from './utils/resolveSelection';
 import unformat from './utils/unformat';
 import validate from './utils/validate';
 
 import type { MaskOptions, Replacement } from './types';
 
-type CachedProps = Required<Omit<MaskOptions, 'track' | 'modify' | 'onMask'>> & {
+interface CachedProps {
+  mask: string;
   replacement: Replacement;
-};
+}
 
 interface Cache {
   value: string;
@@ -48,12 +50,11 @@ export default class Mask extends Input {
     let cache: Cache | null = null;
 
     super({
-      type: 'mask',
       /**
        * Init
        */
       init: ({ initialValue, controlled }) => {
-        const { mask, replacement, showMask, separate } = normalizeOptions(options);
+        const { mask, replacement, showMask } = normalizeOptions(options);
 
         if (process.env.NODE_ENV !== 'production') {
           validate({ initialValue, mask, replacement });
@@ -61,7 +62,7 @@ export default class Mask extends Input {
 
         initialValue = controlled || initialValue ? initialValue : showMask ? mask : '';
 
-        const cachedProps = { mask, replacement, showMask, separate };
+        const cachedProps = { mask, replacement };
         cache = { value: initialValue, props: cachedProps, fallbackProps: cachedProps };
 
         return initialValue;
@@ -71,6 +72,21 @@ export default class Mask extends Input {
        */
       tracking: ({ inputType, previousValue, addedValue, changeStart, changeEnd }) => {
         const { mask, replacement, showMask, separate, track, modify } = normalizeOptions(options);
+
+        const _addedValue = track?.({
+          ...(inputType === 'insert' ? { inputType, data: addedValue } : { inputType, data: null }),
+          value: previousValue,
+          selectionStart: changeStart,
+          selectionEnd: changeEnd,
+        });
+
+        if (_addedValue === false) {
+          throw new SyntheticChangeError('Custom tracking stop.');
+        } else if (_addedValue === null) {
+          addedValue = '';
+        } else if (_addedValue !== true && _addedValue !== undefined) {
+          addedValue = _addedValue;
+        }
 
         if (cache === null) {
           throw new SyntheticChangeError('The state has not been initialized.');
@@ -85,71 +101,38 @@ export default class Mask extends Input {
           cache.fallbackProps = cache.props;
         }
 
-        // Дополнительно нам важно учесть, что немаскированное значение с учетом удаления или добавления символов должно
-        // получаться с помощью закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
-
-        let beforeChangeValue = unformat(previousValue, {
-          end: changeStart,
-          mask: cache.props.mask,
-          replacement: cache.props.replacement,
-          separate: cache.props.separate,
-        });
+        // Дополнительно учитываем, что добавление/удаление символов не затрагивают значения до и после диапазона
+        // изменения, поэтому нам важно получить их немаскированные значения на основе предыдущего значения и
+        // закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
+        let beforeChangeValue = unformat(previousValue, { end: changeStart, separate, ...cache.props });
+        let afterChangeValue = unformat(previousValue, { start: changeEnd, separate, ...cache.props });
 
         // Регулярное выражение по поиску символов кроме ключей `replacement`
-        const regExp$1 = RegExp(`[^${Object.keys(cache.props.replacement).join('')}]`, 'g');
-
+        const regExp$1 = RegExp(`[^${Object.keys(replacement).join('')}]`, 'g');
         // Находим все заменяемые символы для фильтрации пользовательского значения.
         // Важно определить корректное значение на данном этапе
-        const replacementChars = cache.props.mask.replace(regExp$1, '');
+        let replacementChars = mask.replace(regExp$1, '');
 
         if (beforeChangeValue) {
-          beforeChangeValue = filter(beforeChangeValue, {
-            replacementChars,
-            replacement: cache.props.replacement,
-            separate: cache.props.separate,
-          });
-        }
-
-        const _addedValue = track?.({
-          ...(inputType === 'insert' ? { inputType, data: addedValue } : { inputType, data: null }),
-          value: previousValue,
-          selectionStart: changeStart,
-          selectionEnd: changeEnd,
-        });
-
-        if (_addedValue === false) {
-          throw new SyntheticChangeError('Custom trekking stop.');
-        } else if (_addedValue === null) {
-          addedValue = '';
-        } else if (_addedValue !== true && _addedValue !== undefined) {
-          addedValue = _addedValue;
+          beforeChangeValue = filter(beforeChangeValue, { replacementChars, replacement, separate });
+          replacementChars = replacementChars.slice(beforeChangeValue.length);
         }
 
         if (addedValue) {
-          addedValue = filter(addedValue, {
-            replacementChars: replacementChars.slice(beforeChangeValue.length),
-            replacement: cache.props.replacement,
-            separate: false, // Поскольку нас интересуют только "полезные" символы, фильтруем без учёта заменяемых символов
-          });
+          // Поскольку нас интересуют только "полезные" символы, фильтруем без учёта заменяемых символов
+          addedValue = filter(addedValue, { replacementChars, replacement, separate: false });
+          replacementChars = replacementChars.slice(addedValue.length);
         }
 
         if (inputType === 'insert' && addedValue === '') {
           throw new SyntheticChangeError('The character does not match the key value of the `replacement` object.');
         }
 
-        let afterChangeValue = unformat(previousValue, {
-          start: changeEnd,
-          mask: cache.props.mask,
-          replacement: cache.props.replacement,
-          separate: cache.props.separate,
-        });
-
         // Модифицируем `afterChangeValue` чтобы позиция символов не смещалась. Необходимо выполнять
         // после фильтрации `addedValue` и перед фильтрацией `afterChangeValue`
-        if (cache.props.separate) {
+        if (separate) {
           // Находим заменяемые символы в диапазоне изменяемых символов
-          const separateChars = cache.props.mask.slice(changeStart, changeEnd).replace(regExp$1, '');
-
+          const separateChars = mask.slice(changeStart, changeEnd).replace(regExp$1, '');
           // Получаем количество символов для сохранения перед `afterChangeValue`. Возможные значения:
           // `меньше ноля` - обрезаем значение от начала на количество символов;
           // `ноль` - не меняем значение;
@@ -164,11 +147,7 @@ export default class Mask extends Input {
         }
 
         if (afterChangeValue) {
-          afterChangeValue = filter(afterChangeValue, {
-            replacementChars: replacementChars.slice(beforeChangeValue.length + addedValue.length),
-            replacement: cache.props.replacement,
-            separate: cache.props.separate,
-          });
+          afterChangeValue = filter(afterChangeValue, { replacementChars, replacement, separate });
         }
 
         const input = beforeChangeValue + addedValue + afterChangeValue;
@@ -185,7 +164,7 @@ export default class Mask extends Input {
           modifiedReplacement = formatToReplacementObject(modifiedReplacement);
         }
 
-        const detail = resolveDetail(input, {
+        const value = format(input, {
           mask: modifiedMask,
           replacement: modifiedReplacement,
           showMask: modifiedShowMask,
@@ -193,39 +172,40 @@ export default class Mask extends Input {
 
         const selection = resolveSelection({
           inputType,
-          value: detail.value,
+          value,
           addedValue,
           beforeChangeValue,
-          // afterChangeValue,
-          parts: detail.parts,
+          mask: modifiedMask,
           replacement: modifiedReplacement,
           separate: modifiedSeparate,
         });
 
-        cache.value = detail.value;
-        cache.props = {
-          mask: modifiedMask,
-          replacement: modifiedReplacement,
-          showMask: modifiedShowMask,
-          separate: modifiedSeparate,
-        };
+        cache.value = value;
+        cache.props = { mask: modifiedMask, replacement: modifiedReplacement };
 
         return {
-          value: detail.value,
+          value,
           selectionStart: selection,
           selectionEnd: selection,
-          detail,
         };
       },
     });
   }
 }
 
-type GlobalThis = typeof globalThis & { ReactInput?: { Mask?: typeof Mask } };
+if (process.env.__OUTPUT__ === 'cdn') {
+  interface Context {
+    ReactInput?: {
+      Mask?: typeof Mask & Partial<typeof utils>;
+    };
+  }
 
-if (process.env.FORMAT === 'umd') {
-  const _global: GlobalThis = typeof globalThis !== 'undefined' ? globalThis : global || self;
+  const _global: typeof globalThis & Context = typeof globalThis !== 'undefined' ? globalThis : global || self;
 
   _global.ReactInput = _global.ReactInput ?? {};
   _global.ReactInput.Mask = Mask;
+  _global.ReactInput.Mask.format = utils.format;
+  _global.ReactInput.Mask.formatToParts = utils.formatToParts;
+  _global.ReactInput.Mask.unformat = utils.unformat;
+  _global.ReactInput.Mask.generatePattern = utils.generatePattern;
 }

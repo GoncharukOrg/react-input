@@ -20,6 +20,12 @@ or using **yarn**:
 yarn add @react-input/mask
 ```
 
+or using **CDN**:
+
+```html
+<script src="https://unpkg.com/@react-input/mask/Mask.min.js" type="text/javascript" />
+```
+
 ## Unique properties
 
 | Name          |         Type         | Default | Description                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -31,11 +37,10 @@ yarn add @react-input/mask
 | `separate`    |      `boolean`       | `false` | Stores the position of the entered characters. By default, input characters are non-breaking, which means that if you remove characters in the middle of the value, the characters are shifted to the left, forming a non-breaking value, which is the behavior of `input`. For example, with `true`, the possible value is `+0 (123) ___-45-__`, with `false` - `+0 (123) 45_-__-__`.                                            |
 | `track`       |      `function`      |         | The tarck function is run before masking, allowing the entered value to be conditionally changed (see «[Track](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#track)»).                                                                                                                                                                                                                                      |
 | `modify`      |      `function`      |         | Function triggered before masking. Allows you conditionally change the properties of the component that affect masking. Valid values ​​for modification are `mask`, `replacement`, `showMask` and `separate`. This is useful when you need conditionally tweak the displayed value to improve UX (see «[Modify](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#modify)»).                                    |
-| `onMask`      |      `function`      |         | Handler for the custom event `input-mask`. Called asynchronously after the `change` event, accessing the `detail` property containing additional useful information about the value. (see «[Mask event](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#mask-event)»).                                                                                                                                        |
 
 > You can also pass other properties available element `input` default or your own components, when integrated across the property `component`.
 
-## Usage
+## Usage with React
 
 The `@react-input/mask` package provides two options for using a mask. The first is the `InputMask` component, which is a standard input element with additional logic to handle the input. The second is using the `useMask` hook, which needs to be linked to the `input` element through the `ref` property.
 
@@ -59,7 +64,10 @@ Now the same thing, but using the `useMask` hook:
 import { useMask } from '@react-input/mask';
 
 export default function App() {
-  const inputRef = useMask({ mask: '+0 (___) ___-__-__', replacement: { _: /\d/ } });
+  const inputRef = useMask({
+    mask: '+0 (___) ___-__-__',
+    replacement: { _: /\d/ },
+  });
 
   return <input ref={inputRef} />;
 }
@@ -67,9 +75,39 @@ export default function App() {
 
 The `useMask` hook takes the same properties as the `InputMask` component, except for the `component` properties. Both approaches are equivalent, but the use of the `InputMask` component provides additional capabilities, which will be discussed in the section «[Integration with custom components](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#integration-with-custom-components)».
 
-> The `InputMask` component does not change the value passed in the `value` or `defaultValue` property of the `input` element, so set the initialized value to something that can match the masked value at any stage of input. If you make a mistake, you will see a warning about it in the console.
+## Usage with CDN
 
-> To ensure consistent and correct operation, the `type` property of the `input` element (`InputMask`) must be set to "`text`" (the default). If you use other values, the mask will not be applied and you will see a warning in the console.
+To use the library's capabilities, you can also load it via CDN.
+
+When loading, you get the global class `ReactInput.Mask`, calling it with the specified mask parameters will create a new object with two methods, where the first is `register`, which applies masking when inputting to the specified element, the second is `unregister`, which cancels the previous action. The following example illustrates this use:
+
+```js
+const mask = new ReactInput.Mask({
+  mask: '+0 (___) ___-__-__',
+  replacement: { _: /\d/ },
+});
+
+const elements = document.getElementsByName('phone');
+
+elements.forEach((element) => {
+  mask.register(element);
+});
+
+// If necessary, you can disable masking as you type.
+// elements.forEach((element) => {
+//   mask.unregister(element);
+// });
+```
+
+Please note that in this way you can register multiple elements to which the mask will be applied.
+
+To use the utilities described in the "[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#utils)" section, access them via the `ReactInput.Mask` class, for example `ReactInput.Mask.format(...`.
+
+> Although you can use a class to mask input, using a hook or component in the React environment is preferable due to the optimizations applied, where you do not have to think about when to call `register` and `unregister` for input masking to work.
+
+> `@react-input/mask` does not change the value passed in the `value` or `defaultValue` properties of the `input` element, so set the initialized value to something that can match the masked value at any point in the input. If you make a mistake, you will see a warning in the console about it.
+
+> For consistent and correct behavior, the `type` property of the `input` element or the `InputMask` component must be set to `"text"` (the default), `"email"`, `"tel"`, `"search"`, or `"url"`. If you use other values, the mask will not be applied and you will see a warning in the console.
 
 ## Replacement
 
@@ -164,50 +202,6 @@ export default function App() {
 
 The advantage of this approach is that you do not need to store the state of the component to change its properties, the modification happens in the already running masking process.
 
-## Mask event
-
-It can be useful to have additional data about the value at hand, for this you can use the `input-mask` event.
-
-The `input-mask` event is fired asynchronously after the `change` event, in addition, the `input-mask` event object has a `detail` property that contains additional useful information about the value:
-
-| Name      |    Type    | Description                                                                                                                                                                                 |
-| --------- | :--------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`   |  `string`  | Masked value (same as `event.target.value`).                                                                                                                                                |
-| `input`   |  `string`  | Value without mask characters.                                                                                                                                                              |
-| `parts`   | `object[]` | Parts of the masked value, where each object contains the character type: `replacement` - the replacement character; `mask` - mask character; `input` is the character entered by the user. |
-| `pattern` |  `string`  | A regular expression of type `string` that the masked value must match.                                                                                                                     |
-| `isValid` | `boolean`  | `true` if the mask is full and matches the pattern value.                                                                                                                                   |
-
-By itself, the `input-mask` event can completely replace the `change` event, but you should not use it if it is not necessary, since the `input-mask` event is called asynchronously after the `change` event has completed, which may lead to additional rendering of the component. Consider the `input-mask` event as an optional feature, not a required feature.
-
-> You can use both the `input-mask` event and the `change` event to save the state, however, if you don't need additional parameters in the `detail` property, prefer the `change` event.
-
-An example of using the `input-mask` event:
-
-```tsx
-import { useState } from 'react';
-
-import { InputMask, type MaskEventDetail } from '@react-input/mask';
-
-export default function App() {
-  const [detail, setDetail] = useState<MaskEventDetail | null>(null);
-
-  return (
-    <>
-      <InputMask
-        mask="1yyy"
-        replacement={{ _: /\d/ }}
-        value={detail?.value ?? ''}
-        onMask={(event) => setDetail(event.detail)}
-      />
-      {detail?.input && !detail.isValid && <span>The field is not filled.</span>}
-    </>
-  );
-}
-```
-
-> Note that in the example above we are checking for `detail.input`, this is because we only want to display the error text if the user entered numbers. Thus, if you only want the numbers from the masked value, the `event.detail.input` property will not contain the numbers from the mask, since they are mask characters. So, in the example above (`mask="1yyy"`), if you enter the value "991", the value in the property `event.detail.input` will match the entered value "991", but not "1991".
-
 ## Integration with custom components
 
 The `InputMask` component makes it easy to integrate with custom components allowing you to use your own styled components. To do this, you need to pass the custom component to the `forwardRef` method provided by React. `forwardRef` allows you automatically pass a `ref` value to a child element ([more on `forwardRef`](https://reactjs.org/docs/forwarding-refs.html)).
@@ -293,30 +287,7 @@ export default function App() {
 
 ## Usage with TypeScript
 
-The `@react-input/mask` package is written in [TypeScript](https://www.typescriptlang.org/), so you have full type support out of the box. In addition, you can import the types you need for your use:
-
-```tsx
-import { useState } from 'react';
-
-import { InputMask } from '@react-input/mask';
-
-import type { MaskEventDetail, MaskEvent, MaskEventHandler, Modify } from '@react-input/mask';
-
-export default function App() {
-  const [detail, setDetail] = useState<MaskEventDetail | null>(null);
-
-  // Or `event: MaskEvent`
-  const handleMask: MaskEventHandler = (event) => {
-    setDetail(event.detail);
-  };
-
-  const modify: Modify = (input) => {
-    return undefined;
-  };
-
-  return <InputMask mask="___-___" replacement="_" modify={modify} onMask={handleMask} />;
-}
-```
+The `@react-input/mask` package is written in [TypeScript](https://www.typescriptlang.org/), so you have full type support out of the box. Additionally, you can import the types you need via `@react-input/mask` or `@react-input/mask/types`.
 
 ### Property type support
 
@@ -325,25 +296,25 @@ Since the `InputMask` component supports two use cases (as an `input` element an
 By default, the `InputMask` component is an `input` element and supports all the attributes supported by the `input` element. But if the `component` property was passed, the `InputMask` will additionally support the properties available to the integrated component. This approach allows you to integrate your own component as conveniently as possible, not forcing you to rewrite its logic, but using a mask where necessary.
 
 ```tsx
-import { InputMask, type InputMaskProps, type MaskProps } from '@react-input/mask';
+import { InputMask, type InputMaskProps, type MaskOptions } from '@react-input/mask';
 
 export default function App() {
   // Here, since no `component` property was passed,
   // `InputMask` returns an `input` element and takes the type:
-  // `MaskProps & React.InputHTMLAttributes<HTMLInputElement>` (the same as `InputMaskProps`)
+  // `MaskOptions & React.InputHTMLAttributes<HTMLInputElement>` (the same as `InputMaskProps`)
   return <InputMask mask="___-___" replacement="_" />;
 }
 ```
 
 ```tsx
-import { InputMask, type InputMaskProps, type MaskProps } from '@react-input/mask';
+import { InputMask, type InputMaskProps, type MaskOptions } from '@react-input/mask';
 
 import { CustomInput, type CustomInputProps } from './CustomInput';
 
 export default function App() {
   // Here, since the `component` property was passed,
   // `InputMask` returns the `CustomInput` component and takes the type:
-  // `MaskProps & CustomInputProps` (the same as `InputMaskProps<typeof CustomInput>`)
+  // `MaskOptions & CustomInputProps` (the same as `InputMaskProps<typeof CustomInput>`)
   return <InputMask component={CustomInput} mask="___-___" replacement="_" />;
 }
 ```
@@ -362,11 +333,9 @@ export default function Component(props: any) {
 }
 ```
 
-## Testing
+## Testing and development
 
-Because each input performs the necessary calculations to set the formatting of the value, you need to set a delay between character inputs when testing the input in your application, otherwise the test may not succeed due to the necessary changes between inputs not taking effect.
-
-The recommended delay time is 15 milliseconds, however, you may need to set a different time, which can be found experimentally.
+To make it easier to work with the library, you will receive corresponding messages in the console when errors occur, which is good during development, but not needed in a production application. To avoid receiving error messages in a production application, make sure that the `NODE_ENV` variable is set to `"production"` when building the application.
 
 When testing a component with `showMask`, make sure that you set the initial cursor position (`selectionStart`). Value entry in testing tools starts from the end of the value, and without specifying `selectionStart` the entry will be made from a position equal to the length of the mask, since the `showMask` property actually inserts the value into the input element.
 
@@ -449,6 +418,12 @@ const pattern = generatePattern({ mask, replacement }, true); // "^(?!_)(\\D)$"
 RegExp(pattern).test('_'); // false
 RegExp(pattern).test('a'); // true
 ```
+
+## What's new?
+
+Starting with `@react-input/mask@2.0.0`, we have removed the use of the `input-mask` event and the `onMask` method call, focusing only on using native and React events, due to the fact that a native event cannot be explicitly coordinated with React events, making such use non-obvious, as well as the order of event firing.
+
+To use useful data from the `detail` property of the `input-mask` event object, you can use the utilities described in the "[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#utils)" section.
 
 ## Other packages from `@react-input`
 

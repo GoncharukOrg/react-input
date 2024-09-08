@@ -2,7 +2,6 @@ import { forwardRef, useState } from 'react';
 
 import { InputMask } from '../src';
 
-import type { MaskEventDetail } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 export default {
@@ -13,16 +12,17 @@ export default {
 interface ForwardedCustomComponentProps {
   label?: string;
   value: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 function ForwardedCustomComponent(
-  { label, value }: ForwardedCustomComponentProps,
+  { label, ...props }: ForwardedCustomComponentProps,
   forwardedRef: React.ForwardedRef<HTMLInputElement>,
 ) {
   return (
     <>
       <label htmlFor="custom-input">{label}</label>
-      <input ref={forwardedRef} id="custom-input" value={value} />
+      <input ref={forwardedRef} id="custom-input" {...props} />
     </>
   );
 }
@@ -30,23 +30,19 @@ function ForwardedCustomComponent(
 const CustomComponent = forwardRef(ForwardedCustomComponent);
 
 function Component() {
-  const [detail, setDetail] = useState<MaskEventDetail | null>(null);
+  const [value, setValue] = useState('');
 
   return (
-    <>
-      <InputMask
-        component={CustomComponent}
-        label="Мой заголовок"
-        mask="+7 (___) ___-__-__"
-        replacement={{ _: /\d/ }}
-        value={detail?.value ?? ''}
-        onMask={(event) => {
-          setDetail(event.detail);
-        }}
-      />
-
-      <pre>{JSON.stringify(detail, null, 2)}</pre>
-    </>
+    <InputMask
+      component={CustomComponent}
+      label="Мой заголовок"
+      mask="+7 (___) ___-__-__"
+      replacement={{ _: /\d/ }}
+      value={value}
+      onChange={(event) => {
+        setValue(event.target.value);
+      }}
+    />
   );
 }
 

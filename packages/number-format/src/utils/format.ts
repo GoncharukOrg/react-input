@@ -5,9 +5,9 @@ import type { InputType } from '@react-input/core';
 
 interface Options {
   inputType: InputType;
-  locales: string | string[] | undefined;
+  locales: Intl.LocalesArgument;
+  options: NumberFormatOptions;
   localizedValues: LocalizedNumberFormatValues;
-  currentOptions: NumberFormatOptions | undefined;
   resolvedOptions: ResolvedNumberFormatOptions;
 }
 
@@ -17,16 +17,20 @@ interface Options {
  * @param options
  * @returns
  */
-export default function resolveDetail(
+export default function format(
   value: string,
-  { inputType, locales, localizedValues, currentOptions, resolvedOptions }: Options,
+  { inputType, locales, options, localizedValues, resolvedOptions }: Options,
 ) {
   if (
     (inputType === 'deleteBackward' || inputType === 'deleteForward') &&
     (value === '' || value === '-' || /^-?\.?0*$/.test(value))
   ) {
-    return { value: '', number: 0 };
+    return '';
   }
+
+  // const maximumSignificantDigits = resolvedOptions.maximumSignificantDigits;
+  const maximumIntegerDigits = resolvedOptions.maximumIntegerDigits;
+  const maximumFractionDigits = resolvedOptions.maximumFractionDigits;
 
   const isNegative = value.startsWith('-');
   const absValue = isNegative ? value.slice(1) : value;
@@ -34,92 +38,84 @@ export default function resolveDetail(
   // При `fraction` равном `undefined` - разделитель не был введён
   let [integer, fraction = undefined] = absValue.split('.');
 
-  // Определяем настройки для применения в `Intl.NumberFormat`
-  let currentMinimumFractionDigits = resolvedOptions.minimumFractionDigits;
-  const currentMaximumFractionDigits = resolvedOptions.maximumFractionDigits;
-  // let currentMinimumSignificantDigits = resolvedOptions.minimumSignificantDigits;
-
   // Поскольку состояние ввода хранит последний введенный символ,
   // при форматировании может произойти округление, поэтому нам важно
   // заранее обрезать символ не соответствующий максимальному количеству символов
 
   // - `replace` - Учитываем `minimumSignificantDigits` и `minimumIntegerDigits`.
   // Так, при `addedValue` "2": "000 001" -> "000 0012" -> "12" -> "000 012"
-  integer = integer.replace(/^0+/g, '').slice(0, resolvedOptions.maximumIntegerDigits);
+  integer = integer.replace(/^0+/g, '').slice(0, maximumIntegerDigits);
 
-  // if (fraction !== undefined && resolvedOptions.maximumSignificantDigits !== undefined) {
-  //   currentMaximumFractionDigits = resolvedOptions.maximumSignificantDigits - integer.length;
+  // if (fraction !== undefined && maximumSignificantDigits !== undefined) {
+  //   maximumFractionDigits = maximumSignificantDigits - integer.length;
 
   //   if (/^0*$/.test(integer) && /^0*$/.test(fraction)) {
-  //     currentMaximumFractionDigits -= 1;
+  //     maximumFractionDigits -= 1;
   //   } else if (/^0*$/.test(integer) && /^0*[1-9]+/.test(fraction)) {
-  //     currentMaximumFractionDigits += fraction.match(/^0+/g)?.[0].length ?? 0;
+  //     maximumFractionDigits += fraction.match(/^0+/g)?.[0].length ?? 0;
   //   }
   // }
 
-  fraction = fraction?.slice(0, currentMaximumFractionDigits);
+  fraction = fraction?.slice(0, maximumFractionDigits);
 
   const number = Number((isNegative ? '-' : '') + (integer || '0') + (fraction ? `.${fraction}` : ''));
 
   // Чтобы иметь возможность прописывать "0" и сохранять его с каждой итерацией,
   // переопределяем `minimumFractionDigits` и `minimumSignificantDigits`
 
-  currentMinimumFractionDigits = resolveMinimumFractionDigits({
+  // let minimumSignificantDigits = resolvedOptions.minimumSignificantDigits;
+  let minimumFractionDigits = resolveMinimumFractionDigits({
     // integer,
     // fraction: fraction ?? '',
     resolvedOptions,
   });
 
-  // Если `currentMinimumFractionDigits` равен нулю, дробная часть будет округлена
-  if (
-    inputType === 'insert' &&
-    fraction === '' &&
-    currentMinimumFractionDigits === 0 &&
-    currentMaximumFractionDigits > 0
-  ) {
-    currentMinimumFractionDigits = 1;
+  // Если `minimumFractionDigits` равен нулю, дробная часть будет округлена
+  if (inputType === 'insert' && fraction === '' && minimumFractionDigits === 0 && maximumFractionDigits > 0) {
+    minimumFractionDigits = 1;
 
-    // if (currentMinimumSignificantDigits !== undefined) {
-    //   currentMinimumSignificantDigits = (integer.length || 1) + 1;
+    // if (minimumSignificantDigits !== undefined) {
+    //   minimumSignificantDigits = (integer.length || 1) + 1;
     // }
   }
 
-  if (fraction !== undefined && fraction.length > currentMinimumFractionDigits) {
-    currentMinimumFractionDigits = fraction.length;
+  if (fraction !== undefined && fraction.length > minimumFractionDigits) {
+    minimumFractionDigits = fraction.length;
 
     // `minimumFractionDigits` игнорируется при указанном `minimumSignificantDigits` или
     // `maximumSignificantDigits`, поэтому указываем правило для `minimumSignificantDigits`
-    // if (currentMinimumSignificantDigits !== undefined) {
+    // if (minimumSignificantDigits !== undefined) {
     //   if (/^0*$/.test(integer) && /^0*$/.test(fraction)) {
-    //     currentMinimumSignificantDigits = fraction.length + 1;
+    //     minimumSignificantDigits = fraction.length + 1;
     //   } else if (/^0*$/.test(integer) && /^0*[1-9]+/.test(fraction)) {
-    //     currentMinimumSignificantDigits = fraction.replace(/^0+/g, '').length;
+    //     minimumSignificantDigits = fraction.replace(/^0+/g, '').length;
     //   } else if (/^0*[1-9]+/.test(integer)) {
-    //     currentMinimumSignificantDigits = integer.length + fraction.length;
+    //     minimumSignificantDigits = integer.length + fraction.length;
     //   }
     // }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { format, groupDisplay, maximumIntegerDigits, ...options } = currentOptions ?? {};
+  const normalizedOptions: NumberFormatOptions & Intl.NumberFormatOptions = { ...options };
 
-  let nextValue = Intl.NumberFormat(locales, {
-    ...options,
-    style: format,
-    useGrouping: groupDisplay,
-    minimumFractionDigits: currentMinimumFractionDigits,
-    // minimumSignificantDigits: currentMinimumSignificantDigits,
-  }).format(number);
+  normalizedOptions.style = normalizedOptions.format;
+  normalizedOptions.useGrouping = normalizedOptions.groupDisplay;
+  normalizedOptions.minimumFractionDigits = minimumFractionDigits;
+  // normalizedOptions.minimumSignificantDigits = minimumSignificantDigits;
+
+  delete normalizedOptions.format;
+  delete normalizedOptions.groupDisplay;
+  delete normalizedOptions.maximumIntegerDigits;
 
   // В значении может встречаться юникод, нам важно заменить
   // такие символы для соответствия стандартному значению
-  nextValue = nextValue.replace(/\s/g, ' ');
+  let nextValue = new Intl.NumberFormat(locales, normalizedOptions).format(number).replace(/\s/g, ' ');
+  let sign: string | undefined;
 
-  const sign = nextValue.includes('+')
-    ? '+'
-    : nextValue.includes(localizedValues.minusSign)
-      ? localizedValues.minusSign
-      : undefined;
+  if (nextValue.includes('+')) {
+    sign = '+';
+  } else if (nextValue.includes(localizedValues.minusSign)) {
+    sign = localizedValues.minusSign;
+  }
 
   // Арабская локаль содержит юникод, что приводит к неожидаемому
   // сдвигу курсора при смещении через клавиатуру, для предотвращения
@@ -138,5 +134,5 @@ export default function resolveDetail(
     }
   }
 
-  return { value: nextValue, number };
+  return nextValue;
 }

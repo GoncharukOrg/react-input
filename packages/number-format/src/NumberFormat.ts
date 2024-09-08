@@ -1,16 +1,19 @@
 import Input from '@react-input/core/Input';
 import SyntheticChangeError from '@react-input/core/SyntheticChangeError';
 
+import * as utils from './utils';
+import filter from './utils/filter';
+import format from './utils/format';
 import localizeValues from './utils/localizeValues';
-import resolveDetail from './utils/resolveDetail';
 import resolveMinimumFractionDigits from './utils/resolveMinimumFractionDigits';
 import resolveOptions from './utils/resolveOptions';
 import resolveSelection from './utils/resolveSelection';
+import unformat from './utils/unformat';
 
-import type { NumberFormatOptions, NumberFormatProps } from './types';
+import type { NumberFormatOptions } from './types';
 
 interface CachedProps {
-  locales: NumberFormatProps['locales'];
+  locales: Intl.LocalesArgument;
   options: NumberFormatOptions;
 }
 
@@ -30,24 +33,22 @@ export default class NumberFormat extends Input {
     });
   }
 
-  constructor(locales: string | string[], options: NumberFormatOptions = {}) {
+  constructor(locales: Intl.LocalesArgument, options: NumberFormatOptions = {}) {
     let cache: Cache | null = null;
 
     super({
-      type: 'number-format',
       /**
        * Init
        */
       init: ({ initialValue }) => {
-        const { current, resolved } = resolveOptions(locales, options);
+        const maximumIntegerDigits = options.maximumIntegerDigits;
+        const resolvedMaximumIntegerDigits = resolveOptions(locales, options).maximumIntegerDigits;
 
-        const invalidType =
-          current.maximumIntegerDigits !== undefined && typeof current.maximumIntegerDigits !== 'number';
         const invalidRange =
-          typeof current.maximumIntegerDigits === 'number' &&
-          current.maximumIntegerDigits < resolved.minimumIntegerDigits;
+          maximumIntegerDigits !== undefined &&
+          (typeof maximumIntegerDigits !== 'number' || maximumIntegerDigits < resolvedMaximumIntegerDigits);
 
-        if (invalidType || invalidRange) {
+        if (invalidRange) {
           throw new RangeError('maximumIntegerDigits value is out of range.');
         }
 
@@ -75,36 +76,9 @@ export default class NumberFormat extends Input {
 
         const previousLocalizedValues = localizeValues(cache.props.locales);
         const localizedValues = localizeValues(locales);
-        const { current, resolved } = resolveOptions(locales, options);
+        const resolvedOptions = resolveOptions(locales, options);
 
-        // Удаляем неразрешённые символы
-        const filter = (value: string) => {
-          const p$1 = `\\-\\${localizedValues.minusSign}`;
-          const p$2 = `.,${localizedValues.decimal}`;
-          const p$3 = `\\d${localizedValues.digits}`;
-
-          const p$4 = `[^${p$1}${p$2}${p$3}]|[${p$2}](?=.*[${p$2}])`;
-
-          const _value = value.replace(RegExp(p$4, 'g'), '');
-
-          if (localizedValues.signBackwards) {
-            return _value.replace(RegExp(`[${p$1}](?=.*[${p$1}${p$2}${p$3}])`, 'g'), '');
-          }
-
-          const firstMinusSignIndex = _value.search(RegExp(`[${p$1}]`));
-          const firstDecimalIndex = _value.search(RegExp(`[${p$2}]`));
-          const firstDigitIndex = _value.search(RegExp(`[${p$3}]`));
-
-          return _value.replace(RegExp(`[${p$1}]`, 'g'), (match, offset) => {
-            const isMoreMinusSignIndex = firstMinusSignIndex !== -1 && offset > firstMinusSignIndex;
-            const isMoreDecimalIndex = firstDecimalIndex !== -1 && offset > firstDecimalIndex;
-            const isMoreDigitIndex = firstDigitIndex !== -1 && offset > firstDigitIndex;
-
-            return isMoreMinusSignIndex || isMoreDecimalIndex || isMoreDigitIndex ? '' : match;
-          });
-        };
-
-        addedValue = filter(addedValue);
+        addedValue = filter(addedValue, localizedValues);
 
         if (inputType === 'insert' && !addedValue) {
           throw new SyntheticChangeError('The added value does not contain allowed characters.');
@@ -120,19 +94,7 @@ export default class NumberFormat extends Input {
         const beforeChangeValue = previousValue.slice(0, changeStart).replace(regExp$1, '');
         const afterChangeValue = previousValue.slice(changeEnd).replace(regExp$1, '');
 
-        let normalizedValue = beforeChangeValue + addedValue + afterChangeValue;
-
-        // Фильтруем значение для преобразование в число
-        normalizedValue = filter(normalizedValue)
-          // Нормализуем десятичный разделитель
-          .replace(RegExp(`[,${localizedValues.decimal}]`, 'g'), '.')
-          // Нормализуем знак минуса
-          .replace(RegExp(localizedValues.minusSign, 'g'), '-')
-          // Нормализуем цифры
-          .replace(RegExp(`[${localizedValues.digits}]`, 'g'), (localeDigit) => {
-            const digit = localizedValues.digits.indexOf(localeDigit);
-            return digit !== -1 ? digit.toString() : localeDigit;
-          });
+        let normalizedValue = unformat(beforeChangeValue + addedValue + afterChangeValue, localizedValues);
 
         // В случае ввода знака минуса нам нужно его удалить если
         // оно присутствует, в противном случае добавить, тем самым
@@ -150,12 +112,6 @@ export default class NumberFormat extends Input {
           if (isReflectMinusSign && !hasPreviousValueMinusSign && !hasNormalizedValueMinusSign) {
             normalizedValue = `-${normalizedValue}`;
           }
-        }
-
-        // Для нормализации значения, ставим минус слева.
-        // В случае арабской локали он может находиться справа
-        if (normalizedValue.endsWith('-')) {
-          normalizedValue = `-${normalizedValue.slice(0, -1)}`;
         }
 
         // Если изменения происходят в области `minimumFractionDigits`, очищаем дробную часть
@@ -183,7 +139,7 @@ export default class NumberFormat extends Input {
             const previousMinimumFractionDigits = resolveMinimumFractionDigits({
               // integer: previousInteger,
               // fraction: previousFraction,
-              resolvedOptions: resolveOptions(cache.props.locales, cache.props.options).resolved,
+              resolvedOptions: resolveOptions(cache.props.locales, cache.props.options),
             });
 
             // Если изменения происходят в области `minimumFractionDigits`
@@ -197,45 +153,49 @@ export default class NumberFormat extends Input {
           }
         }
 
-        const detail = resolveDetail(normalizedValue, {
+        const value = format(normalizedValue, {
           inputType,
           locales,
+          options,
           localizedValues,
-          currentOptions: current,
-          resolvedOptions: resolved,
+          resolvedOptions,
         });
 
         const selection = resolveSelection({
           localizedValues,
           previousLocalizedValues,
-          resolvedOptions: resolved,
+          resolvedOptions,
           inputType,
+          value,
           previousValue,
           addedValue,
-          nextValue: detail.value,
           changeStart,
           changeEnd,
         });
 
-        cache.value = detail.value;
+        cache.value = value;
         cache.props = { locales, options };
 
         return {
-          value: detail.value,
+          value,
           selectionStart: selection.start,
           selectionEnd: selection.end,
-          detail,
         };
       },
     });
   }
 }
 
-type GlobalThis = typeof globalThis & { ReactInput?: { NumberFormat?: typeof NumberFormat } };
+if (process.env.__OUTPUT__ === 'cdn') {
+  interface Context {
+    ReactInput?: {
+      NumberFormat?: typeof NumberFormat & Partial<typeof utils>;
+    };
+  }
 
-if (process.env.FORMAT === 'umd') {
-  const _global: GlobalThis = typeof globalThis !== 'undefined' ? globalThis : global || self;
+  const _global: typeof globalThis & Context = typeof globalThis !== 'undefined' ? globalThis : global || self;
 
   _global.ReactInput = _global.ReactInput ?? {};
   _global.ReactInput.NumberFormat = NumberFormat;
+  _global.ReactInput.NumberFormat.unformat = utils.unformat;
 }

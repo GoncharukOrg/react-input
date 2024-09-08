@@ -13,18 +13,14 @@ function Component() {
   const [value, setValue] = useState('');
 
   return (
-    <>
-      <InputMask
-        mask="+7 (___) ___-__-__"
-        replacement={{ _: /\d/ }}
-        value={value}
-        onChange={(event) => {
-          setValue(event.target.value);
-        }}
-      />
-
-      <pre>{JSON.stringify({ value }, null, 2)}</pre>
-    </>
+    <InputMask
+      mask="+7 (___) ___-__-__"
+      replacement={{ _: /\d/ }}
+      value={value}
+      onChange={(event) => {
+        setValue(event.target.value);
+      }}
+    />
   );
 }
 

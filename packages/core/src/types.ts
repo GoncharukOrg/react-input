@@ -1,11 +1,3 @@
-export interface CustomInputEvent<D = unknown> extends CustomEvent<D> {
-  target: EventTarget & HTMLInputElement;
-}
-
-export type CustomInputEventHandler<E extends CustomInputEvent> = {
-  bivarianceHack(event: E): void;
-}['bivarianceHack'];
-
 export type InputType = 'insert' | 'deleteBackward' | 'deleteForward';
 
 export interface InputAttributes {
@@ -26,10 +18,9 @@ export type TrackingFunction = (param: {
   changeEnd: number;
   selectionStart: number;
   selectionEnd: number;
-}) => InputAttributes & { detail?: unknown };
+}) => InputAttributes;
 
 export interface InputOptions {
-  type: string;
   init: InitFunction;
   tracking: TrackingFunction;
 }

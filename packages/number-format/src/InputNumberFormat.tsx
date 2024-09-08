@@ -4,11 +4,12 @@ import useConnectedRef from '@react-input/core/useConnectedRef';
 
 import useNumberFormat from './useNumberFormat';
 
-import type { NumberFormatProps } from './types';
+import type { NumberFormatOptions } from './types';
 import type { InputComponent, InputComponentProps } from '@react-input/core';
 
-export type InputNumberFormatProps<C extends React.ComponentType | undefined = undefined> = NumberFormatProps &
-  InputComponentProps<C>;
+export type InputNumberFormatProps<C extends React.ComponentType | undefined = undefined> = NumberFormatOptions & {
+  locales?: Intl.LocalesArgument;
+} & InputComponentProps<C>;
 
 function ForwardedInputNumberFormat<C extends React.ComponentType | undefined = undefined>(
   {
@@ -25,7 +26,6 @@ function ForwardedInputNumberFormat<C extends React.ComponentType | undefined = 
     maximumIntegerDigits,
     minimumFractionDigits,
     maximumFractionDigits,
-    onNumberFormat,
     ...props
   }: InputNumberFormatProps<C>,
   forwardedRef: React.ForwardedRef<HTMLInputElement>,
@@ -43,7 +43,6 @@ function ForwardedInputNumberFormat<C extends React.ComponentType | undefined = 
     maximumIntegerDigits,
     minimumFractionDigits,
     maximumFractionDigits,
-    onNumberFormat,
   });
 
   const connectedRef = useConnectedRef(ref, forwardedRef);
@@ -56,6 +55,8 @@ function ForwardedInputNumberFormat<C extends React.ComponentType | undefined = 
   return <input ref={connectedRef} {...props} />;
 }
 
-const InputNumberFormat = forwardRef(ForwardedInputNumberFormat) as InputComponent<NumberFormatProps>;
+const InputNumberFormat = forwardRef(ForwardedInputNumberFormat) as InputComponent<
+  NumberFormatOptions & { locales?: Intl.LocalesArgument }
+>;
 
 export default InputNumberFormat;

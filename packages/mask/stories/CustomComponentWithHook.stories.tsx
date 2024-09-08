@@ -2,7 +2,6 @@ import { forwardRef, useState } from 'react';
 
 import { InputMask, useMask } from '../src';
 
-import type { MaskEventDetail } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 export default {
@@ -12,6 +11,7 @@ export default {
 
 interface ForwardedCustomComponentProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 function ForwardedCustomComponent(
@@ -29,24 +29,25 @@ function ForwardedCustomComponent(
 const CustomComponent = forwardRef(ForwardedCustomComponent);
 
 function Component() {
-  const [detail, setDetail] = useState<MaskEventDetail | null>(null);
-
   const ref = useMask({
     mask: '+7 (___) ___-__-__',
     replacement: { _: /\d/ },
     separate: true,
     showMask: true,
-    onMask: (event) => {
-      setDetail(event.detail);
-    },
   });
 
-  return (
-    <>
-      <CustomComponent ref={ref} id="custom-input" label="Мой заголовок" value={detail?.value} />
+  const [value, setValue] = useState('');
 
-      <pre>{JSON.stringify(detail, null, 2)}</pre>
-    </>
+  return (
+    <CustomComponent
+      ref={ref}
+      id="custom-input"
+      label="Мой заголовок"
+      value={value}
+      onChange={(event) => {
+        setValue(event.target.value);
+      }}
+    />
   );
 }
 

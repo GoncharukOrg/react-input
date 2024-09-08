@@ -4,15 +4,4 @@ export { default as useMask } from './useMask';
 export * from './utils';
 
 export type { InputMaskProps } from './InputMask';
-export type {
-  MaskOptions,
-  MaskProps,
-  Replacement,
-  TrackParam,
-  Track,
-  ModifiedData,
-  Modify,
-  MaskEvent,
-  MaskEventDetail,
-  MaskEventHandler,
-} from './types';
+export type { MaskOptions, Replacement, TrackParam, Track, ModifiedData, Modify } from './types';

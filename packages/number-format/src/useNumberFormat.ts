@@ -4,7 +4,7 @@ import createProxy from '@react-input/core/createProxy';
 
 import NumberFormat from './NumberFormat';
 
-import type { NumberFormatEvent, NumberFormatProps } from './types';
+import type { NumberFormatOptions } from './types';
 
 export default function useNumberFormat({
   locales,
@@ -21,50 +21,37 @@ export default function useNumberFormat({
   maximumFractionDigits,
   // minimumSignificantDigits,
   // maximumSignificantDigits,
-  onNumberFormat,
-}: NumberFormatProps = {}) {
-  const ref = useRef<HTMLInputElement | null>(null);
-
-  const props = useRef({
-    locales,
-    options: {
-      format,
-      currency,
-      currencyDisplay,
-      unit,
-      unitDisplay,
-      signDisplay,
-      groupDisplay,
-      minimumIntegerDigits,
-      maximumIntegerDigits,
-      minimumFractionDigits,
-      maximumFractionDigits,
-    },
-    handler: onNumberFormat,
+}: NumberFormatOptions & { locales?: Intl.LocalesArgument } = {}) {
+  const $ref = useRef<HTMLInputElement | null>(null);
+  const $locales = useRef(locales);
+  const $options = useRef({
+    format,
+    currency,
+    currencyDisplay,
+    unit,
+    unitDisplay,
+    signDisplay,
+    groupDisplay,
+    minimumIntegerDigits,
+    maximumIntegerDigits,
+    minimumFractionDigits,
+    maximumFractionDigits,
   });
 
-  props.current.locales = locales;
-  props.current.options.format = format;
-  props.current.options.currency = currency;
-  props.current.options.currencyDisplay = currencyDisplay;
-  props.current.options.unit = unit;
-  props.current.options.unitDisplay = unitDisplay;
-  props.current.options.signDisplay = signDisplay;
-  props.current.options.groupDisplay = groupDisplay;
-  props.current.options.minimumIntegerDigits = minimumIntegerDigits;
-  props.current.options.maximumIntegerDigits = maximumIntegerDigits;
-  props.current.options.minimumFractionDigits = minimumFractionDigits;
-  props.current.options.maximumFractionDigits = maximumFractionDigits;
-  props.current.handler = onNumberFormat;
+  $locales.current = locales;
+  $options.current.format = format;
+  $options.current.currency = currency;
+  $options.current.currencyDisplay = currencyDisplay;
+  $options.current.unit = unit;
+  $options.current.unitDisplay = unitDisplay;
+  $options.current.signDisplay = signDisplay;
+  $options.current.groupDisplay = groupDisplay;
+  $options.current.minimumIntegerDigits = minimumIntegerDigits;
+  $options.current.maximumIntegerDigits = maximumIntegerDigits;
+  $options.current.minimumFractionDigits = minimumFractionDigits;
+  $options.current.maximumFractionDigits = maximumFractionDigits;
 
   return useMemo(() => {
-    const numberFormat = new NumberFormat(props.current.locales, props.current.options);
-
-    return createProxy(ref, numberFormat, {
-      type: 'number-format',
-      handler: (event) => {
-        props.current.handler?.(event as NumberFormatEvent);
-      },
-    });
+    return createProxy($ref, new NumberFormat($locales.current, $options.current));
   }, []);
 }

@@ -421,9 +421,9 @@ RegExp(pattern).test('a'); // true
 
 ## What's new?
 
-Starting with `@react-input/mask@2.0.0`, we have removed the use of the `input-mask` event and the `onMask` method call, focusing only on using native and React events, due to the fact that a native event cannot be explicitly coordinated with React events, making such use non-obvious, as well as the order of event firing.
+Starting with `@react-input/mask@2.0.0`, we removed the `input-mask` event and the `onMask` method, focusing only on using native React events and methods such as `onChange`, since the `input-mask` event cannot be explicitly coordinated with React events and methods, making such usage and event firing order non-obvious.
 
-To use useful data from the `detail` property of the `input-mask` event object, you can use the utilities described in the "[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#utils)" section.
+To use the useful data from the `detail` property of the `input-mask` (`onMask`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#utils)» section.
 
 ## Other packages from `@react-input`
 

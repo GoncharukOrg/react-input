@@ -32,11 +32,13 @@ function createRollupConfig(...entries) {
         format: 'es',
         dir: 'dist/module',
         entryFileNames: '[name].js',
+        hoistTransitiveImports: false,
       },
       {
         format: 'cjs',
         dir: 'dist/node',
         entryFileNames: '[name].cjs',
+        hoistTransitiveImports: false,
       },
     ],
     external: [/^react(\/.*)?$/, /^react-dom(\/.*)?$/, /^@react-input\/core(\/.*)?$/],

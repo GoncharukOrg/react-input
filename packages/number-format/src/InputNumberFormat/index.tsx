@@ -2,9 +2,9 @@ import { forwardRef } from 'react';
 
 import { useConnectedInputRef } from '@react-input/core';
 
-import useNumberFormat from './useNumberFormat';
+import useNumberFormat from '../useNumberFormat';
 
-import type { NumberFormatProps } from './types';
+import type { NumberFormatProps } from '../types';
 import type { InputComponent, InputComponentProps } from '@react-input/core';
 
 export type InputNumberFormatProps<C extends React.ComponentType | undefined = undefined> = NumberFormatProps &

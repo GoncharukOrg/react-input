@@ -27,7 +27,7 @@ const ENTRIES = {
       },
     },
     react: {
-      input: ['src/index.ts', 'src/InputMask.tsx', 'src/Mask.ts', 'src/useMask.ts', 'src/utils.ts'],
+      input: ['src/index.ts', 'src/Mask.ts', 'src/useMask.ts', 'src/utils.ts', 'src/InputMask/index.tsx'],
     },
   },
   '@react-input/number-format': {
@@ -40,10 +40,10 @@ const ENTRIES = {
     react: {
       input: [
         'src/index.ts',
-        'src/InputNumberFormat.tsx',
         'src/NumberFormat.ts',
         'src/useNumberFormat.ts',
         'src/utils.ts',
+        'src/InputNumberFormat/index.tsx',
       ],
     },
   },
@@ -112,11 +112,13 @@ function rollup() {
           format: 'es',
           dir: 'dist/module',
           entryFileNames: '[name].js',
+          hoistTransitiveImports: false,
         },
         {
           format: 'cjs',
           dir: 'dist/node',
           entryFileNames: '[name].cjs',
+          hoistTransitiveImports: false,
         },
       ],
       external: [/^react(\/.*)?$/, /^react-dom(\/.*)?$/, /^@react-input\/core(\/.*)?$/],

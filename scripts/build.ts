@@ -73,6 +73,35 @@ execSync(
 }
 
 /**
+ * Create package.json
+ */
+
+{
+  const map = {
+    '@react-input/mask': 'InputMask',
+    '@react-input/number-format': 'InputNumberFormat',
+  };
+
+  if (npm_package_name === '@react-input/mask' || npm_package_name === '@react-input/number-format') {
+    for (const type of ['node', 'module']) {
+      fs.writeFileSync(
+        `./dist/${type}/${map[npm_package_name]}/package.json`,
+        JSON.stringify(
+          {
+            sideEffects: false,
+            module: type === 'module' ? './index.js' : `../../module/${map[npm_package_name]}/index.js`,
+            main: type === 'node' ? './index.cjs' : `../../node/${map[npm_package_name]}/index.cjs`,
+            types: `../../@types/${map[npm_package_name]}/index.d.ts`,
+          },
+          null,
+          2,
+        ),
+      );
+    }
+  }
+}
+
+/**
  * Console
  */
 

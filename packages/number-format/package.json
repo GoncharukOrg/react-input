@@ -1,6 +1,7 @@
 {
   "name": "@react-input/number-format",
-  "version": "1.0.27",
+  "version": "1.0.28",
+  "license": "MIT",
   "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
   "description": "React input component for formatted number input with locale-specific.",
   "keywords": [
@@ -27,14 +28,14 @@
     "url": "https://github.com/GoncharukBro/react-input/issues"
   },
   "homepage": "https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#readme",
-  "license": "MIT",
-  "module": "dist/module/index.js",
-  "main": "dist/node/index.cjs",
-  "types": "dist/@types/index.d.ts",
   "files": [
     "dist"
   ],
+  "sideEffects": false,
   "type": "module",
+  "module": "dist/module/index.js",
+  "main": "dist/node/index.cjs",
+  "types": "dist/@types/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/module/index.js",
@@ -42,32 +43,29 @@
       "types": "./dist/@types/index.d.ts"
     },
     "./*": {
-      "import": [
-        "./dist/module/*.js",
-        "./dist/module/*/index.js"
-      ],
-      "require": [
-        "./dist/node/*.cjs",
-        "./dist/node/*/index.cjs"
-      ],
-      "types": [
-        "./dist/@types/*.d.ts",
-        "./dist/@types/*/index.d.ts"
-      ]
+      "import": "./dist/module/*.js",
+      "require": "./dist/node/*.cjs",
+      "types": "./dist/@types/*.d.ts"
     },
     "./*.js": {
-      "import": [
-        "./dist/module/*.js",
-        "./dist/module/*/index.js"
-      ],
-      "require": [
-        "./dist/node/*.cjs",
-        "./dist/node/*/index.cjs"
-      ],
-      "types": [
-        "./dist/@types/*.d.ts",
-        "./dist/@types/*/index.d.ts"
-      ]
+      "import": "./dist/module/*.js",
+      "require": "./dist/node/*.cjs",
+      "types": "./dist/@types/*.d.ts"
+    },
+    "./InputNumberFormat": {
+      "import": "./dist/module/InputNumberFormat/index.js",
+      "require": "./dist/node/InputNumberFormat/index.cjs",
+      "types": "./dist/@types/InputNumberFormat/index.d.ts"
+    },
+    "./InputNumberFormat/*": {
+      "import": "./dist/module/InputNumberFormat/*.js",
+      "require": "./dist/node/InputNumberFormat/*.cjs",
+      "types": "./dist/@types/InputNumberFormat/*.d.ts"
+    },
+    "./InputNumberFormat/*.js": {
+      "import": "./dist/module/InputNumberFormat/*.js",
+      "require": "./dist/node/InputNumberFormat/*.cjs",
+      "types": "./dist/@types/InputNumberFormat/*.d.ts"
     }
   },
   "typesVersions": {
@@ -91,7 +89,7 @@
     "release:patch": "ts-node ../../scripts/release.ts patch"
   },
   "dependencies": {
-    "@react-input/core": "^1.0.12"
+    "@react-input/core": "^1.0.13"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

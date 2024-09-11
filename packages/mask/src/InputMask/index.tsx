@@ -2,9 +2,9 @@ import { forwardRef } from 'react';
 
 import useConnectedRef from '@react-input/core/useConnectedRef';
 
-import useMask from './useMask';
+import useMask from '../useMask';
 
-import type { MaskOptions } from './types';
+import type { MaskOptions } from '../types';
 import type { InputComponent, InputComponentProps } from '@react-input/core';
 
 export type InputMaskProps<C extends React.ComponentType | undefined = undefined> = MaskOptions &

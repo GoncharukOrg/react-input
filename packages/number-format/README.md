@@ -122,7 +122,7 @@ To support the concept of controlled input, `@react-input/number-format` does no
 In cases where the input value is unformatted, you should use the `Intl.NumberFormat` constructor ([MDN](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat)) to set the correct value, for example:
 
 ```tsx
-import { useMask, format } from '@react-input/mask';
+import { useNumberFormat } from '@react-input/number-format';
 
 const locales = 'en';
 const options = { maximumFractionDigits: 2 };

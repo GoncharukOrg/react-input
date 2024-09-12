@@ -121,8 +121,9 @@ const options = {
 
 export default function App() {
   const inputRef = useMask(options);
+  const defaultValue = format('1234567890', options);
 
-  return <input ref={inputRef} defaultValue={format('1234567890', options)} />;
+  return <input ref={inputRef} defaultValue={defaultValue} />;
 }
 ```
 

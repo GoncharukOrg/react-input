@@ -124,15 +124,14 @@ In cases where the input value is unformatted, you should use the `Intl.NumberFo
 ```tsx
 import { useMask, format } from '@react-input/mask';
 
-export default function App() {
-  const inputRef = useNumberFormat({
-    locales: 'en',
-    maximumFractionDigits: 2,
-  });
+const locales = 'en';
+const options = { maximumFractionDigits: 2 };
 
-  return (
-    <input ref={inputRef} defaultValue={new Intl.NumberFormat('en', { maximumFractionDigits: 2 }).format(value)} />
-  );
+export default function App() {
+  const inputRef = useNumberFormat({ locales, ...options });
+  const defaultValue = new Intl.NumberFormat(locales, options).format(value);
+
+  return <input ref={inputRef} defaultValue={defaultValue} />;
 }
 ```
 

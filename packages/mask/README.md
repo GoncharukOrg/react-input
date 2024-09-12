@@ -8,6 +8,12 @@
 
 [![Edit @react-input/mask](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/react-input-mask-r5jmmm?file=%2Fsrc%2FInput.tsx)
 
+## What's new?
+
+Starting with `@react-input/mask@2.0.0`, we removed the `input-mask` event and the `onMask` method, focusing only on using native React events and methods such as `onChange`, since the `input-mask` event cannot be explicitly coordinated with React events and methods, making such usage and event firing order non-obvious.
+
+To use the useful data from the `detail` property of the `input-mask` (`onMask`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#utils)» section.
+
 ## Installation
 
 ```bash
@@ -438,12 +444,6 @@ const pattern = generatePattern({ mask, replacement }, true); // "^(?!_)(\\D)$"
 RegExp(pattern).test('_'); // false
 RegExp(pattern).test('a'); // true
 ```
-
-## What's new?
-
-Starting with `@react-input/mask@2.0.0`, we removed the `input-mask` event and the `onMask` method, focusing only on using native React events and methods such as `onChange`, since the `input-mask` event cannot be explicitly coordinated with React events and methods, making such usage and event firing order non-obvious.
-
-To use the useful data from the `detail` property of the `input-mask` (`onMask`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#utils)» section.
 
 ## Other packages from `@react-input`
 

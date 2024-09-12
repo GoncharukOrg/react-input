@@ -8,6 +8,12 @@
 
 [![Edit @react-input/number-format](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/react-input-number-format-r234d9?file=%2Fsrc%2FInput.tsx)
 
+## What's new?
+
+Starting with `@react-input/number-format@2.0.0`, we removed the `input-number-format` event and the `onNumberFormat` method, focusing only on using native React events and methods such as `onChange`, since the `input-number-format` event cannot be explicitly coordinated with React events and methods, making such usage and event firing order non-obvious.
+
+To use the useful data from the `detail` property of the `input-number-format` (`onNumberFormat`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#utils)» section.
+
 ## Installation
 
 ```bash
@@ -350,12 +356,6 @@ Returns a number corresponding to the formatted value.
 unformat('$1,23,456.78', 'en-IN');
 // returns: 123456.78
 ```
-
-## What's new?
-
-Starting with `@react-input/number-format@2.0.0`, we removed the `input-number-format` event and the `onNumberFormat` method, focusing only on using native React events and methods such as `onChange`, since the `input-number-format` event cannot be explicitly coordinated with React events and methods, making such usage and event firing order non-obvious.
-
-To use the useful data from the `detail` property of the `input-number-format` (`onNumberFormat`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#utils)» section.
 
 ## Other packages from `@react-input`
 

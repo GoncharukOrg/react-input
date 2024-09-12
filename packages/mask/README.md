@@ -23,7 +23,7 @@ yarn add @react-input/mask
 or using **CDN**:
 
 ```html
-<script src="https://unpkg.com/@react-input/mask/Mask.min.js" type="text/javascript" />
+<script src="https://unpkg.com/@react-input/mask/dist/Mask.min.js" type="text/javascript" />
 ```
 
 ## Unique properties
@@ -105,9 +105,28 @@ To use the utilities described in the "[Utils](https://github.com/GoncharukBro/r
 
 > Although you can use a class to mask input, using a hook or component in the React environment is preferable due to the optimizations applied, where you do not have to think about when to call `register` and `unregister` for input masking to work.
 
-> `@react-input/mask` does not change the value passed in the `value` or `defaultValue` properties of the `input` element, so set the initialized value to something that can match the masked value at any point in the input. If you make a mistake, you will see a warning in the console about it.
+## Initializing the value
 
-> For consistent and correct behavior, the `type` property of the `input` element or the `InputMask` component must be set to `"text"` (the default), `"email"`, `"tel"`, `"search"`, or `"url"`. If you use other values, the mask will not be applied and you will see a warning in the console.
+To support the concept of controlled input, `@react-input/mask` does not change the value passed in the `value` or `defaultValue` properties of the `input` element, so set the initialized value to something that can match the masked value at any point in the input. If you make a mistake, you'll see a warning in the console about it.
+
+In cases where the input contains an unmasked value, you should use the `format` utility described in the chapter "[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#utils)" to substitute the correct value, for example:
+
+```tsx
+import { useMask, format } from '@react-input/mask';
+
+export default function App() {
+  const options = {
+    mask: '+0 (___) ___-__-__',
+    replacement: { _: /\d/ },
+  };
+
+  const inputRef = useMask(options);
+
+  return <input ref={inputRef} defaultValue={format('1234567890', options)} />;
+}
+```
+
+For consistent and correct behavior, the `type` property of the `input` element or the `InputMask` component must be set to `"text"` (the default), `"email"`, `"tel"`, `"search"`, or `"url"`. If you use other values, the mask will not be applied and you will see a warning in the console.
 
 ## Replacement
 

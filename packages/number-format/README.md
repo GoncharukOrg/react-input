@@ -23,7 +23,7 @@ yarn add @react-input/number-format
 or using **CDN**:
 
 ```html
-<script src="https://unpkg.com/@react-input/number-format/NumberFormat.min.js" type="text/javascript" />
+<script src="https://unpkg.com/@react-input/number-format/dist/NumberFormat.min.js" type="text/javascript" />
 ```
 
 ## Unique properties
@@ -115,9 +115,28 @@ To use the utilities described in the "[Utils](https://github.com/GoncharukBro/r
 
 > While you can use a class to format input, using a hook or component in the React environment is preferable due to the optimizations applied, where you don't have to think about when to call `register` and `unregister` for input formatting to work.
 
-> `@react-input/number-format` does not change the value passed in the `value` or `defaultValue` properties of the `input` element, so set the initialized value to something that can match the formatted value at any point in the input. If you make a mistake, you will see a warning in the console about it.
+## Initializing the value
 
-> For consistent and correct behavior, the `type` property of the `input` element or the `InputNumberFormat` component must be set to `"text"` (the default). If you use other values, the formatting will not be applied and you will see a warning in the console.
+To support the concept of controlled input, `@react-input/number-format` does not change the value passed in the `value` or `defaultValue` properties of the `input` element, so set the initialized value to something that can match the formatted value at any point in the input. If you make a mistake, you will see a warning in the console about it.
+
+In cases where the input value is unformatted, you should use the `Intl.NumberFormat` constructor ([MDN](https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat)) to set the correct value, for example:
+
+```tsx
+import { useMask, format } from '@react-input/mask';
+
+export default function App() {
+  const inputRef = useNumberFormat({
+    locales: 'en',
+    maximumFractionDigits: 2,
+  });
+
+  return (
+    <input ref={inputRef} defaultValue={new Intl.NumberFormat('en', { maximumFractionDigits: 2 }).format(value)} />
+  );
+}
+```
+
+For consistent and correct behavior, the `type` property of the `input` element or the `InputNumberFormat` component must be set to `"text"` (the default). If you use other values, the formatting will not be applied and you will see a warning in the console.
 
 ## Examples of using
 

@@ -129,7 +129,7 @@ const options = { maximumFractionDigits: 2 };
 
 export default function App() {
   const inputRef = useNumberFormat({ locales, ...options });
-  const defaultValue = new Intl.NumberFormat(locales, options).format(value);
+  const defaultValue = new Intl.NumberFormat(locales, options).format(123456789);
 
   return <input ref={inputRef} defaultValue={defaultValue} />;
 }

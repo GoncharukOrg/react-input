@@ -114,12 +114,12 @@ In cases where the input contains an unmasked value, you should use the `format`
 ```tsx
 import { useMask, format } from '@react-input/mask';
 
-export default function App() {
-  const options = {
-    mask: '+0 (___) ___-__-__',
-    replacement: { _: /\d/ },
-  };
+const options = {
+  mask: '+0 (___) ___-__-__',
+  replacement: { _: /\d/ },
+};
 
+export default function App() {
   const inputRef = useMask(options);
 
   return <input ref={inputRef} defaultValue={format('1234567890', options)} />;

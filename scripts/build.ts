@@ -68,6 +68,7 @@ typesPaths.forEach((path) => {
         JSON.stringify(
           {
             sideEffects: false,
+            type: type === 'module' ? 'module' : undefined,
             module: type === 'module' ? './index.js' : `../../module/${map[npm_package_name]}/index.js`,
             main: type === 'node' ? './index.cjs' : `../../node/${map[npm_package_name]}/index.cjs`,
             types: `../../@types/${map[npm_package_name]}/index.d.ts`,

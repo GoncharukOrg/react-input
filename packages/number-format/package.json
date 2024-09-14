@@ -33,39 +33,39 @@
   ],
   "sideEffects": false,
   "type": "module",
+  "types": "dist/@types/index.d.ts",
   "module": "dist/module/index.js",
   "main": "dist/node/index.cjs",
-  "types": "dist/@types/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/@types/index.d.ts",
       "import": "./dist/module/index.js",
-      "require": "./dist/node/index.cjs",
-      "types": "./dist/@types/index.d.ts"
+      "require": "./dist/node/index.cjs"
     },
     "./*": {
+      "types": "./dist/@types/*.d.ts",
       "import": "./dist/module/*.js",
-      "require": "./dist/node/*.cjs",
-      "types": "./dist/@types/*.d.ts"
+      "require": "./dist/node/*.cjs"
     },
     "./*.js": {
+      "types": "./dist/@types/*.d.ts",
       "import": "./dist/module/*.js",
-      "require": "./dist/node/*.cjs",
-      "types": "./dist/@types/*.d.ts"
+      "require": "./dist/node/*.cjs"
     },
     "./InputNumberFormat": {
+      "types": "./dist/@types/InputNumberFormat/index.d.ts",
       "import": "./dist/module/InputNumberFormat/index.js",
-      "require": "./dist/node/InputNumberFormat/index.cjs",
-      "types": "./dist/@types/InputNumberFormat/index.d.ts"
+      "require": "./dist/node/InputNumberFormat/index.cjs"
     },
     "./InputNumberFormat/*": {
+      "types": "./dist/@types/InputNumberFormat/*.d.ts",
       "import": "./dist/module/InputNumberFormat/*.js",
-      "require": "./dist/node/InputNumberFormat/*.cjs",
-      "types": "./dist/@types/InputNumberFormat/*.d.ts"
+      "require": "./dist/node/InputNumberFormat/*.cjs"
     },
     "./InputNumberFormat/*.js": {
+      "types": "./dist/@types/InputNumberFormat/*.d.ts",
       "import": "./dist/module/InputNumberFormat/*.js",
-      "require": "./dist/node/InputNumberFormat/*.cjs",
-      "types": "./dist/@types/InputNumberFormat/*.d.ts"
+      "require": "./dist/node/InputNumberFormat/*.cjs"
     }
   },
   "typesVersions": {

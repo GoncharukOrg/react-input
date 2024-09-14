@@ -1,6 +1,6 @@
 {
   "name": "@react-input/core",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "license": "MIT",
   "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
   "description": "The core of the packages included in the `@react-input` scope.",
@@ -26,24 +26,24 @@
   ],
   "sideEffects": false,
   "type": "module",
+  "types": "dist/@types/index.d.ts",
   "module": "dist/module/index.js",
   "main": "dist/node/index.cjs",
-  "types": "dist/@types/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/@types/index.d.ts",
       "import": "./dist/module/index.js",
-      "require": "./dist/node/index.cjs",
-      "types": "./dist/@types/index.d.ts"
+      "require": "./dist/node/index.cjs"
     },
     "./*": {
+      "types": "./dist/@types/*.d.ts",
       "import": "./dist/module/*.js",
-      "require": "./dist/node/*.cjs",
-      "types": "./dist/@types/*.d.ts"
+      "require": "./dist/node/*.cjs"
     },
     "./*.js": {
+      "types": "./dist/@types/*.d.ts",
       "import": "./dist/module/*.js",
-      "require": "./dist/node/*.cjs",
-      "types": "./dist/@types/*.d.ts"
+      "require": "./dist/node/*.cjs"
     }
   },
   "typesVersions": {

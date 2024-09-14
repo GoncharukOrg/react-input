@@ -19,7 +19,7 @@ function ForwardedInputMask<C extends React.ComponentType | undefined = undefine
   const connectedRef = useConnectedRef(ref, forwardedRef);
 
   if (Component) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unnecessary-type-assertion
     return <Component ref={connectedRef} {...(props as any)} />;
   }
 

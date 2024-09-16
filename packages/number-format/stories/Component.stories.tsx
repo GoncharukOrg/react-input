@@ -1,22 +1,20 @@
-import { InputNumberFormat, NumberFormatOptions, useNumberFormat } from '../src';
+import { InputNumberFormat, NumberFormatOptions } from '../src';
 
 import type { Meta, StoryObj } from '@storybook/react';
 
 function Component(props: NumberFormatOptions) {
-  const ref = useNumberFormat(props);
-
   return (
     <>
       <div>
         <p>{JSON.stringify(props)}</p>
-        <input ref={ref} />
+        <InputNumberFormat {...props} />
       </div>
     </>
   );
 }
 
 const meta = {
-  title: 'number-format/useNumberFormat',
+  title: 'number-format/InputNumberFormat',
   component: InputNumberFormat,
   tags: ['autodocs'],
 } satisfies Meta<typeof InputNumberFormat>;
@@ -33,39 +31,44 @@ export const Story1: Story = {
 export const Story2: Story = {
   render: Component,
   args: {
-    locales: 'ru-RU',
-    maximumIntegerDigits: 6,
+    locales: 'de-DE',
+    format: 'currency',
+    currency: 'EUR',
   },
 };
 
 export const Story3: Story = {
   render: Component,
   args: {
-    locales: 'ru-RU',
+    locales: 'ja-JP',
     format: 'currency',
-    currency: 'RUB',
+    currency: 'JPY',
   },
 };
 
 export const Story4: Story = {
   render: Component,
   args: {
-    locales: 'ja-JP',
-    format: 'currency',
-    currency: 'RUB',
+    locales: 'en-IN',
+    maximumIntegerDigits: 3,
   },
 };
 
 export const Story5: Story = {
   render: Component,
   args: {
-    locales: 'ar-EG',
+    locales: 'pt-PT',
+    format: 'unit',
+    unit: 'kilometer-per-hour',
   },
 };
 
 export const Story6: Story = {
   render: Component,
   args: {
-    locales: 'zh-Hans-CN-u-nu-hanidec',
+    locales: 'en-GB',
+    format: 'unit',
+    unit: 'liter',
+    unitDisplay: 'long',
   },
 };

@@ -186,7 +186,7 @@ export default function resolveSelection({
   // Сдвигаем каретку к ближайшей цифре
   if (inputType === 'deleteForward') {
     const p$1 = `^.{${selection}}[^${localizedValues.digits}]*[\\${localizedValues.minusSign}${localizedValues.digits}]`;
-    const nextDigitIndex = value.match(RegExp(p$1))?.[0].length;
+    const nextDigitIndex = RegExp(p$1).exec(value)?.[0].length;
 
     if (nextDigitIndex !== undefined) {
       selection = nextDigitIndex - 1;
@@ -196,7 +196,7 @@ export default function resolveSelection({
     const p$1 = `[${inputType === 'deleteBackward' ? `\\${localizedValues.minusSign}` : ''}${
       localizedValues.digits
     }][^${localizedValues.digits}]*.{${value.length - selection}}$`;
-    const previousDigitIndex = value.match(RegExp(p$1))?.index;
+    const previousDigitIndex = RegExp(p$1).exec(value)?.index;
 
     if (previousDigitIndex !== undefined) {
       selection = previousDigitIndex + 1;

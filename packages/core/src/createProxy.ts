@@ -1,9 +1,6 @@
 import type Input from './Input';
 
-export default function createProxy<T extends Input>(
-  ref: React.MutableRefObject<HTMLInputElement | null>,
-  instanse: T,
-) {
+export default function createProxy(ref: React.MutableRefObject<HTMLInputElement | null>, instanse: Input) {
   return new Proxy(ref, {
     set(target, property, element: HTMLInputElement | null) {
       if (property !== 'current') {

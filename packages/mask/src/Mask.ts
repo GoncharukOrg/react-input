@@ -28,7 +28,7 @@ function normalizeOptions(options: MaskOptions) {
     replacement:
       typeof options.replacement === 'string'
         ? formatToReplacementObject(options.replacement)
-        : options.replacement ?? {},
+        : (options.replacement ?? {}),
     showMask: options.showMask ?? false,
     separate: options.separate ?? false,
     track: options.track,

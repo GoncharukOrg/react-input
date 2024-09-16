@@ -1,10 +1,10 @@
-const babel = require('@rollup/plugin-babel').default;
-const commonjs = require('@rollup/plugin-commonjs').default;
-const nodeResolve = require('@rollup/plugin-node-resolve').default;
-const replace = require('@rollup/plugin-replace').default;
-const terser = require('@rollup/plugin-terser').default;
+import babel from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
+import nodeResolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
+import terser from '@rollup/plugin-terser';
 
-const readdir = require('./utils/readdir.js');
+import readdir from './utils/readdir.js';
 
 const { npm_package_name } = process.env;
 
@@ -87,7 +87,7 @@ const plugins = (/** @type {'cdn'|'react'} */ output) => [
   terser(),
 ];
 
-function rollup() {
+export default () => {
   // @ts-expect-error
   const entries = ENTRIES[npm_package_name];
   const config = [];
@@ -129,6 +129,4 @@ function rollup() {
   }
 
   return config;
-}
-
-module.exports = rollup;
+};

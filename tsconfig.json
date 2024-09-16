@@ -26,11 +26,6 @@
 
     "skipLibCheck": true
   },
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
-  },
-  "include": ["packages", "scripts", "utils", "rollup.config.js"],
+  "include": [".storybook/**/*", "packages", "scripts", "utils"],
   "exclude": ["**/node_modules", "**/dist"]
 }

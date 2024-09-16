@@ -29,7 +29,7 @@ function ForwardedInputNumberFormat<C extends React.ComponentType | undefined = 
     ...props
   }: InputNumberFormatProps<C>,
   forwardedRef: React.ForwardedRef<HTMLInputElement>,
-): JSX.Element {
+) {
   const ref = useNumberFormat({
     locales,
     format,
@@ -48,7 +48,7 @@ function ForwardedInputNumberFormat<C extends React.ComponentType | undefined = 
   const connectedRef = useConnectedRef(ref, forwardedRef);
 
   if (Component) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unnecessary-type-assertion
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return <Component ref={connectedRef} {...(props as any)} />;
   }
 

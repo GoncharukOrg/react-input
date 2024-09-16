@@ -34,4 +34,4 @@ export type InputComponentProps<C extends React.ComponentType | undefined = unde
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InputComponent<P extends object> = <C extends React.ComponentType<any> | undefined = undefined>(
   props: P & InputComponentProps<C> & React.RefAttributes<HTMLInputElement>,
-) => JSX.Element;
+) => React.JSX.Element;

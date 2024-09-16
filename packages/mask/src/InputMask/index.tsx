@@ -13,13 +13,13 @@ export type InputMaskProps<C extends React.ComponentType | undefined = undefined
 function ForwardedInputMask<C extends React.ComponentType | undefined = undefined>(
   { component: Component, mask, replacement, showMask, separate, track, modify, ...props }: InputMaskProps<C>,
   forwardedRef: React.ForwardedRef<HTMLInputElement>,
-): JSX.Element {
+) {
   const ref = useMask({ mask, replacement, showMask, separate, track, modify });
 
   const connectedRef = useConnectedRef(ref, forwardedRef);
 
   if (Component) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unnecessary-type-assertion
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return <Component ref={connectedRef} {...(props as any)} />;
   }
 

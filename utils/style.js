@@ -1,4 +1,4 @@
-const style = {
+export default {
   reset: '\x1b[0m',
   bright: '\x1b[1m',
   dim: '\x1b[2m',
@@ -29,5 +29,3 @@ const style = {
     crimson: '\x1b[48m',
   },
 };
-
-module.exports = style;

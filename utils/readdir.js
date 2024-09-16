@@ -1,10 +1,10 @@
-const fs = require('fs');
+import fs from 'fs';
 
 /**
  * @param {fs.PathLike} dir
  * @param {string[]} paths
  */
-function readdir(dir, paths = []) {
+export default function readdir(dir, paths = []) {
   fs.readdirSync(dir).forEach((relativePath) => {
     const path = `${dir}/${relativePath}`;
 
@@ -17,5 +17,3 @@ function readdir(dir, paths = []) {
 
   return paths;
 }
-
-module.exports = readdir;

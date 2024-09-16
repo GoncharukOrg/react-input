@@ -83,10 +83,10 @@
     "access": "public"
   },
   "scripts": {
-    "build": "ts-node ../../scripts/build.ts",
-    "release:major": "ts-node ../../scripts/release.ts major",
-    "release:minor": "ts-node ../../scripts/release.ts minor",
-    "release:patch": "ts-node ../../scripts/release.ts patch"
+    "build": "tsx ../../scripts/build.ts",
+    "release:major": "tsx ../../scripts/release.ts major",
+    "release:minor": "tsx ../../scripts/release.ts minor",
+    "release:patch": "tsx ../../scripts/release.ts patch"
   },
   "dependencies": {
     "@react-input/core": "^1.0.15"

@@ -31,7 +31,7 @@ rl.question(`Do you want to update and publish the ${npm_package_name} package? 
   const output = execSync(`npm version ${process.argv[2]}`, { encoding: 'utf8' });
 
   const packageName = npm_package_name.replace(/^.+\/(.+)/, '$1');
-  const newPackageVersion = output.match(/\d+\.\d+\.\d+/)?.[0];
+  const newPackageVersion = /\d+\.\d+\.\d+/.exec(output)?.[0];
 
   if (!newPackageVersion) {
     throw new Error('');

@@ -1,6 +1,6 @@
 {
   "name": "@react-input/number-format",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "license": "MIT",
   "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
   "description": "React input component for formatted number input with locale-specific.",
@@ -89,7 +89,7 @@
     "release:patch": "tsx ../../scripts/release.ts patch"
   },
   "dependencies": {
-    "@react-input/core": "^1.0.15"
+    "@react-input/core": "^1.0.16"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

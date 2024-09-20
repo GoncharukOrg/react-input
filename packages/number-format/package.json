@@ -51,21 +51,6 @@
       "types": "./dist/@types/*.d.ts",
       "import": "./dist/module/*.js",
       "require": "./dist/node/*.cjs"
-    },
-    "./InputNumberFormat": {
-      "types": "./dist/@types/InputNumberFormat/index.d.ts",
-      "import": "./dist/module/InputNumberFormat/index.js",
-      "require": "./dist/node/InputNumberFormat/index.cjs"
-    },
-    "./InputNumberFormat/*": {
-      "types": "./dist/@types/InputNumberFormat/*.d.ts",
-      "import": "./dist/module/InputNumberFormat/*.js",
-      "require": "./dist/node/InputNumberFormat/*.cjs"
-    },
-    "./InputNumberFormat/*.js": {
-      "types": "./dist/@types/InputNumberFormat/*.d.ts",
-      "import": "./dist/module/InputNumberFormat/*.js",
-      "require": "./dist/node/InputNumberFormat/*.cjs"
     }
   },
   "typesVersions": {
@@ -74,8 +59,7 @@
         "dist/@types/index.d.ts"
       ],
       "*": [
-        "dist/@types/*",
-        "dist/@types/*/index.d.ts"
+        "dist/@types/*"
       ]
     }
   },

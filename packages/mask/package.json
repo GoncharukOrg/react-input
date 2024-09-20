@@ -51,21 +51,6 @@
       "types": "./dist/@types/*.d.ts",
       "import": "./dist/module/*.js",
       "require": "./dist/node/*.cjs"
-    },
-    "./InputMask": {
-      "types": "./dist/@types/InputMask/index.d.ts",
-      "import": "./dist/module/InputMask/index.js",
-      "require": "./dist/node/InputMask/index.cjs"
-    },
-    "./InputMask/*": {
-      "types": "./dist/@types/InputMask/*.d.ts",
-      "import": "./dist/module/InputMask/*.js",
-      "require": "./dist/node/InputMask/*.cjs"
-    },
-    "./InputMask/*.js": {
-      "types": "./dist/@types/InputMask/*.d.ts",
-      "import": "./dist/module/InputMask/*.js",
-      "require": "./dist/node/InputMask/*.cjs"
     }
   },
   "typesVersions": {
@@ -74,8 +59,7 @@
         "dist/@types/index.d.ts"
       ],
       "*": [
-        "dist/@types/*",
-        "dist/@types/*/index.d.ts"
+        "dist/@types/*"
       ]
     }
   },

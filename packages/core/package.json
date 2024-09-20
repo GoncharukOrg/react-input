@@ -52,8 +52,7 @@
         "dist/@types/index.d.ts"
       ],
       "*": [
-        "dist/@types/*",
-        "dist/@types/*/index.d.ts"
+        "dist/@types/*"
       ]
     }
   },
@@ -61,8 +60,7 @@
     "access": "public"
   },
   "scripts": {
-    "write:entries": "ts-node ../../scripts/write-entries.ts",
-    "build": "npm run write:entries && ts-node ../../scripts/build.ts",
+    "build": "ts-node ../../scripts/build.ts",
     "release:major": "ts-node ../../scripts/release.ts major",
     "release:minor": "ts-node ../../scripts/release.ts minor",
     "release:patch": "ts-node ../../scripts/release.ts patch"

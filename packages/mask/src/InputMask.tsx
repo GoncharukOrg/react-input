@@ -1,10 +1,11 @@
-import { forwardRef } from 'react';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import React, { forwardRef } from 'react';
 
 import { useConnectedInputRef } from '@react-input/core';
 
-import useMask from '../useMask';
+import useMask from './useMask';
 
-import type { MaskProps } from '../types';
+import type { MaskProps } from './types';
 import type { InputComponent, InputComponentProps } from '@react-input/core';
 
 export type InputMaskProps<C extends React.ComponentType | undefined = undefined> = MaskProps & InputComponentProps<C>;

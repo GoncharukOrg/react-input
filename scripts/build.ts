@@ -11,6 +11,25 @@ if (!npm_package_name) {
 }
 
 /**
+ * Write entries
+ */
+
+if (npm_package_name === '@react-input/core') {
+  const resolvedPaths = readdir('./src').filter((path) => {
+    return !/index.[^/]+$|\.stories\.[^/]+$|\.test\.[^/]+$|types\.ts$|\.d\.ts$/gm.test(path);
+  });
+
+  const imports = resolvedPaths.map((path) => {
+    const normalizedPath = path.replace(/^\.\/src\/|\.[^/]+$/g, '');
+    const moduleName = normalizedPath.replace(/^(.*\/)?/g, '');
+
+    return `export { default as ${moduleName} } from './${normalizedPath}';\n`;
+  });
+
+  fs.writeFileSync('./src/index.ts', `${imports.join('')}\nexport type * from './types';\n`, { encoding: 'utf-8' });
+}
+
+/**
  * Remove `dist`
  */
 
@@ -27,32 +46,34 @@ execSync('rollup --config rollup.config.js');
  */
 
 execSync(
-  `tsc src/index.ts ${npm_package_name === '@react-input/core' ? '--removeComments' : ''} --declaration --emitDeclarationOnly --jsx react-jsx --rootDir src --outDir dist/@types`,
+  `tsc src/index.ts ${npm_package_name === '@react-input/core' ? '--removeComments' : ''} --declaration --emitDeclarationOnly --esModuleInterop --jsx react --rootDir src --outDir dist/@types`,
 );
 
 /**
  * Clear types
  */
 
-const nodePaths = readdir('./dist/node');
-const typesPaths = readdir('./dist/@types');
+{
+  const nodePaths = readdir('./dist/node');
+  const typesPaths = readdir('./dist/@types');
 
-typesPaths.forEach((path) => {
-  const normalizedPath = path.replace(/^\.\/dist\/@types/, './dist/node').replace(/d\.ts$/, 'cjs');
+  typesPaths.forEach((path) => {
+    const normalizedPath = path.replace(/^\.\/dist\/@types/, './dist/node').replace(/d\.ts$/, 'cjs');
 
-  if (!nodePaths.includes(normalizedPath) && !path.endsWith('/types.d.ts')) {
-    const dirPath = path.replace(/\/[^/]*$/gm, '');
+    if (!nodePaths.includes(normalizedPath) && !path.endsWith('/types.d.ts')) {
+      const dirPath = path.replace(/\/[^/]*$/gm, '');
 
-    fs.rmSync(path);
+      fs.rmSync(path);
 
-    if (fs.readdirSync(dirPath).length === 0) {
-      fs.rmdirSync(dirPath);
+      if (fs.readdirSync(dirPath).length === 0) {
+        fs.rmdirSync(dirPath);
+      }
     }
-  }
-});
+  });
+}
 
 /**
- * Create package.json
+ * Add directives
  */
 
 {
@@ -63,31 +84,63 @@ typesPaths.forEach((path) => {
 
   if (npm_package_name === '@react-input/mask' || npm_package_name === '@react-input/number-format') {
     for (const type of ['node', 'module']) {
-      fs.writeFileSync(
-        `./dist/${type}/${map[npm_package_name]}/package.json`,
-        JSON.stringify(
-          {
-            sideEffects: false,
-            type: type === 'module' ? 'module' : undefined,
-            types: `../../@types/${map[npm_package_name]}/index.d.ts`,
-            module: type === 'module' ? './index.js' : `../../module/${map[npm_package_name]}/index.js`,
-            main: type === 'node' ? './index.cjs' : `../../node/${map[npm_package_name]}/index.cjs`,
-          },
-          null,
-          2,
-        ),
-      );
+      const format = type === 'module' ? 'js' : 'cjs';
+      const path = `./dist/${type}/${map[npm_package_name]}.${format}`;
+
+      let src = fs.readFileSync(path, 'utf-8');
+
+      if (type === 'module') {
+        src = src.replace('', '"use client";');
+      }
+
+      if (type === 'node') {
+        src = src.replace('"use strict";', '"use strict";"use client";');
+      }
+
+      fs.writeFileSync(path, src);
     }
   }
 }
+
+// /**
+//  * Create package.json
+//  */
+
+// {
+//   const map = {
+//     '@react-input/mask': 'InputMask',
+//     '@react-input/number-format': 'InputNumberFormat',
+//   };
+
+//   if (npm_package_name === '@react-input/mask' || npm_package_name === '@react-input/number-format') {
+//     for (const type of ['node', 'module']) {
+//       fs.writeFileSync(
+//         `./dist/${type}/${map[npm_package_name]}/package.json`,
+//         JSON.stringify(
+//           {
+//             sideEffects: false,
+//             type: type === 'module' ? 'module' : undefined,
+//             types: `../../@types/${map[npm_package_name]}/index.d.ts`,
+//             module: type === 'module' ? './index.js' : `../../module/${map[npm_package_name]}/index.js`,
+//             main: type === 'node' ? './index.cjs' : `../../node/${map[npm_package_name]}/index.cjs`,
+//           },
+//           null,
+//           2,
+//         ),
+//       );
+//     }
+//   }
+// }
 
 /**
  * Console
  */
 
-const packageName = `${process.env.npm_package_name}@${process.env.npm_package_version}`;
+{
+  const packageName = `${process.env.npm_package_name}@${process.env.npm_package_version}`;
 
-console.log(
-  `\n${style.fg.yellow}The package ${style.fg.blue}${packageName} ${style.fg.yellow}was successfully built!\n`,
-  style.reset,
-);
+  console.log(
+    `\n${style.fg.yellow}The package ${style.fg.blue}${packageName} ${style.fg.yellow}was successfully built!\n`,
+    style.reset,
+  );
+}

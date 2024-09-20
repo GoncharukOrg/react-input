@@ -1,5 +1,4 @@
-import Input from '@react-input/core/Input';
-import SyntheticChangeError from '@react-input/core/SyntheticChangeError';
+import { Input, SyntheticChangeError } from '@react-input/core';
 
 import * as utils from './utils';
 import filter from './utils/filter';
@@ -28,7 +27,7 @@ function normalizeOptions(options: MaskOptions) {
     replacement:
       typeof options.replacement === 'string'
         ? formatToReplacementObject(options.replacement)
-        : (options.replacement ?? {}),
+        : options.replacement ?? {},
     showMask: options.showMask ?? false,
     separate: options.separate ?? false,
     track: options.track,

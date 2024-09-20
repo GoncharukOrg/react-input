@@ -1,6 +1,6 @@
 {
   "name": "@react-input/number-format",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "license": "MIT",
   "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
   "description": "React input component for formatted number input with locale-specific.",
@@ -51,21 +51,6 @@
       "types": "./dist/@types/*.d.ts",
       "import": "./dist/module/*.js",
       "require": "./dist/node/*.cjs"
-    },
-    "./InputNumberFormat": {
-      "types": "./dist/@types/InputNumberFormat/index.d.ts",
-      "import": "./dist/module/InputNumberFormat/index.js",
-      "require": "./dist/node/InputNumberFormat/index.cjs"
-    },
-    "./InputNumberFormat/*": {
-      "types": "./dist/@types/InputNumberFormat/*.d.ts",
-      "import": "./dist/module/InputNumberFormat/*.js",
-      "require": "./dist/node/InputNumberFormat/*.cjs"
-    },
-    "./InputNumberFormat/*.js": {
-      "types": "./dist/@types/InputNumberFormat/*.d.ts",
-      "import": "./dist/module/InputNumberFormat/*.js",
-      "require": "./dist/node/InputNumberFormat/*.cjs"
     }
   },
   "typesVersions": {
@@ -74,8 +59,7 @@
         "dist/@types/index.d.ts"
       ],
       "*": [
-        "dist/@types/*",
-        "dist/@types/*/index.d.ts"
+        "dist/@types/*"
       ]
     }
   },
@@ -89,7 +73,7 @@
     "release:patch": "tsx ../../scripts/release.ts patch"
   },
   "dependencies": {
-    "@react-input/core": "^1.0.16"
+    "@react-input/core": "^1.0.17"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

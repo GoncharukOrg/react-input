@@ -46,7 +46,7 @@ execSync('rollup --config ../../rollup.config.js');
  */
 
 execSync(
-  `tsc src/index.ts ${npm_package_name === '@react-input/core' ? '--removeComments' : ''} --declaration --emitDeclarationOnly --jsx react-jsx --rootDir src --outDir dist/@types`,
+  `tsc src/index.ts ${npm_package_name === '@react-input/core' ? '--removeComments' : ''} --declaration --emitDeclarationOnly --esModuleInterop --jsx react --rootDir src --outDir dist/@types`,
 );
 
 /**
@@ -73,7 +73,7 @@ execSync(
 }
 
 /**
- * Create package.json
+ * Add directives
  */
 
 {
@@ -84,23 +84,53 @@ execSync(
 
   if (npm_package_name === '@react-input/mask' || npm_package_name === '@react-input/number-format') {
     for (const type of ['node', 'module']) {
-      fs.writeFileSync(
-        `./dist/${type}/${map[npm_package_name]}/package.json`,
-        JSON.stringify(
-          {
-            sideEffects: false,
-            type: type === 'module' ? 'module' : undefined,
-            types: `../../@types/${map[npm_package_name]}/index.d.ts`,
-            module: type === 'module' ? './index.js' : `../../module/${map[npm_package_name]}/index.js`,
-            main: type === 'node' ? './index.cjs' : `../../node/${map[npm_package_name]}/index.cjs`,
-          },
-          null,
-          2,
-        ),
-      );
+      const format = type === 'module' ? 'js' : 'cjs';
+      const path = `./dist/${type}/${map[npm_package_name]}.${format}`;
+
+      let src = fs.readFileSync(path, 'utf-8');
+
+      if (type === 'module') {
+        src = src.replace('', '"use client";');
+      }
+
+      if (type === 'node') {
+        src = src.replace('"use strict";', '"use strict";"use client";');
+      }
+
+      fs.writeFileSync(path, src);
     }
   }
 }
+
+// /**
+//  * Create package.json
+//  */
+
+// {
+//   const map = {
+//     '@react-input/mask': 'InputMask',
+//     '@react-input/number-format': 'InputNumberFormat',
+//   };
+
+//   if (npm_package_name === '@react-input/mask' || npm_package_name === '@react-input/number-format') {
+//     for (const type of ['node', 'module']) {
+//       fs.writeFileSync(
+//         `./dist/${type}/${map[npm_package_name]}/package.json`,
+//         JSON.stringify(
+//           {
+//             sideEffects: false,
+//             type: type === 'module' ? 'module' : undefined,
+//             types: `../../@types/${map[npm_package_name]}/index.d.ts`,
+//             module: type === 'module' ? './index.js' : `../../module/${map[npm_package_name]}/index.js`,
+//             main: type === 'node' ? './index.cjs' : `../../node/${map[npm_package_name]}/index.cjs`,
+//           },
+//           null,
+//           2,
+//         ),
+//       );
+//     }
+//   }
+// }
 
 /**
  * Console

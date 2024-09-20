@@ -211,6 +211,12 @@ export default [
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          varsIgnorePattern: '^React$',
+        },
+      ],
       '@typescript-eslint/restrict-template-expressions': [
         'error',
         {

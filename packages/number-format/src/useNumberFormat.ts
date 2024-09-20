@@ -1,6 +1,6 @@
 import { useMemo, useRef } from 'react';
 
-import createProxy from '@react-input/core/createProxy';
+import { createProxy } from '@react-input/core';
 
 import NumberFormat from './NumberFormat';
 

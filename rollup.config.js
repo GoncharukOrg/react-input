@@ -27,7 +27,7 @@ const ENTRIES = {
       },
     },
     react: {
-      input: ['src/index.ts', 'src/Mask.ts', 'src/useMask.ts', 'src/utils.ts', 'src/InputMask/index.tsx'],
+      input: ['src/index.ts', 'src/InputMask.tsx', 'src/Mask.ts', 'src/useMask.ts', 'src/utils.ts'],
     },
   },
   '@react-input/number-format': {
@@ -40,10 +40,10 @@ const ENTRIES = {
     react: {
       input: [
         'src/index.ts',
+        'src/InputNumberFormat.tsx',
         'src/NumberFormat.ts',
         'src/useNumberFormat.ts',
         'src/utils.ts',
-        'src/InputNumberFormat/index.tsx',
       ],
     },
   },

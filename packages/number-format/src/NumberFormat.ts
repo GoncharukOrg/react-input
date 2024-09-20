@@ -1,5 +1,4 @@
-import Input from '@react-input/core/Input';
-import SyntheticChangeError from '@react-input/core/SyntheticChangeError';
+import { Input, SyntheticChangeError } from '@react-input/core';
 
 import * as utils from './utils';
 import filter from './utils/filter';

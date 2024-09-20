@@ -23,12 +23,12 @@ rl.question(`Do you want to update and publish the ${npm_package_name} package? 
     fs.writeFileSync(
       npm_package_json,
       fs
-        .readFileSync(npm_package_json, 'utf8')
+        .readFileSync(npm_package_json, 'utf-8')
         .replace(/"@react-input\/core": "\^\d+\.\d+\.\d+"/, `"@react-input/core": "^${corePackage.version}"`),
     );
   }
   execSync('npm run build');
-  const output = execSync(`npm version ${process.argv[2]}`, { encoding: 'utf8' });
+  const output = execSync(`npm version ${process.argv[2]}`, { encoding: 'utf-8' });
 
   const packageName = npm_package_name.replace(/^.+\/(.+)/, '$1');
   const newPackageVersion = /\d+\.\d+\.\d+/.exec(output)?.[0];

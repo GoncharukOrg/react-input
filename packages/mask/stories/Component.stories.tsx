@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 
 import InputMask from '../src/InputMask';
 

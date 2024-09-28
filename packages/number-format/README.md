@@ -369,7 +369,7 @@ If you find a bug or want to make a suggestion for improving the package, [open 
 
 Support the project with a star ⭐ on [GitHub](https://github.com/GoncharukOrg/react-input).
 
-You can also support the authors by donating 🪙 to [Open Collective](https://opencollective.com):
+You can also support the authors by donating 🪙 to [Open Collective](https://opencollective.com/react-input):
 
 [![Donate to our collective](https://opencollective.com/react-input/donate/button.png)](https://opencollective.com/react-input/donate)
 

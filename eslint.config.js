@@ -229,7 +229,7 @@ export default [
     ...config,
     files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
   })),
-  ...compat.extends('plugin:storybook/recommended').map((config) => ({
+  ...fixupConfigRules(compat.extends('plugin:storybook/recommended')).map((config) => ({
     ...config,
     files: ['**/stories/**/*.[jt]s?(x)', '**/?(*.)+stories.[jt]s?(x)'],
   })),

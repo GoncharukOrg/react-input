@@ -1,19 +1,18 @@
 import React from 'react';
 
-import { InputNumberFormat, NumberFormatOptions, useNumberFormat } from '../src';
+import { InputNumberFormat, useNumberFormat } from '../src';
 
+import type { NumberFormatOptions } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 function Component(props: NumberFormatOptions) {
   const ref = useNumberFormat(props);
 
   return (
-    <>
-      <div>
-        <p>{JSON.stringify(props)}</p>
-        <input ref={ref} />
-      </div>
-    </>
+    <div>
+      <p>{JSON.stringify(props)}</p>
+      <input ref={ref} />
+    </div>
   );
 }
 

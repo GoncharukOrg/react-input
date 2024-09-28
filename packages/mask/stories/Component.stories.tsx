@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import React, { forwardRef, useState } from 'react';
 
 import InputMask from '../src/InputMask';

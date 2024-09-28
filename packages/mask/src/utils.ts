@@ -12,7 +12,7 @@ interface Options {
 }
 
 /**
- * Masks a value using the specified mask (see «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#format)»).
+ * Masks a value using the specified mask (see «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#format)»).
  *
  * The result fully corresponds to the value obtained when entering.
  * Useful when you need to get a masked value without calling an input event.
@@ -36,7 +36,7 @@ export function format(value: string, { mask, replacement }: Options): string {
 }
 
 /**
- * Unmasks the value using the specified mask (see «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#unformat)»).
+ * Unmasks the value using the specified mask (see «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#unformat)»).
  *
  * Returns all characters entered by the user. Essentially does the opposite of the `format` utility.
  *
@@ -54,7 +54,7 @@ export function unformat(formattedValue: string, { mask, replacement }: Options)
 }
 
 /**
- * Specifies the parts of the masked value (see «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#formattoparts)»).
+ * Specifies the parts of the masked value (see «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#formattoparts)»).
  *
  * The masked value parts are an array of objects, where each object contains the
  * necessary information about each character of the value. Parts of the masked value
@@ -83,7 +83,7 @@ export function formatToParts(value: string, { mask, replacement }: Options): Ma
 }
 
 /**
- * Generates a regular expression to match a masked value (see «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#generatepattern)»).
+ * Generates a regular expression to match a masked value (see «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#generatepattern)»).
  *
  * If `takeReplacementKey: true`, then the regular expression search will not take into account the
  * `replacement` parameter key, that is, the character at the index of the replacement character in the

@@ -71,7 +71,13 @@ export default function format(
   });
 
   // Если `minimumFractionDigits` равен нулю, дробная часть будет округлена
-  if (inputType === 'insert' && fraction === '' && minimumFractionDigits === 0 && maximumFractionDigits > 0) {
+  if (
+    inputType === 'insert' &&
+    fraction === '' &&
+    minimumFractionDigits === 0 &&
+    typeof maximumFractionDigits === 'number' &&
+    maximumFractionDigits > 0
+  ) {
     minimumFractionDigits = 1;
 
     // if (minimumSignificantDigits !== undefined) {

@@ -83,7 +83,7 @@ export default class Input {
 
     // При создании `input` элемента возможно программное изменение свойства `value`, что может
     // сказаться на отображении состояния элемента, поэтому важно учесть свойство `value` в приоритете.
-    // ISSUE: https://github.com/GoncharukBro/react-input/issues/3
+    // ISSUE: https://github.com/GoncharukOrg/react-input/issues/3
     const initialValue = element.value || (value ?? defaultValue ?? '');
     const controlled = value !== null && value !== undefined;
 

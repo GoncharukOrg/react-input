@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import React, { forwardRef } from 'react';
 
 import { useConnectedRef } from '@react-input/core';

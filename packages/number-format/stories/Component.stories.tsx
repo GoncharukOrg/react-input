@@ -1,17 +1,16 @@
 import React from 'react';
 
-import { InputNumberFormat, NumberFormatOptions } from '../src';
+import { InputNumberFormat } from '../src';
 
+import type { NumberFormatOptions } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 function Component(props: NumberFormatOptions) {
   return (
-    <>
-      <div>
-        <p>{JSON.stringify(props)}</p>
-        <InputNumberFormat {...props} />
-      </div>
-    </>
+    <div>
+      <p>{JSON.stringify(props)}</p>
+      <InputNumberFormat {...props} />
+    </div>
   );
 }
 

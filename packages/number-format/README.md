@@ -6,13 +6,15 @@
 ![npm](https://img.shields.io/npm/v/@react-input/number-format?style=flat-square)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/@react-input/number-format?style=flat-square)
 
+[![Donate to our collective](https://opencollective.com/react-input/donate/button.png)](https://opencollective.com/react-input/donate)
+
 [![Edit @react-input/number-format](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/react-input-number-format-r234d9?file=%2Fsrc%2FInput.tsx)
 
 ## What's new?
 
 Starting with `@react-input/number-format@2.0.0`, we removed the `input-number-format` event and the `onNumberFormat` method, focusing only on using native React events and methods such as `onChange`, since the `input-number-format` event cannot be explicitly coordinated with React events and methods, making such usage and event firing order non-obvious.
 
-To use the useful data from the `detail` property of the `input-number-format` (`onNumberFormat`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#utils)» section.
+To use the useful data from the `detail` property of the `input-number-format` (`onNumberFormat`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)» section.
 
 ## Installation
 
@@ -36,7 +38,7 @@ or using **CDN**:
 
 | Name                    |                          Type                          |   Default   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | ----------------------- | :----------------------------------------------------: | :---------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `component`             |                      `Component`                       |             | **Not used in the useNumberFormat hook**. Serves to enable the use of custom components, for example, if you want to use your own styled component with the ability to format the value (see «[Integration with custom components](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#integration-with-custom-components)»).                                                                                                                                                                                                                                           |
+| `component`             |                      `Component`                       |             | **Not used in the useNumberFormat hook**. Serves to enable the use of custom components, for example, if you want to use your own styled component with the ability to format the value (see «[Integration with custom components](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#integration-with-custom-components)»).                                                                                                                                                                                                                                           |
 | `locales`               |                 `string` \| `string[]`                 |             | The locale is specified as a string , or an array of such strings in order of preference. By default, the locale set in the environment (browser) is used. For the general form and interpretation of the locales argument, see [Locale identification and negotiation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#locale_identification_and_negotiation).                                                                                                                                                                                            |
 | `format`                | `"decimal"` \| `"currency"` \| `"percent"` \| `"unit"` | `"decimal"` | The formatting style to use.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `currency`              |                        `string`                        |             | The currency to use in currency formatting. Possible values are the ISO 4217 currency codes, such as `"USD"` for the US dollar, `"EUR"` for the euro, or `"CNY"` for the Chinese RMB — see the [Current currency & funds code list](https://www.six-group.com/en/products-services/financial-information/data-standards.html#scrollTo=currency-codes). If the `format` is `"currency"`, the `currency` property must be provided.                                                                                                                                                                |
@@ -89,7 +91,7 @@ export default function App() {
 }
 ```
 
-The `useNumberFormat` hook takes the same properties as the `InputNumberFormat` component, except for the `component` properties. Both approaches are equivalent, but the use of the `InputNumberFormat` component provides additional capabilities, which will be discussed in the section «[Integration with custom components](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#integration-with-custom-components)».
+The `useNumberFormat` hook takes the same properties as the `InputNumberFormat` component, except for the `component` properties. Both approaches are equivalent, but the use of the `InputNumberFormat` component provides additional capabilities, which will be discussed in the section «[Integration with custom components](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#integration-with-custom-components)».
 
 ## Usage with CDN
 
@@ -117,7 +119,7 @@ elements.forEach((element) => {
 
 Note that this way you can register multiple elements to which input formatting will be applied.
 
-To use the utilities described in the "[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#utils)" section, access them via the `ReactInput.NumberFormat` class, for example `ReactInput.NumberFormat.unformat(...`.
+To use the utilities described in the "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)" section, access them via the `ReactInput.NumberFormat` class, for example `ReactInput.NumberFormat.unformat(...`.
 
 > While you can use a class to format input, using a hook or component in the React environment is preferable due to the optimizations applied, where you don't have to think about when to call `register` and `unregister` for input formatting to work.
 
@@ -363,16 +365,14 @@ unformat('$1,23,456.78', 'en-IN');
 
 ## Feedback
 
-If you find a bug or want to make a suggestion for improving the package, [open the issues on GitHub](https://github.com/GoncharukBro/react-input/issues) or email [goncharuk.bro@gmail.com](mailto:goncharuk.bro@gmail.com).
+If you find a bug or want to make a suggestion for improving the package, [open the issues on GitHub](https://github.com/GoncharukOrg/react-input/issues) or email [goncharuk.bro@gmail.com](mailto:goncharuk.bro@gmail.com).
 
-Support the project with a star ⭐ on [GitHub](https://github.com/GoncharukBro/react-input).
+Support the project with a star ⭐ on [GitHub](https://github.com/GoncharukOrg/react-input).
 
-You can also support the authors by donating 🪙 to the wallet for:
+You can also support the authors by donating 🪙 to [Open Collective](https://opencollective.com):
 
-Toncoin (TON): `UQDuf-wr5aKSbnPHd5RW0y9pVymxR-HCUeU_2GuEZQVipbvV`\
-Bitcoin (BTC): `13acJP8hnusuNDuBgiuhcd56Tow5iHuXqK`\
-Dollars (USDT): `TXyeRKKTr9BkhwTG1aCdbU3i84VHiju6r1`
+[![Donate to our collective](https://opencollective.com/react-input/donate/button.png)](https://opencollective.com/react-input/donate)
 
 ## License
 
-MIT © [Nikolay Goncharuk](https://github.com/GoncharukBro)
+[MIT](https://github.com/GoncharukOrg/react-input/blob/main/packages/number-format/LICENSE) © [Nikolay Goncharuk](https://github.com/GoncharukOrg)

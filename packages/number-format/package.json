@@ -19,15 +19,19 @@
     "percent-format",
     "pattern"
   ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/react-input"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GoncharukBro/react-input.git",
+    "url": "git+https://github.com/GoncharukOrg/react-input.git",
     "directory": "packages/number-format"
   },
   "bugs": {
-    "url": "https://github.com/GoncharukBro/react-input/issues"
+    "url": "https://github.com/GoncharukOrg/react-input/issues"
   },
-  "homepage": "https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#readme",
+  "homepage": "https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#readme",
   "files": [
     "dist"
   ],

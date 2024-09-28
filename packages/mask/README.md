@@ -6,13 +6,15 @@
 ![npm](https://img.shields.io/npm/v/@react-input/mask?style=flat-square)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/@react-input/mask?style=flat-square)
 
+[![Donate to our collective](https://opencollective.com/react-input/donate/button.png)](https://opencollective.com/react-input/donate)
+
 [![Edit @react-input/mask](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/react-input-mask-r5jmmm?file=%2Fsrc%2FInput.tsx)
 
 ## What's new?
 
 Starting with `@react-input/mask@2.0.0`, we removed the `input-mask` event and the `onMask` method, focusing only on using native React events and methods such as `onChange`, since the `input-mask` event cannot be explicitly coordinated with React events and methods, making such usage and event firing order non-obvious.
 
-To use the useful data from the `detail` property of the `input-mask` (`onMask`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#utils)» section.
+To use the useful data from the `detail` property of the `input-mask` (`onMask`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils)» section.
 
 ## Installation
 
@@ -36,13 +38,13 @@ or using **CDN**:
 
 | Name          |         Type         | Default | Description                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ------------- | :------------------: | :-----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `component`   |     `Component`      |         | **Not used in the useMask hook**. Serves to enable the use of custom components, for example, if you want to use your own styled component with the ability to mask the value (see «[Integration with custom components](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#integration-with-custom-components)»).                                                                                               |
+| `component`   |     `Component`      |         | **Not used in the useMask hook**. Serves to enable the use of custom components, for example, if you want to use your own styled component with the ability to mask the value (see «[Integration with custom components](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#integration-with-custom-components)»).                                                                                               |
 | `mask`        |       `string`       |  `""`   | Input mask, `replacement` is used to replace characters.                                                                                                                                                                                                                                                                                                                                                                          |
-| `replacement` | `string` \| `object` |  `{}`   | Sets the characters replaced in the mask, where "key" is the replaced character, "value" is the regular expression to which the input character must match (see «[Replacement](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#replacement)»). It is possible to pass the replacement character as a string, then `replacement="_"` will default to `replacement={{ _: /./ }}`. Keys are ignored as you type. |
+| `replacement` | `string` \| `object` |  `{}`   | Sets the characters replaced in the mask, where "key" is the replaced character, "value" is the regular expression to which the input character must match (see «[Replacement](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#replacement)»). It is possible to pass the replacement character as a string, then `replacement="_"` will default to `replacement={{ _: /./ }}`. Keys are ignored as you type. |
 | `showMask`    |      `boolean`       | `false` | Controls the display of the mask, for example, `+0 (123) ___-__-__` instead of `+0 (123`.                                                                                                                                                                                                                                                                                                                                         |
 | `separate`    |      `boolean`       | `false` | Stores the position of the entered characters. By default, input characters are non-breaking, which means that if you remove characters in the middle of the value, the characters are shifted to the left, forming a non-breaking value, which is the behavior of `input`. For example, with `true`, the possible value is `+0 (123) ___-45-__`, with `false` - `+0 (123) 45_-__-__`.                                            |
-| `track`       |      `function`      |         | The tarck function is run before masking, allowing the entered value to be conditionally changed (see «[Track](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#track)»).                                                                                                                                                                                                                                      |
-| `modify`      |      `function`      |         | Function triggered before masking. Allows you conditionally change the properties of the component that affect masking. Valid values ​​for modification are `mask`, `replacement`, `showMask` and `separate`. This is useful when you need conditionally tweak the displayed value to improve UX (see «[Modify](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#modify)»).                                    |
+| `track`       |      `function`      |         | The tarck function is run before masking, allowing the entered value to be conditionally changed (see «[Track](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#track)»).                                                                                                                                                                                                                                      |
+| `modify`      |      `function`      |         | Function triggered before masking. Allows you conditionally change the properties of the component that affect masking. Valid values ​​for modification are `mask`, `replacement`, `showMask` and `separate`. This is useful when you need conditionally tweak the displayed value to improve UX (see «[Modify](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#modify)»).                                    |
 
 > You can also pass other properties available element `input` default or your own components, when integrated across the property `component`.
 
@@ -79,7 +81,7 @@ export default function App() {
 }
 ```
 
-The `useMask` hook takes the same properties as the `InputMask` component, except for the `component` properties. Both approaches are equivalent, but the use of the `InputMask` component provides additional capabilities, which will be discussed in the section «[Integration with custom components](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#integration-with-custom-components)».
+The `useMask` hook takes the same properties as the `InputMask` component, except for the `component` properties. Both approaches are equivalent, but the use of the `InputMask` component provides additional capabilities, which will be discussed in the section «[Integration with custom components](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#integration-with-custom-components)».
 
 ## Usage with CDN
 
@@ -107,7 +109,7 @@ elements.forEach((element) => {
 
 Please note that in this way you can register multiple elements to which the mask will be applied.
 
-To use the utilities described in the "[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#utils)" section, access them via the `ReactInput.Mask` class, for example `ReactInput.Mask.format(...`.
+To use the utilities described in the "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils)" section, access them via the `ReactInput.Mask` class, for example `ReactInput.Mask.format(...`.
 
 > Although you can use a class to mask input, using a hook or component in the React environment is preferable due to the optimizations applied, where you do not have to think about when to call `register` and `unregister` for input masking to work.
 
@@ -115,7 +117,7 @@ To use the utilities described in the "[Utils](https://github.com/GoncharukBro/r
 
 To support the concept of controlled input, `@react-input/mask` does not change the value passed in the `value` or `defaultValue` properties of the `input` element, so set the initialized value to something that can match the masked value at any point in the input. If you make a mistake, you'll see a warning in the console about it.
 
-In cases where the input contains an unmasked value, you should use the `format` utility described in the chapter "[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/mask#utils)" to substitute the correct value, for example:
+In cases where the input contains an unmasked value, you should use the `format` utility described in the chapter "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils)" to substitute the correct value, for example:
 
 ```tsx
 import { useMask, format } from '@react-input/mask';
@@ -451,16 +453,14 @@ RegExp(pattern).test('a'); // true
 
 ## Feedback
 
-If you find a bug or want to make a suggestion for improving the package, [open the issues on GitHub](https://github.com/GoncharukBro/react-input/issues) or email [goncharuk.bro@gmail.com](mailto:goncharuk.bro@gmail.com).
+If you find a bug or want to make a suggestion for improving the package, [open the issues on GitHub](https://github.com/GoncharukOrg/react-input/issues) or email [goncharuk.bro@gmail.com](mailto:goncharuk.bro@gmail.com).
 
-Support the project with a star ⭐ on [GitHub](https://github.com/GoncharukBro/react-input).
+Support the project with a star ⭐ on [GitHub](https://github.com/GoncharukOrg/react-input).
 
-You can also support the authors by donating 🪙 to the wallet for:
+You can also support the authors by donating 🪙 to [Open Collective](https://opencollective.com):
 
-Toncoin (TON): `UQDuf-wr5aKSbnPHd5RW0y9pVymxR-HCUeU_2GuEZQVipbvV`\
-Bitcoin (BTC): `13acJP8hnusuNDuBgiuhcd56Tow5iHuXqK`\
-Dollars (USDT): `TXyeRKKTr9BkhwTG1aCdbU3i84VHiju6r1`
+[![Donate to our collective](https://opencollective.com/react-input/donate/button.png)](https://opencollective.com/react-input/donate)
 
 ## License
 
-MIT © [Nikolay Goncharuk](https://github.com/GoncharukBro)
+[MIT](https://github.com/GoncharukOrg/react-input/blob/main/packages/mask/LICENSE) © [Nikolay Goncharuk](https://github.com/GoncharukOrg)

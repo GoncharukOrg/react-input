@@ -91,7 +91,7 @@ It is possible to pass the replacement character as a string, then any character
 
 ## Track
 
-The `tarck` function is run before masking, allowing the entered value to be conditionally changed.
+The `track` function is run before masking, allowing the entered value to be conditionally changed.
 
 You can intercept input to change the entered value every time the value in the input element changes. This is useful in cases where you need to provide a uniform data format, but at the same time you do not want to limit the user to the set of valid characters for input.
 

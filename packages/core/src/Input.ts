@@ -78,20 +78,17 @@ export default class Input {
       },
     });
 
-    const value = element.getAttribute('value');
-    const defaultValue = element.getAttribute('defaultValue');
-
-    // При создании `input` элемента возможно программное изменение свойства `value`, что может
-    // сказаться на отображении состояния элемента, поэтому важно учесть свойство `value` в приоритете.
-    // ISSUE: https://github.com/GoncharukOrg/react-input/issues/3
-    const initialValue = element.value || (value ?? defaultValue ?? '');
-    const controlled = value !== null && value !== undefined;
+    const { initialValue = '', controlled = false } =
+      (element as { _wrapperState?: { initialValue?: string; controlled?: boolean } })._wrapperState ?? {};
 
     // Поскольку в `init` возможно изменение инициализированного значения, мы
     // также должны изменить значение элемента, при этом мы не должны устанавливать
     // позицию каретки, так как установка позиции здесь приведёт к автофокусу.
     setInputAttributes(element, {
-      value: this.init({ initialValue, controlled }),
+      // При создании `input` элемента возможно программное изменение свойства `value`, что может
+      // сказаться на отображении состояния элемента, поэтому важно учесть свойство `value` в приоритете.
+      // ISSUE: https://github.com/GoncharukOrg/react-input/issues/3
+      value: this.init({ initialValue: element.value || initialValue, controlled }),
     });
 
     /**

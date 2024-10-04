@@ -19,12 +19,10 @@ export default function useNumberFormat({
   maximumIntegerDigits,
   minimumFractionDigits,
   maximumFractionDigits,
-  // minimumSignificantDigits,
-  // maximumSignificantDigits,
 }: NumberFormatOptions & { locales?: Intl.LocalesArgument } = {}) {
   const $ref = useRef<HTMLInputElement | null>(null);
-  const $locales = useRef(locales);
   const $options = useRef({
+    locales,
     format,
     currency,
     currencyDisplay,
@@ -38,7 +36,7 @@ export default function useNumberFormat({
     maximumFractionDigits,
   });
 
-  $locales.current = locales;
+  $options.current.locales = locales;
   $options.current.format = format;
   $options.current.currency = currency;
   $options.current.currencyDisplay = currencyDisplay;
@@ -52,6 +50,6 @@ export default function useNumberFormat({
   $options.current.maximumFractionDigits = maximumFractionDigits;
 
   return useMemo(() => {
-    return createProxy($ref, new NumberFormat($locales.current, $options.current));
+    return createProxy($ref, new NumberFormat($options.current));
   }, []);
 }

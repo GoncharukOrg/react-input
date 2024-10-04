@@ -38,14 +38,12 @@ type ResolveOptions<T extends Record<string, any>> = Pick<
   | 'minimumIntegerDigits'
   | 'minimumFractionDigits'
   | 'maximumFractionDigits'
-  // | 'minimumSignificantDigits'
-  // | 'maximumSignificantDigits'
 >;
 
 export interface IncludedOptions {
   format: Intl.NumberFormatOptions['style'];
   groupDisplay: Intl.NumberFormatOptions['useGrouping'];
-  maximumIntegerDigits: number;
+  maximumIntegerDigits: number | undefined;
 }
 
 export type NumberFormatOptions = ResolveOptions<Intl.NumberFormatOptions> & Partial<IncludedOptions>;

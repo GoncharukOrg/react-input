@@ -1,10 +1,7 @@
-import filter from './filter';
-
 import type { LocalizedNumberFormatValues } from '../types';
 
 export default function unformat(value: string, localizedValues: LocalizedNumberFormatValues) {
-  // Фильтруем значение для преобразование в число
-  const normalizedValue = filter(value, localizedValues)
+  const normalizedValue = value
     // Нормализуем десятичный разделитель
     .replace(RegExp(`[,${localizedValues.decimal}]`, 'g'), '.')
     // Нормализуем знак минуса

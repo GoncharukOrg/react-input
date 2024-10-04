@@ -20,7 +20,7 @@ interface TempResolved extends Partial<Intl.ResolvedNumberFormatOptions> {
 
 export default function resolveOptions(
   locales: Intl.LocalesArgument,
-  { format, groupDisplay, maximumIntegerDigits = 21, ...options }: NumberFormatOptions,
+  { format, groupDisplay, maximumIntegerDigits, ...options }: NumberFormatOptions,
 ) {
   const resolvedOptions = new Intl.NumberFormat(locales, {
     ...options,
@@ -30,11 +30,11 @@ export default function resolveOptions(
 
   resolvedOptions.format = (resolvedOptions as unknown as Intl.ResolvedNumberFormatOptions).style;
   resolvedOptions.groupDisplay = (resolvedOptions as unknown as Intl.ResolvedNumberFormatOptions).useGrouping;
-  resolvedOptions.maximumIntegerDigits = maximumIntegerDigits;
 
-  if (resolvedOptions.maximumIntegerDigits < resolvedOptions.minimumIntegerDigits) {
-    resolvedOptions.maximumIntegerDigits = resolvedOptions.minimumIntegerDigits;
-  }
+  const isMaxGreaterMin =
+    maximumIntegerDigits !== undefined && maximumIntegerDigits < resolvedOptions.minimumIntegerDigits;
+
+  resolvedOptions.maximumIntegerDigits = isMaxGreaterMin ? resolvedOptions.minimumIntegerDigits : maximumIntegerDigits;
 
   // Удаляем из `resolvedOptions` неиспользуемые свойства
   const tempResolvedOptions = resolvedOptions as unknown as TempResolved;

@@ -12,8 +12,6 @@ export default function localizeValues(locales: Intl.LocalesArgument): Localized
     minimumIntegerDigits: 10,
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
-    // minimumSignificantDigits: 10,
-    // maximumSignificantDigits: 10,
   }).format(-1234567890.1);
 
   // При, например, арабской локали, минус устанавливается

@@ -4,12 +4,15 @@ import * as utils from './utils';
 import filter from './utils/filter';
 import format from './utils/format';
 import localizeValues from './utils/localizeValues';
-import resolveMinimumFractionDigits from './utils/resolveMinimumFractionDigits';
+import normalize from './utils/normalize';
 import resolveOptions from './utils/resolveOptions';
 import resolveSelection from './utils/resolveSelection';
-import unformat from './utils/unformat';
 
 import type { NumberFormatOptions } from './types';
+
+function resolveMinimumFractionDigits(minimumFractionDigits = 0) {
+  return minimumFractionDigits < 0 ? 0 : minimumFractionDigits;
+}
 
 interface CachedProps {
   locales: Intl.LocalesArgument;
@@ -32,7 +35,7 @@ export default class NumberFormat extends Input {
     });
   }
 
-  constructor(locales: Intl.LocalesArgument, options: NumberFormatOptions = {}) {
+  constructor(_options: NumberFormatOptions & { locales?: Intl.LocalesArgument } = {}) {
     let cache: Cache | null = null;
 
     super({
@@ -40,11 +43,14 @@ export default class NumberFormat extends Input {
        * Init
        */
       init: ({ initialValue }) => {
+        const { locales, ...options } = _options;
+
         const maximumIntegerDigits = options.maximumIntegerDigits;
         const resolvedMaximumIntegerDigits = resolveOptions(locales, options).maximumIntegerDigits;
 
         const invalidRange =
           maximumIntegerDigits !== undefined &&
+          resolvedMaximumIntegerDigits !== undefined &&
           (typeof maximumIntegerDigits !== 'number' || maximumIntegerDigits < resolvedMaximumIntegerDigits);
 
         if (invalidRange) {
@@ -60,6 +66,8 @@ export default class NumberFormat extends Input {
        * Tracking
        */
       tracking: ({ inputType, previousValue, addedValue, changeStart, changeEnd }) => {
+        const { locales, ...options } = _options;
+
         if (cache === null) {
           throw new SyntheticChangeError('The state has not been initialized.');
         }
@@ -93,7 +101,8 @@ export default class NumberFormat extends Input {
         const beforeChangeValue = previousValue.slice(0, changeStart).replace(regExp$1, '');
         const afterChangeValue = previousValue.slice(changeEnd).replace(regExp$1, '');
 
-        let normalizedValue = unformat(beforeChangeValue + addedValue + afterChangeValue, localizedValues);
+        const filteredValue = filter(beforeChangeValue + addedValue + afterChangeValue, localizedValues);
+        let normalizedValue = normalize(filteredValue, localizedValues);
 
         // В случае ввода знака минуса нам нужно его удалить если
         // оно присутствует, в противном случае добавить, тем самым
@@ -135,11 +144,11 @@ export default class NumberFormat extends Input {
           }
 
           if (previousFractionIndex !== -1) {
-            const previousMinimumFractionDigits = resolveMinimumFractionDigits({
-              // integer: previousInteger,
-              // fraction: previousFraction,
-              resolvedOptions: resolveOptions(cache.props.locales, cache.props.options),
-            });
+            const previousResolvedOptions = resolveOptions(cache.props.locales, cache.props.options);
+
+            const previousMinimumFractionDigits = resolveMinimumFractionDigits(
+              previousResolvedOptions.minimumFractionDigits,
+            );
 
             // Если изменения происходят в области `minimumFractionDigits`
             const isRange =
@@ -152,13 +161,21 @@ export default class NumberFormat extends Input {
           }
         }
 
-        const value = format(normalizedValue, {
-          inputType,
-          locales,
-          options,
-          localizedValues,
-          resolvedOptions,
-        });
+        let value = '';
+
+        // Если `integer` удалён и `fraction` отсутствует или равен нулю, удаляем всё значение
+        const isEmptyValue =
+          (inputType === 'deleteBackward' || inputType === 'deleteForward') &&
+          (normalizedValue === '' || normalizedValue === '-' || /^-?(\.0*)?$/.test(normalizedValue));
+
+        if (!isEmptyValue) {
+          value = format(normalizedValue, {
+            locales,
+            options,
+            localizedValues,
+            resolvedOptions,
+          });
+        }
 
         const selection = resolveSelection({
           localizedValues,
@@ -196,5 +213,6 @@ if (process.env.__OUTPUT__ === 'cdn') {
 
   _global.ReactInput = _global.ReactInput ?? {};
   _global.ReactInput.NumberFormat = NumberFormat;
+  _global.ReactInput.NumberFormat.format = utils.format;
   _global.ReactInput.NumberFormat.unformat = utils.unformat;
 }

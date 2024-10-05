@@ -21,13 +21,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GoncharukBro/react-input.git",
+    "url": "git+https://github.com/GoncharukOrg/react-input.git",
     "directory": "packages/mask"
   },
   "bugs": {
-    "url": "https://github.com/GoncharukBro/react-input/issues"
+    "url": "https://github.com/GoncharukOrg/react-input/issues"
   },
-  "homepage": "https://github.com/GoncharukBro/react-input/tree/main/packages/mask#readme",
+  "homepage": "https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#readme",
   "files": [
     "dist"
   ],

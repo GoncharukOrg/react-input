@@ -51,7 +51,7 @@ export type InputComponentProps<C extends React.ComponentType | undefined = unde
   component?: C;
 } & (C extends React.ComponentType<infer P> ? P : React.InputHTMLAttributes<HTMLInputElement>);
 
-// https://github.com/GoncharukBro/react-input/issues/15
+// https://github.com/GoncharukOrg/react-input/issues/15
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InputComponent<P extends object> = <C extends React.ComponentType<any> | undefined = undefined>(
   props: P & InputComponentProps<C> & React.RefAttributes<HTMLInputElement>,

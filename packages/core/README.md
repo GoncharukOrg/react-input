@@ -19,9 +19,9 @@ yarn add @react-input/core
 
 ## Feedback
 
-If you find a bug or want to make a suggestion for improving the package, [open the issues on GitHub](https://github.com/GoncharukBro/react-input/issues) or email [goncharuk.bro@gmail.com](mailto:goncharuk.bro@gmail.com).
+If you find a bug or want to make a suggestion for improving the package, [open the issues on GitHub](https://github.com/GoncharukOrg/react-input/issues) or email [goncharuk.bro@gmail.com](mailto:goncharuk.bro@gmail.com).
 
-Support the project with a star ⭐ on [GitHub](https://github.com/GoncharukBro/react-input).
+Support the project with a star ⭐ on [GitHub](https://github.com/GoncharukOrg/react-input).
 
 You can also support the authors by donating 🪙 to the wallet for:
 
@@ -31,4 +31,4 @@ Dollars (USDT): `TXyeRKKTr9BkhwTG1aCdbU3i84VHiju6r1`
 
 ## License
 
-MIT © [Nikolay Goncharuk](https://github.com/GoncharukBro)
+MIT © [Nikolay Goncharuk](https://github.com/GoncharukOrg)

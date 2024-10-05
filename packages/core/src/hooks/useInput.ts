@@ -49,7 +49,7 @@ function proxy(
           const { controlled = false, initialValue = '' } = inputElement._wrapperState ?? {};
           // При создании `input` элемента возможно программное изменение свойства `value`, что может
           // сказаться на отображении состояния элемента, поэтому важно учесть свойство `value` в приоритете
-          // ISSUE: https://github.com/GoncharukBro/react-input/issues/3
+          // ISSUE: https://github.com/GoncharukOrg/react-input/issues/3
           const initResult = init({ controlled, initialValue: inputElement.value || initialValue });
           // Поскольку в предыдущем шаге возможно изменение инициализированного значения, мы
           // также должны изменить значение элемента, при этом мы не должны устанавливать

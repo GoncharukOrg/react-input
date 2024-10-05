@@ -14,13 +14,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GoncharukBro/react-input.git",
+    "url": "git+https://github.com/GoncharukOrg/react-input.git",
     "directory": "packages/core"
   },
   "bugs": {
-    "url": "https://github.com/GoncharukBro/react-input/issues"
+    "url": "https://github.com/GoncharukOrg/react-input/issues"
   },
-  "homepage": "https://github.com/GoncharukBro/react-input/tree/main/packages/core#readme",
+  "homepage": "https://github.com/GoncharukOrg/react-input/tree/main/packages/core#readme",
   "files": [
     "dist"
   ],

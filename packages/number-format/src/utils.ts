@@ -7,7 +7,7 @@ import _resolveOptions from './utils/resolveOptions';
 import type { NumberFormatOptions } from './types';
 
 /**
- * Formats the value using the specified locales and options (see "[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#format)").
+ * Formats the value using the specified locales and options (see "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#format)").
  *
  * The result is exactly the same as the value received from the input.
  * Useful when you want to get a formatted value without raising an input event.
@@ -30,7 +30,7 @@ export function format(
 }
 
 /**
- * Unformats the value using the specified locales (see «[Utils](https://github.com/GoncharukBro/react-input/tree/main/packages/number-format#unformat)»).
+ * Unformats the value using the specified locales (see «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#unformat)»).
  *
  * Returns the number corresponding to the input value. Essentially does the opposite of the `format` utility.
  *

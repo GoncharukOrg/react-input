@@ -6,6 +6,8 @@
 ![npm](https://img.shields.io/npm/v/@react-input/mask?style=flat-square)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/@react-input/mask?style=flat-square)
 
+[![Donate to our collective](https://opencollective.com/react-input/donate/button.png)](https://opencollective.com/react-input/donate)
+
 [![Edit @react-input/mask](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/react-input-mask-r5jmmm?file=%2Fsrc%2FInput.tsx)
 
 ## Installation
@@ -59,7 +61,10 @@ Now the same thing, but using the `useMask` hook:
 import { useMask } from '@react-input/mask';
 
 export default function App() {
-  const inputRef = useMask({ mask: '+0 (___) ___-__-__', replacement: { _: /\d/ } });
+  const inputRef = useMask({
+    mask: '+0 (___) ___-__-__',
+    replacement: { _: /\d/ },
+  });
 
   return <input ref={inputRef} />;
 }
@@ -67,9 +72,29 @@ export default function App() {
 
 The `useMask` hook takes the same properties as the `InputMask` component, except for the `component` properties. Both approaches are equivalent, but the use of the `InputMask` component provides additional capabilities, which will be discussed in the section «[Integration with custom components](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#integration-with-custom-components)».
 
-> The `InputMask` component does not change the value passed in the `value` or `defaultValue` property of the `input` element, so set the initialized value to something that can match the masked value at any stage of input. If you make a mistake, you will see a warning about it in the console.
+## Initializing the value
 
-> To ensure consistent and correct operation, the `type` property of the `input` element (`InputMask`) must be set to "`text`" (the default). If you use other values, the mask will not be applied and you will see a warning in the console.
+To support the concept of controlled input, `@react-input/mask` does not change the value passed in the `value` or `defaultValue` properties of the `input` element, so set the initialized value to something that can match the masked value at any point in the input. If you make a mistake, you'll see a warning in the console about it.
+
+In cases where the input contains an unmasked value, you should use the `format` utility described in the chapter "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils)" to substitute the correct value, for example:
+
+```tsx
+import { useMask, format } from '@react-input/mask';
+
+const options = {
+  mask: '+0 (___) ___-__-__',
+  replacement: { _: /\d/ },
+};
+
+export default function App() {
+  const inputRef = useMask(options);
+  const defaultValue = format('1234567890', options);
+
+  return <input ref={inputRef} defaultValue={defaultValue} />;
+}
+```
+
+For consistent and correct behavior, the `type` property of the `input` element or the `InputMask` component must be set to `"text"` (the default), `"email"`, `"tel"`, `"search"`, or `"url"`. If you use other values, the mask will not be applied and you will see a warning in the console.
 
 ## Replacement
 
@@ -362,7 +387,9 @@ export default function Component(props: any) {
 }
 ```
 
-## Testing
+## Testing and development
+
+To make it easier to work with the library, you will receive corresponding messages in the console when errors occur, which is good during development, but not needed in a production application. To avoid receiving error messages in a production application, make sure that the `NODE_ENV` variable is set to `"production"` when building the application.
 
 Because each input performs the necessary calculations to set the formatting of the value, you need to set a delay between character inputs when testing the input in your application, otherwise the test may not succeed due to the necessary changes between inputs not taking effect.
 
@@ -460,12 +487,10 @@ If you find a bug or want to make a suggestion for improving the package, [open 
 
 Support the project with a star ⭐ on [GitHub](https://github.com/GoncharukOrg/react-input).
 
-You can also support the authors by donating 🪙 to the wallet for:
+You can also support the authors by donating 🪙 to [Open Collective](https://opencollective.com/react-input):
 
-Toncoin (TON): `UQDuf-wr5aKSbnPHd5RW0y9pVymxR-HCUeU_2GuEZQVipbvV`\
-Bitcoin (BTC): `13acJP8hnusuNDuBgiuhcd56Tow5iHuXqK`\
-Dollars (USDT): `TXyeRKKTr9BkhwTG1aCdbU3i84VHiju6r1`
+[![Donate to our collective](https://opencollective.com/react-input/donate/button.png)](https://opencollective.com/react-input/donate)
 
 ## License
 
-MIT © [Nikolay Goncharuk](https://github.com/GoncharukOrg)
+[MIT](https://github.com/GoncharukOrg/react-input/blob/main/packages/mask/LICENSE) © [Nikolay Goncharuk](https://github.com/GoncharukOrg)

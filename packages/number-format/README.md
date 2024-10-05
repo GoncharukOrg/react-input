@@ -6,6 +6,8 @@
 ![npm](https://img.shields.io/npm/v/@react-input/number-format?style=flat-square)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/@react-input/number-format?style=flat-square)
 
+[![Donate to our collective](https://opencollective.com/react-input/donate/button.png)](https://opencollective.com/react-input/donate)
+
 [![Edit @react-input/number-format](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/react-input-number-format-r234d9?file=%2Fsrc%2FInput.tsx)
 
 ## Installation
@@ -69,7 +71,10 @@ Now the same thing, but using the `useNumberFormat` hook:
 import { useNumberFormat } from '@react-input/number-format';
 
 export default function App() {
-  const inputRef = useNumberFormat({ locales: 'en', maximumFractionDigits: 2 });
+  const inputRef = useNumberFormat({
+    locales: 'en',
+    maximumFractionDigits: 2,
+  });
 
   return <input ref={inputRef} />;
 }
@@ -77,9 +82,27 @@ export default function App() {
 
 The `useNumberFormat` hook takes the same properties as the `InputNumberFormat` component, except for the `component` properties. Both approaches are equivalent, but the use of the `InputNumberFormat` component provides additional capabilities, which will be discussed in the section «[Integration with custom components](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#integration-with-custom-components)».
 
-> The `InputNumberFormat` component does not change the value passed in the `value` or `defaultValue` property of the `input` element, so set the initialized value to something that can match the formatted value at any stage of input. If you make a mistake, you will see a warning about it in the console.
+## Initializing the value
 
-> To ensure consistent and correct operation, the `type` property of the `input` element (`InputNumberFormat`) must be set to "`text`" (the default). If you use other values, the formatting will not be applied and you will see a warning in the console.
+To support the concept of controlled input, `@react-input/number-format` does not change the value passed in the `value` or `defaultValue` properties of the `input` element, so set the initialized value to something that can match the formatted value at any point in the input. If you make a mistake, you will see a warning in the console about it.
+
+In cases where the input value is unformatted, you should use the `format` utility described in the chapter "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)" to substitute the correct value, for example:
+
+```tsx
+import { useNumberFormat, format } from '@react-input/number-format';
+
+const locales = 'en';
+const options = { maximumFractionDigits: 2 };
+
+export default function App() {
+  const inputRef = useNumberFormat({ locales, ...options });
+  const defaultValue = format(123456789, { locales, ...options });
+
+  return <input ref={inputRef} defaultValue={defaultValue} />;
+}
+```
+
+For consistent and correct behavior, the `type` property of the `input` element or the `InputNumberFormat` component must be set to `"text"` (the default). If you use other values, the formatting will not be applied and you will see a warning in the console.
 
 ## Examples of using
 
@@ -322,7 +345,9 @@ export default function Component(props: any) {
 }
 ```
 
-## Testing
+## Testing and development
+
+To make it easier to work with the library, you will receive corresponding messages in the console when errors occur, which is good during development, but not needed in a production application. To avoid receiving error messages in a production application, make sure that the `NODE_ENV` variable is set to `"production"` when building the application.
 
 Because each input performs the necessary calculations to set the formatting of the value, you need to set a delay between character inputs when testing the input in your application, otherwise the test may not succeed due to the necessary changes between inputs not taking effect.
 
@@ -370,12 +395,10 @@ If you find a bug or want to make a suggestion for improving the package, [open 
 
 Support the project with a star ⭐ on [GitHub](https://github.com/GoncharukOrg/react-input).
 
-You can also support the authors by donating 🪙 to the wallet for:
+You can also support the authors by donating 🪙 to [Open Collective](https://opencollective.com/react-input):
 
-Toncoin (TON): `UQDuf-wr5aKSbnPHd5RW0y9pVymxR-HCUeU_2GuEZQVipbvV`\
-Bitcoin (BTC): `13acJP8hnusuNDuBgiuhcd56Tow5iHuXqK`\
-Dollars (USDT): `TXyeRKKTr9BkhwTG1aCdbU3i84VHiju6r1`
+[![Donate to our collective](https://opencollective.com/react-input/donate/button.png)](https://opencollective.com/react-input/donate)
 
 ## License
 
-MIT © [Nikolay Goncharuk](https://github.com/GoncharukOrg)
+[MIT](https://github.com/GoncharukOrg/react-input/blob/main/packages/number-format/LICENSE) © [Nikolay Goncharuk](https://github.com/GoncharukOrg)

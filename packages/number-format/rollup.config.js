@@ -1,3 +1,8 @@
 import createRollupConfig from '../../utils/createRollupConfig.js';
 
-export default createRollupConfig('src/index.ts', 'src/InputNumberFormat.tsx', 'src/useNumberFormat.ts');
+export default createRollupConfig(
+  'src/index.ts',
+  'src/InputNumberFormat.tsx',
+  'src/useNumberFormat.ts',
+  'src/utils.ts',
+);

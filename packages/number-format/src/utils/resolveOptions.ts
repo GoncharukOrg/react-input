@@ -3,7 +3,7 @@ import type { NumberFormatOptions, ResolvedNumberFormatOptions } from '../types'
 interface TempResolved extends Partial<Intl.ResolvedNumberFormatOptions> {
   localeMatcher?: string;
   numberingSystem?: string;
-  roundingIncrement?: number;
+  roundingIncrement?: 1 | 2 | 5 | 10 | 20 | 25 | 50 | 100 | 200 | 250 | 500 | 1000 | 2000 | 2500 | 5000 | undefined;
   roundingMode?:
     | 'ceil'
     | 'floor'
@@ -19,41 +19,39 @@ interface TempResolved extends Partial<Intl.ResolvedNumberFormatOptions> {
 }
 
 export default function resolveOptions(
-  locales: string | string[] | undefined,
-  options: NumberFormatOptions | undefined = {},
+  locales: Intl.LocalesArgument,
+  { format, groupDisplay, maximumIntegerDigits, ...options }: NumberFormatOptions,
 ) {
-  const { format, groupDisplay, maximumIntegerDigits = 21, ...current } = options;
-
-  const resolved = Intl.NumberFormat(locales, {
-    ...current,
+  const resolvedOptions = new Intl.NumberFormat(locales, {
+    ...options,
     style: format,
     useGrouping: groupDisplay,
   }).resolvedOptions() as unknown as ResolvedNumberFormatOptions;
 
-  resolved.format = (resolved as unknown as Intl.ResolvedNumberFormatOptions).style;
-  resolved.groupDisplay = (resolved as unknown as Intl.ResolvedNumberFormatOptions).useGrouping;
-  resolved.maximumIntegerDigits = maximumIntegerDigits;
+  resolvedOptions.format = (resolvedOptions as unknown as Intl.ResolvedNumberFormatOptions).style;
+  resolvedOptions.groupDisplay = (resolvedOptions as unknown as Intl.ResolvedNumberFormatOptions).useGrouping;
 
-  if (resolved.maximumIntegerDigits < resolved.minimumIntegerDigits) {
-    resolved.maximumIntegerDigits = resolved.minimumIntegerDigits;
-  }
+  const isMaxGreaterMin =
+    maximumIntegerDigits !== undefined && maximumIntegerDigits < resolvedOptions.minimumIntegerDigits;
 
-  // Удаляем из `resolved` неиспользуемые свойства
-  const tempResolved = resolved as unknown as TempResolved;
+  resolvedOptions.maximumIntegerDigits = isMaxGreaterMin ? resolvedOptions.minimumIntegerDigits : maximumIntegerDigits;
 
-  delete tempResolved.style;
-  delete tempResolved.currencySign;
-  delete tempResolved.useGrouping;
-  delete tempResolved.minimumSignificantDigits;
-  delete tempResolved.maximumSignificantDigits;
-  delete tempResolved.compactDisplay;
-  delete tempResolved.notation;
-  delete tempResolved.numberingSystem;
-  delete tempResolved.localeMatcher;
-  delete tempResolved.roundingIncrement;
-  delete tempResolved.roundingMode;
-  delete tempResolved.roundingPriority;
-  delete tempResolved.trailingZeroDisplay;
+  // Удаляем из `resolvedOptions` неиспользуемые свойства
+  const tempResolvedOptions = resolvedOptions as unknown as TempResolved;
 
-  return { current: options, resolved };
+  delete tempResolvedOptions.style;
+  delete tempResolvedOptions.currencySign;
+  delete tempResolvedOptions.useGrouping;
+  delete tempResolvedOptions.minimumSignificantDigits;
+  delete tempResolvedOptions.maximumSignificantDigits;
+  delete tempResolvedOptions.compactDisplay;
+  delete tempResolvedOptions.notation;
+  delete tempResolvedOptions.numberingSystem;
+  delete tempResolvedOptions.localeMatcher;
+  delete tempResolvedOptions.roundingIncrement;
+  delete tempResolvedOptions.roundingMode;
+  delete tempResolvedOptions.roundingPriority;
+  delete tempResolvedOptions.trailingZeroDisplay;
+
+  return resolvedOptions;
 }

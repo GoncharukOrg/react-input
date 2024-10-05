@@ -49,19 +49,17 @@ type ResolveOptions<T extends Record<string, any>> = Pick<
   | 'minimumIntegerDigits'
   | 'minimumFractionDigits'
   | 'maximumFractionDigits'
-  // | 'minimumSignificantDigits'
-  // | 'maximumSignificantDigits'
 >;
 
 interface IncludedOptions {
-  format?: Intl.NumberFormatOptions['style'];
-  groupDisplay?: Intl.NumberFormatOptions['useGrouping'];
-  maximumIntegerDigits?: number;
+  format: Intl.NumberFormatOptions['style'];
+  groupDisplay: Intl.NumberFormatOptions['useGrouping'];
+  maximumIntegerDigits: number | undefined;
 }
 
-export type NumberFormatOptions = ResolveOptions<Intl.NumberFormatOptions> & IncludedOptions;
+export type NumberFormatOptions = ResolveOptions<Intl.NumberFormatOptions> & Partial<IncludedOptions>;
 
-export type ResolvedNumberFormatOptions = ResolveOptions<Intl.ResolvedNumberFormatOptions> & Required<IncludedOptions>;
+export type ResolvedNumberFormatOptions = ResolveOptions<Intl.ResolvedNumberFormatOptions> & IncludedOptions;
 
 export interface LocalizedNumberFormatValues {
   signBackwards: boolean;
@@ -71,6 +69,6 @@ export interface LocalizedNumberFormatValues {
 }
 
 export interface NumberFormatProps extends NumberFormatOptions {
-  locales?: string | string[];
+  locales?: Intl.LocalesArgument;
   onNumberFormat?: NumberFormatEventHandler;
 }

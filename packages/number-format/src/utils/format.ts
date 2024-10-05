@@ -36,20 +36,24 @@ export default function format(value: string, { locales, options, localizedValue
   // Так, при `addedValue` "2": "000 001" -> "000 0012" -> "12" -> "000 012"
   integer = integer.replace(/^(-)?0+/, '$1').slice(0, resolvedOptions.maximumIntegerDigits);
   fraction += '0'.repeat(resolvedOptions.minimumFractionDigits ?? 0);
-  fraction = fraction.slice(0, resolvedOptions.maximumFractionDigits);
 
   // В значении может встречаться юникод, нам важно заменить
   // такие символы для соответствия стандартному значению
   let nextValue = new Intl.NumberFormat(locales, normalizedOptions).format(BigInt(integer)).replace(/\s/g, ' ');
 
-  if (value.includes('.') || fraction.length > 0) {
+  if (
+    (resolvedOptions.maximumFractionDigits === undefined || resolvedOptions.maximumFractionDigits > 0) &&
+    (value.includes('.') || fraction.length > 0)
+  ) {
     nextValue = nextValue.replace(
       RegExp(`([${localizedValues.digits}])([^${localizedValues.digits}]*)$`),
       `$1${localizedValues.decimal}$2`,
     );
 
     if (fraction.length > 0) {
-      const localizedFraction = fraction.replace(/\d/g, (digit) => localizedValues.digits[Number(digit)]);
+      const localizedFraction = fraction
+        .slice(0, resolvedOptions.maximumFractionDigits)
+        .replace(/\d/g, (digit) => localizedValues.digits[Number(digit)]);
 
       nextValue = nextValue.replace(
         RegExp(`([${localizedValues.decimal}])([^${localizedValues.digits}]*)$`),

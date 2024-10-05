@@ -34,8 +34,10 @@ export default function resolveSelection({
   changeStart,
   changeEnd,
 }: ResolveSelectionParam): ResolveSelectionReturn {
+  const hasPreviousDecimal = previousValue.includes(localizedValues.decimal);
+
   // Если был введен `decimal` возвращаем позицию после символа `decimal`
-  if (RegExp(`^[.,${localizedValues.decimal}]$`).test(addedValue) && previousValue.includes(localizedValues.decimal)) {
+  if (hasPreviousDecimal && RegExp(`^[.,${localizedValues.decimal}]$`).test(addedValue)) {
     const decimalIndex = value.indexOf(localizedValues.decimal);
 
     if (decimalIndex !== -1) {
@@ -44,11 +46,10 @@ export default function resolveSelection({
     }
   }
 
+  const hasPreviousMinusSign = previousValue.includes(localizedValues.minusSign);
+
   // Если был введен `minusSign`
-  if (
-    RegExp(`^[\\-\\${localizedValues.minusSign}]$`).test(addedValue) &&
-    previousValue.includes(localizedValues.minusSign)
-  ) {
+  if (hasPreviousMinusSign && RegExp(`^[\\-\\${localizedValues.minusSign}]$`).test(addedValue)) {
     const minusSignIndex = value.indexOf(localizedValues.minusSign);
 
     if (minusSignIndex !== -1) {
@@ -61,29 +62,28 @@ export default function resolveSelection({
   // необходимо выделить все нули для последующего удаления `integer`. Такое
   // поведение оправдано в случае если `minimumIntegerDigits` больше чем 1
   if (inputType === 'deleteBackward' || inputType === 'deleteForward') {
-    const [beforeDecimalPreviousValue] = previousValue.split(previousLocalizedValues.decimal);
+    const [beforePreviousDecimal] = previousValue.split(previousLocalizedValues.decimal);
 
     if (
-      changeEnd <= beforeDecimalPreviousValue.length &&
-      !RegExp(`[${previousLocalizedValues.digits.slice(1)}]`).test(beforeDecimalPreviousValue)
+      changeEnd <= beforePreviousDecimal.length &&
+      !RegExp(`[${previousLocalizedValues.digits.slice(1)}]`).test(beforePreviousDecimal)
     ) {
-      const firstPreviousIntegerDigitIndex = beforeDecimalPreviousValue.indexOf(previousLocalizedValues.digits[0]);
-      const lastPreviousIntegerDigitIndex = beforeDecimalPreviousValue.lastIndexOf(previousLocalizedValues.digits[0]);
+      const firstPreviousIntegerDigitIndex = beforePreviousDecimal.indexOf(previousLocalizedValues.digits[0]);
+      const lastPreviousIntegerDigitIndex = beforePreviousDecimal.lastIndexOf(previousLocalizedValues.digits[0]);
 
-      const hasPreviousIntegerDigitIndex =
-        firstPreviousIntegerDigitIndex !== -1 && lastPreviousIntegerDigitIndex !== -1;
+      if (firstPreviousIntegerDigitIndex !== -1 && lastPreviousIntegerDigitIndex !== -1) {
+        const _lastPreviousIntegerDigitIndex = lastPreviousIntegerDigitIndex + 1;
 
-      // Нам не нужно повторно сохранять выделение
-      const hasSelection =
-        changeStart === firstPreviousIntegerDigitIndex && changeEnd === lastPreviousIntegerDigitIndex + 1;
+        // Нам не нужно повторно сохранять выделение
+        const hasNotSelection =
+          changeStart !== firstPreviousIntegerDigitIndex || changeEnd !== _lastPreviousIntegerDigitIndex;
 
-      if (
-        hasPreviousIntegerDigitIndex &&
-        !hasSelection &&
-        changeEnd > firstPreviousIntegerDigitIndex &&
-        changeEnd <= lastPreviousIntegerDigitIndex + 1
-      ) {
-        return { start: firstPreviousIntegerDigitIndex, end: lastPreviousIntegerDigitIndex + 1 };
+        const hasIntegerDigitsRange =
+          changeEnd > firstPreviousIntegerDigitIndex && changeEnd <= _lastPreviousIntegerDigitIndex;
+
+        if (hasNotSelection && hasIntegerDigitsRange) {
+          return { start: firstPreviousIntegerDigitIndex, end: _lastPreviousIntegerDigitIndex };
+        }
       }
     }
   }
@@ -94,10 +94,11 @@ export default function resolveSelection({
   // будет подсчёт количества цифр до выделенной области изменения (до `changeStart`).
 
   let selection = value.length;
+  // "Устойчиваое" число - цифры и десятичный разделитель без учитёта
+  // нулей от начала значения до первой цифры не равной нулю в `integer`
   let countStableDigits = 0;
 
-  // Находим символы "устойчивого" числа до `changeStart` (не учитывая
-  // нули от начала значения до первой цифры не равной нулю в `integer`)
+  // Находим символы "устойчивого" числа до `changeStart`
   for (let i = 0, start = false; i < changeStart; i++) {
     const isDigit = previousLocalizedValues.digits.includes(previousValue[i]);
     const isDecimal = previousValue[i] === previousLocalizedValues.decimal;
@@ -132,15 +133,16 @@ export default function resolveSelection({
       absAdded = absAdded.replace(RegExp(`[^\\d${localizedValues.digits}]+`, 'g'), '');
     }
 
+    const hasAddedDecimal = absAdded.includes('.');
     let [addedInteger, addedFraction = ''] = absAdded.split('.');
 
     if (previousDecimalIndex !== -1 && changeStart > previousDecimalIndex) {
-      if (absAdded.includes('.')) {
-        const joinedPreviousInteger = previousInteger + previousFraction;
+      if (hasAddedDecimal) {
+        // Нам важно не учитывать `decimal` в предыдущем значении поскольку
+        // в текущем значении при данном условии он будет отсутствовать
+        countStableDigits -= 1;
 
-        if (previousFraction) {
-          countStableDigits -= 1;
-        }
+        const joinedPreviousInteger = previousInteger + previousFraction;
 
         if (
           resolvedOptions.maximumIntegerDigits !== undefined &&
@@ -166,7 +168,7 @@ export default function resolveSelection({
         ? resolvedOptions.maximumIntegerDigits - previousInteger.length
         : undefined;
 
-    const normalizedAdded = addedInteger.slice(0, endSlice) + (addedFraction ? `.${addedFraction}` : addedFraction);
+    const normalizedAdded = addedInteger.slice(0, endSlice) + (hasAddedDecimal ? '.' : '') + addedFraction;
 
     countStableDigits += normalizedAdded.replace(
       RegExp(`[^\\.${localizedValues.decimal}\\d${localizedValues.digits}]+`, 'g'),
@@ -176,9 +178,8 @@ export default function resolveSelection({
 
   // Вычисляем первоначальную позицию каретки по индексу отформатированного
   // значения путём подсчёта количества цифр "устойчивого" числа, где:
-  // `start` - начало "устойчивого" числа (не учитывая нули от начала
-  // значения до первой цифры не равной нулю в `integer`)
-  // `countDigits` - количество найденных символов после начала "устойчивого" числа\
+  // `start` - начало "устойчивого" числа
+  // `countDigits` - количество найденных символов после начала "устойчивого" числа
   // Порядок инструкций имеет значение!
   for (let i = 0, start = false, countDigits = 0; i < value.length; i++) {
     const isDigit = localizedValues.digits.includes(value[i]);
@@ -200,8 +201,9 @@ export default function resolveSelection({
 
   // Сдвигаем каретку к ближайшей цифре
   if (inputType === 'deleteForward') {
-    const p$1 = `^.{${selection}}[^${localizedValues.decimal}${localizedValues.digits}]*[\\${localizedValues.minusSign}${localizedValues.decimal}${localizedValues.digits}]`;
-    const nextDigitIndex = RegExp(p$1).exec(value)?.[0].length;
+    const p$1 = `\\${localizedValues.minusSign}`;
+    const p$2 = `^.{${selection}}[^${localizedValues.decimal}${localizedValues.digits}]*[${p$1}${localizedValues.decimal}${localizedValues.digits}]`;
+    const nextDigitIndex = RegExp(p$2).exec(value)?.[0].length;
 
     if (nextDigitIndex !== undefined) {
       selection = nextDigitIndex - 1;
@@ -229,13 +231,13 @@ export default function resolveSelection({
     const p$1 = `[\\${localizedValues.minusSign}${localizedValues.decimal}${localizedValues.digits.slice(1)}]`;
     const p$2 = `[\\${localizedValues.minusSign}${localizedValues.decimal}${localizedValues.digits}][^${localizedValues.decimal}${localizedValues.digits}]*$`;
 
-    const firstStableDigitIndex = value.search(RegExp(p$1));
-    const lastDigitIndex = value.search(RegExp(p$2));
+    const firstIndex = value.search(RegExp(p$1));
+    const lastIndex = value.search(RegExp(p$2));
 
-    if (firstStableDigitIndex !== -1 && selection < firstStableDigitIndex) {
-      selection = firstStableDigitIndex;
-    } else if (lastDigitIndex !== -1 && selection > lastDigitIndex + 1) {
-      selection = lastDigitIndex + 1;
+    if (firstIndex !== -1 && selection < firstIndex) {
+      selection = firstIndex;
+    } else if (lastIndex !== -1 && selection > lastIndex + 1) {
+      selection = lastIndex + 1;
     }
   }
 

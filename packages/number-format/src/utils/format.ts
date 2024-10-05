@@ -41,7 +41,10 @@ export default function format(value: string, { locales, options, localizedValue
   // такие символы для соответствия стандартному значению
   let nextValue = new Intl.NumberFormat(locales, normalizedOptions).format(BigInt(integer)).replace(/\s/g, ' ');
 
-  if (value.includes('.')) {
+  if (
+    (resolvedOptions.maximumFractionDigits === undefined || resolvedOptions.maximumFractionDigits > 0) &&
+    (value.includes('.') || fraction.length > 0)
+  ) {
     nextValue = nextValue.replace(
       RegExp(`([${localizedValues.digits}])([^${localizedValues.digits}]*)$`),
       `$1${localizedValues.decimal}$2`,

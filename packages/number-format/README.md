@@ -91,12 +91,11 @@ In cases where the input value is unformatted, you should use the `format` utili
 ```tsx
 import { useNumberFormat, format } from '@react-input/number-format';
 
-const locales = 'en';
-const options = { maximumFractionDigits: 2 };
+const options = { locales: 'en', maximumFractionDigits: 2 };
 
 export default function App() {
-  const inputRef = useNumberFormat({ locales, ...options });
-  const defaultValue = format(123456789, { locales, ...options });
+  const inputRef = useNumberFormat(options);
+  const defaultValue = format(123456789, options);
 
   return <input ref={inputRef} defaultValue={defaultValue} />;
 }

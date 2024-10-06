@@ -14,6 +14,7 @@ interface Options {
  * @returns
  */
 export default function format(value: string, { locales, options, localizedValues, resolvedOptions }: Options) {
+  const minimumFractionDigits = resolvedOptions.minimumFractionDigits ?? 0;
   const normalizedOptions: NumberFormatOptions & Intl.NumberFormatOptions = { ...options };
 
   normalizedOptions.style = normalizedOptions.format;
@@ -35,11 +36,14 @@ export default function format(value: string, { locales, options, localizedValue
   // - `replace` - Учитываем `minimumIntegerDigits`.
   // Так, при `addedValue` "2": "000 001" -> "000 0012" -> "12" -> "000 012"
   integer = integer.replace(/^(-)?0+/, '$1').slice(0, resolvedOptions.maximumIntegerDigits);
-  fraction += '0'.repeat(resolvedOptions.minimumFractionDigits ?? 0);
 
   // В значении может встречаться юникод, нам важно заменить
   // такие символы для соответствия стандартному значению
   let nextValue = new Intl.NumberFormat(locales, normalizedOptions).format(BigInt(integer)).replace(/\s/g, ' ');
+
+  if (fraction.length < minimumFractionDigits) {
+    fraction += '0'.repeat(minimumFractionDigits - fraction.length);
+  }
 
   if (
     (resolvedOptions.maximumFractionDigits === undefined || resolvedOptions.maximumFractionDigits > 0) &&
@@ -51,9 +55,8 @@ export default function format(value: string, { locales, options, localizedValue
     );
 
     if (fraction.length > 0) {
-      const localizedFraction = fraction
-        .slice(0, resolvedOptions.maximumFractionDigits)
-        .replace(/\d/g, (digit) => localizedValues.digits[Number(digit)]);
+      fraction = fraction.slice(0, resolvedOptions.maximumFractionDigits);
+      const localizedFraction = fraction.replace(/\d/g, (digit) => localizedValues.digits[Number(digit)]);
 
       nextValue = nextValue.replace(
         RegExp(`([${localizedValues.decimal}])([^${localizedValues.digits}]*)$`),

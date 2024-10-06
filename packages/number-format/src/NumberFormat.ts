@@ -10,10 +10,6 @@ import resolveSelection from './utils/resolveSelection';
 
 import type { NumberFormatOptions } from './types';
 
-function resolveMinimumFractionDigits(minimumFractionDigits = 0) {
-  return minimumFractionDigits < 0 ? 0 : minimumFractionDigits;
-}
-
 interface CachedProps {
   locales: Intl.LocalesArgument;
   options: NumberFormatOptions;
@@ -145,10 +141,7 @@ export default class NumberFormat extends Input {
 
           if (previousFractionIndex !== -1) {
             const previousResolvedOptions = resolveOptions(cache.props.locales, cache.props.options);
-
-            const previousMinimumFractionDigits = resolveMinimumFractionDigits(
-              previousResolvedOptions.minimumFractionDigits,
-            );
+            const previousMinimumFractionDigits = previousResolvedOptions.minimumFractionDigits ?? 0;
 
             // Если изменения происходят в области `minimumFractionDigits`
             const isRange =
@@ -161,14 +154,31 @@ export default class NumberFormat extends Input {
           }
         }
 
+        const isDelete = inputType === 'deleteBackward' || inputType === 'deleteForward';
+
+        // В случае когда у нас имеется обязательная минимальная длина и мы удаляем `decimal`,
+        // нам важно удалить также нули которые перейдут из `fraction` в `integer` при объединении
+        if (isDelete && previousValue.includes(previousLocalizedValues.decimal) && !normalizedValue.includes('.')) {
+          const p$1 = `[${previousLocalizedValues.digits[0]}]*[^${previousLocalizedValues.decimal}${previousLocalizedValues.digits}]*$`;
+          const p$2 = `[^${previousLocalizedValues.digits[0]}]`;
+
+          let countZeros = RegExp(p$1).exec(previousValue)?.[0].replace(RegExp(p$2, 'g'), '').length;
+
+          if (countZeros !== undefined && resolvedOptions.minimumFractionDigits !== undefined) {
+            if (countZeros > resolvedOptions.minimumFractionDigits) {
+              countZeros = resolvedOptions.minimumFractionDigits;
+            }
+
+            normalizedValue = normalizedValue.replace(RegExp(`0{0,${countZeros}}$`), '');
+          }
+        }
+
         let value = '';
 
         // Если `integer` удалён и `fraction` отсутствует или равен нулю, удаляем всё значение
-        const isEmptyValue =
-          (inputType === 'deleteBackward' || inputType === 'deleteForward') &&
-          (normalizedValue === '' || normalizedValue === '-' || /^-?(\.0*)?$/.test(normalizedValue));
+        const isEmptyValue = normalizedValue === '' || normalizedValue === '-' || /^-?(\.0*)?$/.test(normalizedValue);
 
-        if (!isEmptyValue) {
+        if (!isDelete || !isEmptyValue) {
           value = format(normalizedValue, {
             locales,
             options,

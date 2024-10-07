@@ -86,7 +86,7 @@ The `useNumberFormat` hook takes the same properties as the `InputNumberFormat` 
 
 To support the concept of controlled input, `@react-input/number-format` does not change the value passed in the `value` property of the `input` element, which means that the value in the state exactly matches the value in the input, so set the initialized value to something that can match the formatted value at any point in the input. If you make a mistake, you will see a warning in the console about it.
 
-With controlled input, when the input value is not formatted, you should use the `format` utility described in the chapter "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)" to substitute the correct value, for example:
+With controlled input, when the input value is not formatted, you should use the `format` utility described in the chapter «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)» to substitute the correct value, for example:
 
 ```tsx
 import { useNumberFormat, format } from '@react-input/number-format';
@@ -381,7 +381,7 @@ Unformats the value using the specified locales.
 
 Takes two parameters, where the first is the value to format, and the second is the locale you are using when formatting. Specifying the locale is required to recognize digits, decimal separator, and minus signs, as they may differ across locales.
 
-Returns a string as the numeric equivalent of the formatted value.
+Returns a string as the numeric equivalent of the formatted value. Returning a string is due to the fact that a string stores integer and decimal values ​​regardless of their length, unlike a number which has a limit of 2^5. Using a string, you can convert it to a number at your discretion, as well as separate the integer and decimal parts and use the conversion to `BigInt`.
 
 ```ts
 unformat('$1,23,456.78', 'en-IN');

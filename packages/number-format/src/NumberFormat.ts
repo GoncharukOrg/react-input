@@ -93,6 +93,10 @@ export default class NumberFormat extends Input {
 
         addedValue = filter(addedValue, localizedValues);
 
+        if (resolvedOptions.maximumFractionDigits === 0) {
+          addedValue = addedValue.replace(RegExp(`[.,${localizedValues.decimal}]`, 'g'), '');
+        }
+
         if (inputType === 'insert' && !addedValue) {
           throw new SyntheticChangeError('The added value does not contain allowed characters.');
         }

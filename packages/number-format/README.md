@@ -89,6 +89,7 @@ To support the concept of controlled input, `@react-input/number-format` does no
 With controlled input, when the input value is not formatted, you should use the `format` utility described in the chapter «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)» to substitute the correct value, for example:
 
 ```tsx
+import { useState } from 'react';
 import { useNumberFormat, format } from '@react-input/number-format';
 
 const options = { locales: 'en', maximumFractionDigits: 2 };

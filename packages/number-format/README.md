@@ -125,9 +125,9 @@ To use the utilities described in the "[Utils](https://github.com/GoncharukOrg/r
 
 ## Initializing the value
 
-To support the concept of controlled input, `@react-input/number-format` does not change the value passed in the `value` or `defaultValue` properties of the `input` element, so set the initialized value to something that can match the formatted value at any point in the input. If you make a mistake, you will see a warning in the console about it.
+To support the concept of controlled input, `@react-input/number-format` does not change the value passed in the `value` property of the `input` element, which means that the value in the state exactly matches the value in the input, so set the initialized value to something that can match the formatted value at any point in the input. If you make a mistake, you will see a warning in the console about it.
 
-In cases where the input value is unformatted, you should use the `format` utility described in the chapter "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)" to substitute the correct value, for example:
+With controlled input, when the input value is not formatted, you should use the `format` utility described in the chapter "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)" to substitute the correct value, for example:
 
 ```tsx
 import { useNumberFormat, format } from '@react-input/number-format';
@@ -141,9 +141,13 @@ export default function App() {
   const inputRef = useNumberFormat(options);
   const defaultValue = format(123456789, options);
 
-  return <input ref={inputRef} defaultValue={defaultValue} />;
+  const [value, setValue] = useState(defaultValue); // `defaultValue` or '123,456,789'
+
+  return <input ref={inputRef} value={value} onChange={(event) => setValue(event.target.value)} />;
 }
 ```
+
+With uncontrolled input, you do not need to worry about the input value being unformatted, as the value will be formatted automatically upon initialization.
 
 For consistent and correct behavior, the `type` property of the `input` element or the `InputNumberFormat` component must be set to `"text"` (the default). If you use other values, the formatting will not be applied and you will see a warning in the console.
 
@@ -350,13 +354,13 @@ To make it easier to work with the library, you will receive corresponding messa
 
 ### `format`
 
-Formats a value using the specified locales and options.
+Formats the value using the specified locales and options.
 
-Takes three parameters, where the first is the number or string to format and the third is an object with options you use when formating.
+Takes two parameters, where the first is a number or string to format, and the second is an object with options you use when formatting.
 
-The result is exactly the same as the value received from the input. Useful when you need to get the formatted value without raising the input event.
+The result is exactly the same as the value received from the input. Useful when you need to get a formatted value without raising the input event.
 
-Since `InputNumberFormat` works exactly like the `input` element, `InputNumberFormat` will not change the value outside of the input event, so you may end up in a situation where the `input` element has a value that does not match the desired format, such as when initializing a value received from a backend.
+Since `InputNumberFormat` works exactly like the `input` element, `InputNumberFormat` will not change the value outside of the input event for a controlled input, so you may end up in a situation where the `input` element has a value that does not match the desired format, such as when initializing a value received from a backend (see «[Initializing the value](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#initializing-the-value)» for more details).
 
 ```ts
 format(123456.78, { locales: 'en-IN', format: 'currency', currency: 'USD' });
@@ -369,7 +373,7 @@ Unformats the value using the specified locales.
 
 Takes two parameters, where the first is the value to format, and the second is the locale you are using when formatting. Specifying the locale is required to recognize digits, decimal separator, and minus signs, as they may differ across locales.
 
-Returns a string as the numeric equivalent of the formatted value.
+Returns a string as the numeric equivalent of the formatted value. Returning a string is due to the fact that a string stores integer and decimal values ​​regardless of their length, unlike a number which has a limit of 2^5. Using a string, you can convert it to a number at your discretion, as well as separate the integer and decimal parts and use the conversion to `BigInt`.
 
 ```ts
 unformat('$1,23,456.78', 'en-IN');

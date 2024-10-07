@@ -32,7 +32,7 @@ export function format(
 /**
  * Unformats the value using the specified locales (see «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#unformat)»).
  *
- * Returns the number corresponding to the input value. Essentially does the opposite of the `format` utility.
+ * Returns a string as the numeric equivalent of the formatted value. Essentially does the opposite of the `format` utility.
  *
  * `unformat('$1,23,456.78', 'en-IN')` → "123456.78"
  */

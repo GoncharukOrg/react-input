@@ -38,19 +38,29 @@ export default class NumberFormat extends Input {
       /**
        * Init
        */
-      init: ({ initialValue }) => {
+      init: ({ initialValue, controlled }) => {
         const { locales, ...options } = _options;
 
         const maximumIntegerDigits = options.maximumIntegerDigits;
-        const resolvedMaximumIntegerDigits = resolveOptions(locales, options).maximumIntegerDigits;
+        const resolvedOptions = resolveOptions(locales, options);
 
         const invalidRange =
           maximumIntegerDigits !== undefined &&
-          resolvedMaximumIntegerDigits !== undefined &&
-          (typeof maximumIntegerDigits !== 'number' || maximumIntegerDigits < resolvedMaximumIntegerDigits);
+          resolvedOptions.maximumIntegerDigits !== undefined &&
+          (typeof maximumIntegerDigits !== 'number' || maximumIntegerDigits < resolvedOptions.maximumIntegerDigits);
 
         if (invalidRange) {
           throw new RangeError('maximumIntegerDigits value is out of range.');
+        }
+
+        if (!controlled) {
+          const localizedValues = localizeValues(locales);
+          const filteredValue = filter(initialValue, localizedValues);
+
+          if (filteredValue.length > 0) {
+            const normalizedValue = normalize(filteredValue, localizedValues);
+            initialValue = format(normalizedValue, { locales, options, localizedValues, resolvedOptions });
+          }
         }
 
         const cachedProps = { locales, options };

@@ -97,7 +97,7 @@ export default () => {
       input: entries.cdn.input,
       output: {
         format: 'umd',
-        file: `dist/${entries.cdn.output.name}.min.js`,
+        file: 'cdn/index.js',
         name: `ReactInput.${entries.cdn.output.name}`,
       },
       plugins: plugins('cdn'),
@@ -110,14 +110,14 @@ export default () => {
       output: [
         {
           format: 'es',
-          dir: 'dist/module',
+          dir: 'module',
           entryFileNames: '[name].js',
           chunkFileNames: 'helpers-[hash].js',
           hoistTransitiveImports: false,
         },
         {
           format: 'cjs',
-          dir: 'dist/node',
+          dir: 'node',
           entryFileNames: '[name].cjs',
           chunkFileNames: 'helpers-[hash].cjs',
           hoistTransitiveImports: false,

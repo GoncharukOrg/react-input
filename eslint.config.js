@@ -27,7 +27,7 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ['**/node_modules', '**/dist', '**/*.test.ts?(x)', '**/.DS_Store'],
+    ignores: ['**/node_modules', '**/@types', '**/cdn', '**/module', '**/node', '**/*.test.ts?(x)', '**/.DS_Store'],
   },
   ...fixupConfigRules(
     compat.extends(

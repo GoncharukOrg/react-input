@@ -12,7 +12,9 @@
 
 ## What's new?
 
-Starting with `@react-input/number-format@2.0.0`, we removed the `input-number-format` event and the `onNumberFormat` method, focusing only on using native React events and methods such as `onChange`, since the `input-number-format` event cannot be explicitly coordinated with React events and methods, making such usage and event firing order non-obvious.
+Usage via CDN is available (see «[Usage with CDN](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#usage-with-cdn)»).
+
+The `input-number-format` event and `onNumberFormat` method are no longer available in newer versions, focusing work on only using React's own events and methods such as `onChange`, since the `input-number-format` event and `onNumberFormat` method cannot be explicitly coordinated with React's events and methods, making such usage and event firing order non-obvious.
 
 To use the useful data from the `detail` property of the `input-number-format` (`onNumberFormat`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)» section.
 
@@ -28,10 +30,10 @@ or using **yarn**:
 yarn add @react-input/number-format
 ```
 
-or using **CDN**:
+or using **CDN** (for more information, see [UNPKG](https://unpkg.com/)):
 
 ```html
-<script src="https://unpkg.com/@react-input/number-format/dist/NumberFormat.min.js" type="text/javascript" />
+<script src="https://unpkg.com/@react-input/number-format/cdn"></script>
 ```
 
 ## Unique properties

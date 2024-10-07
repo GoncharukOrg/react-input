@@ -26,37 +26,40 @@
   },
   "homepage": "https://github.com/GoncharukOrg/react-input/tree/main/packages/core#readme",
   "files": [
-    "dist"
+    "@types",
+    "cdn",
+    "module",
+    "node"
   ],
   "sideEffects": false,
   "type": "module",
-  "types": "dist/@types/index.d.ts",
-  "module": "dist/module/index.js",
-  "main": "dist/node/index.cjs",
+  "types": "@types/index.d.ts",
+  "module": "module/index.js",
+  "main": "node/index.cjs",
   "exports": {
     ".": {
-      "types": "./dist/@types/index.d.ts",
-      "import": "./dist/module/index.js",
-      "require": "./dist/node/index.cjs"
+      "types": "./@types/index.d.ts",
+      "import": "./module/index.js",
+      "require": "./node/index.cjs"
     },
     "./*": {
-      "types": "./dist/@types/*.d.ts",
-      "import": "./dist/module/*.js",
-      "require": "./dist/node/*.cjs"
+      "types": "./@types/*.d.ts",
+      "import": "./module/*.js",
+      "require": "./node/*.cjs"
     },
     "./*.js": {
-      "types": "./dist/@types/*.d.ts",
-      "import": "./dist/module/*.js",
-      "require": "./dist/node/*.cjs"
+      "types": "./@types/*.d.ts",
+      "import": "./module/*.js",
+      "require": "./node/*.cjs"
     }
   },
   "typesVersions": {
     "*": {
-      "dist/@types/index.d.ts": [
-        "dist/@types/index.d.ts"
+      "@types/index.d.ts": [
+        "@types/index.d.ts"
       ],
       "*": [
-        "dist/@types/*"
+        "@types/*"
       ]
     }
   },

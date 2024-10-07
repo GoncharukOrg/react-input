@@ -30,10 +30,12 @@ if (npm_package_name === '@react-input/core') {
 }
 
 /**
- * Remove `dist`
+ * Remove output directories
  */
 
-fs.rmSync('./dist', { recursive: true, force: true });
+for (const dir of ['@types', 'cdn', 'module', 'node']) {
+  fs.rmSync(`./${dir}`, { recursive: true, force: true });
+}
 
 /**
  * Rollup build
@@ -46,7 +48,7 @@ execSync('rollup --config ../../rollup.config.js');
  */
 
 execSync(
-  `tsc src/index.ts ${npm_package_name === '@react-input/core' ? '--removeComments' : ''} --declaration --emitDeclarationOnly --esModuleInterop --jsx react --rootDir src --outDir dist/@types`,
+  `tsc src/index.ts ${npm_package_name === '@react-input/core' ? '--removeComments' : ''} --declaration --emitDeclarationOnly --esModuleInterop --jsx react --rootDir src --outDir @types`,
 );
 
 /**
@@ -54,11 +56,11 @@ execSync(
  */
 
 {
-  const nodePaths = readdir('./dist/node');
-  const typesPaths = readdir('./dist/@types');
+  const nodePaths = readdir('./node');
+  const typesPaths = readdir('./@types');
 
   typesPaths.forEach((path) => {
-    const normalizedPath = path.replace(/^\.\/dist\/@types/, './dist/node').replace(/d\.ts$/, 'cjs');
+    const normalizedPath = path.replace(/^\.\/@types/, './node').replace(/d\.ts$/, 'cjs');
 
     if (!nodePaths.includes(normalizedPath) && !path.endsWith('/types.d.ts')) {
       const dirPath = path.replace(/\/[^/]*$/gm, '');
@@ -85,7 +87,7 @@ execSync(
   if (npm_package_name === '@react-input/mask' || npm_package_name === '@react-input/number-format') {
     for (const type of ['node', 'module']) {
       const format = type === 'module' ? 'js' : 'cjs';
-      const path = `./dist/${type}/${map[npm_package_name]}.${format}`;
+      const path = `./${type}/${map[npm_package_name]}.${format}`;
 
       let src = fs.readFileSync(path, 'utf-8');
 
@@ -115,7 +117,7 @@ execSync(
 //   if (npm_package_name === '@react-input/mask' || npm_package_name === '@react-input/number-format') {
 //     for (const type of ['node', 'module']) {
 //       fs.writeFileSync(
-//         `./dist/${type}/${map[npm_package_name]}/package.json`,
+//         `./${type}/${map[npm_package_name]}/package.json`,
 //         JSON.stringify(
 //           {
 //             sideEffects: false,

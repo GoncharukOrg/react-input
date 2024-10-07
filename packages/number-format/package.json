@@ -19,6 +19,10 @@
     "percent-format",
     "pattern"
   ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/react-input"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GoncharukOrg/react-input.git",

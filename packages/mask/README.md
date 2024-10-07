@@ -109,7 +109,7 @@ elements.forEach((element) => {
 
 Please note that in this way you can register multiple elements to which the mask will be applied.
 
-To use the utilities described in the "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils)" section, access them via the `ReactInput.Mask` class, for example `ReactInput.Mask.format(...`.
+To use the utilities described in the «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils)» section, access them via the `ReactInput.Mask` class, for example `ReactInput.Mask.format(...`.
 
 > Although you can use a class to mask input, using a hook or component in the React environment is preferable due to the optimizations applied, where you do not have to think about when to call `register` and `unregister` for input masking to work.
 
@@ -117,7 +117,7 @@ To use the utilities described in the "[Utils](https://github.com/GoncharukOrg/r
 
 To support the concept of controlled input, `@react-input/mask` does not change the value passed in the `value` or `defaultValue` properties of the `input` element, so set the initialized value to something that can match the masked value at any point in the input. If you make a mistake, you'll see a warning in the console about it.
 
-In cases where the input contains an unmasked value, you should use the `format` utility described in the chapter "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils)" to substitute the correct value, for example:
+In cases where the input contains an unmasked value, you should use the `format` utility described in the chapter «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils)» to substitute the correct value, for example:
 
 ```tsx
 import { useMask, format } from '@react-input/mask';
@@ -379,7 +379,7 @@ Takes two parameters, where the first is the unmasked value, the second is an ob
 
 The result fully corresponds to the value obtained when entering. Useful when you need to get a masked value without calling an input event.
 
-Since the principle of operation of `InputMask` is fully consistent with the operation of the `input` element, `InputMask` will not change the value outside the input event, so you may find yourself in a situation where the `input` element will have a value that does not correspond to the mask, for example when initializing the value of the received from the backend.
+Since the principle of operation of `InputMask` is fully consistent with the operation of the `input` element, `InputMask` will not change the value outside the input event, so you may find yourself in a situation where the `input` element will have a value that does not correspond to the mask, for example when initializing the value of the received from the backend (see «[Initializing the value](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#initializing-the-value)» for more details).
 
 ```ts
 format('1', { mask: '+__', replacement: { _: /\d/ } });

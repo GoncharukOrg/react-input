@@ -119,7 +119,7 @@ elements.forEach((element) => {
 
 Note that this way you can register multiple elements to which input formatting will be applied.
 
-To use the utilities described in the "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)" section, access them via the `ReactInput.NumberFormat` class, for example `ReactInput.NumberFormat.format(...`.
+To use the utilities described in the «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)» section, access them via the `ReactInput.NumberFormat` class, for example `ReactInput.NumberFormat.format(...`.
 
 > While you can use a class to format input, using a hook or component in the React environment is preferable due to the optimizations applied, where you don't have to think about when to call `register` and `unregister` for input formatting to work.
 
@@ -127,7 +127,7 @@ To use the utilities described in the "[Utils](https://github.com/GoncharukOrg/r
 
 To support the concept of controlled input, `@react-input/number-format` does not change the value passed in the `value` property of the `input` element, which means that the value in the state exactly matches the value in the input, so set the initialized value to something that can match the formatted value at any point in the input. If you make a mistake, you will see a warning in the console about it.
 
-With controlled input, when the input value is not formatted, you should use the `format` utility described in the chapter "[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)" to substitute the correct value, for example:
+With controlled input, when the input value is not formatted, you should use the `format` utility described in the chapter «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)» to substitute the correct value, for example:
 
 ```tsx
 import { useNumberFormat, format } from '@react-input/number-format';

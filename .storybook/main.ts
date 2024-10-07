@@ -12,6 +12,7 @@ function getAbsolutePath(value: string) {
 
 export default {
   stories: ['../packages/**/*.mdx', '../packages/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+
   addons: [
     getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
     getAbsolutePath('@storybook/addon-onboarding'),
@@ -19,11 +20,14 @@ export default {
     getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('@chromatic-com/storybook'),
     getAbsolutePath('@storybook/addon-interactions'),
+    '@chromatic-com/storybook',
   ],
+
   framework: {
     name: getAbsolutePath('@storybook/react-webpack5'),
     options: {},
   },
+
   swc: () => ({
     jsc: {
       transform: {
@@ -33,4 +37,10 @@ export default {
       },
     },
   }),
+
+  docs: {},
+
+  typescript: {
+    reactDocgen: 'react-docgen-typescript',
+  },
 } satisfies StorybookConfig;

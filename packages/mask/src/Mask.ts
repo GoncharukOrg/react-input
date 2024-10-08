@@ -10,17 +10,6 @@ import validate from './utils/validate';
 
 import type { MaskOptions, Replacement } from './types';
 
-interface CachedProps {
-  mask: string;
-  replacement: Replacement;
-}
-
-interface Cache {
-  value: string;
-  props: CachedProps;
-  fallbackProps: CachedProps;
-}
-
 function normalizeOptions(options: MaskOptions) {
   return {
     mask: options.mask ?? '',
@@ -35,7 +24,7 @@ function normalizeOptions(options: MaskOptions) {
   };
 }
 
-export default class Mask extends Input {
+export default class Mask extends Input<{ mask: string; replacement: Replacement }> {
   static {
     Object.defineProperty(this.prototype, Symbol.toStringTag, {
       writable: false,
@@ -46,8 +35,6 @@ export default class Mask extends Input {
   }
 
   constructor(options: MaskOptions = {}) {
-    let cache: Cache | null = null;
-
     super({
       /**
        * Init
@@ -55,21 +42,18 @@ export default class Mask extends Input {
       init: ({ initialValue, controlled }) => {
         const { mask, replacement, showMask } = normalizeOptions(options);
 
+        initialValue = controlled || initialValue ? initialValue : showMask ? mask : '';
+
         if (process.env.NODE_ENV !== 'production') {
           validate({ initialValue, mask, replacement });
         }
 
-        initialValue = controlled || initialValue ? initialValue : showMask ? mask : '';
-
-        const cachedProps = { mask, replacement };
-        cache = { value: initialValue, props: cachedProps, fallbackProps: cachedProps };
-
-        return initialValue;
+        return { value: initialValue, options: { mask, replacement } };
       },
       /**
        * Tracking
        */
-      tracking: ({ inputType, previousValue, addedValue, changeStart, changeEnd }) => {
+      tracking: ({ inputType, previousValue, previousOptions, addedValue, changeStart, changeEnd }) => {
         const { mask, replacement, showMask, separate, track, modify } = normalizeOptions(options);
 
         const _addedValue = track?.({
@@ -87,24 +71,11 @@ export default class Mask extends Input {
           addedValue = _addedValue;
         }
 
-        if (cache === null) {
-          throw new SyntheticChangeError('The state has not been initialized.');
-        }
-
-        // Предыдущее значение всегда должно соответствовать маскированному значению из кэша. Обратная ситуация может
-        // возникнуть при контроле значения, если значение не было изменено после ввода. Для предотвращения подобных
-        // ситуаций, нам важно синхронизировать предыдущее значение с кэшированным значением, если они различаются
-        if (cache.value !== previousValue) {
-          cache.props = cache.fallbackProps;
-        } else {
-          cache.fallbackProps = cache.props;
-        }
-
         // Дополнительно учитываем, что добавление/удаление символов не затрагивают значения до и после диапазона
         // изменения, поэтому нам важно получить их немаскированные значения на основе предыдущего значения и
         // закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
-        let beforeChangeValue = unformat(previousValue, { end: changeStart, separate, ...cache.props });
-        let afterChangeValue = unformat(previousValue, { start: changeEnd, separate, ...cache.props });
+        let beforeChangeValue = unformat(previousValue, { end: changeStart, separate, ...previousOptions });
+        let afterChangeValue = unformat(previousValue, { start: changeEnd, separate, ...previousOptions });
 
         // Регулярное выражение по поиску символов кроме ключей `replacement`
         const regExp$1 = RegExp(`[^${Object.keys(replacement).join('')}]`, 'g');
@@ -179,13 +150,11 @@ export default class Mask extends Input {
           separate: modifiedSeparate,
         });
 
-        cache.value = value;
-        cache.props = { mask: modifiedMask, replacement: modifiedReplacement };
-
         return {
           value,
           selectionStart: selection,
           selectionEnd: selection,
+          options: { mask: modifiedMask, replacement: modifiedReplacement },
         };
       },
     });

@@ -27,7 +27,7 @@ interface ContextValue {
 
 const handlersMap = new WeakMap<HTMLInputElement, ContextValue>();
 
-export default class Input {
+export default class Input<T = unknown> {
   static {
     Object.defineProperty(this.prototype, Symbol.toStringTag, {
       writable: false,
@@ -37,10 +37,10 @@ export default class Input {
     });
   }
 
-  init: InitFunction;
-  tracking: TrackingFunction;
+  init: InitFunction<T>;
+  tracking: TrackingFunction<T>;
 
-  constructor({ init, tracking }: InputOptions) {
+  constructor({ init, tracking }: InputOptions<T>) {
     this.init = init;
     this.tracking = tracking;
   }
@@ -53,6 +53,23 @@ export default class Input {
 
       return;
     }
+
+    const { initialValue = '', controlled = false } =
+      (element as { _wrapperState?: { initialValue?: string; controlled?: boolean } })._wrapperState ?? {};
+
+    // При создании `input` элемента возможно программное изменение свойства `value`, что может
+    // сказаться на отображении состояния элемента, поэтому важно учесть свойство `value` в приоритете.
+    // ISSUE: https://github.com/GoncharukOrg/react-input/issues/3
+    const { value, options } = this.init({
+      initialValue: element.value || initialValue,
+      controlled,
+    });
+
+    const cache = {
+      value,
+      options,
+      fallbackOptions: options,
+    };
 
     const timeout = {
       id: -1,
@@ -78,18 +95,10 @@ export default class Input {
       },
     });
 
-    const { initialValue = '', controlled = false } =
-      (element as { _wrapperState?: { initialValue?: string; controlled?: boolean } })._wrapperState ?? {};
-
     // Поскольку в `init` возможно изменение инициализированного значения, мы
     // также должны изменить значение элемента, при этом мы не должны устанавливать
     // позицию каретки, так как установка позиции здесь приведёт к автофокусу.
-    setInputAttributes(element, {
-      // При создании `input` элемента возможно программное изменение свойства `value`, что может
-      // сказаться на отображении состояния элемента, поэтому важно учесть свойство `value` в приоритете.
-      // ISSUE: https://github.com/GoncharukOrg/react-input/issues/3
-      value: this.init({ initialValue: element.value || initialValue, controlled }),
-    });
+    setInputAttributes(element, { value });
 
     /**
      * Handle focus
@@ -183,9 +192,21 @@ export default class Input {
           deletedValue = previousValue.slice(changeStart, changeEnd);
         }
 
-        const attributes = this.tracking({
+        // Предыдущее значение всегда должно соответствовать маскированному значению из кэша. Обратная ситуация может
+        // возникнуть при контроле значения, если значение не было изменено после ввода. Для предотвращения подобных
+        // ситуаций, нам важно синхронизировать предыдущее значение с кэшированным значением, если они различаются
+        if (cache.value !== previousValue) {
+          cache.options = cache.fallbackOptions;
+        } else {
+          cache.fallbackOptions = cache.options;
+        }
+
+        const previousOptions = cache.options;
+
+        const { options, ...attributes } = this.tracking({
           inputType,
           previousValue,
+          previousOptions,
           value,
           addedValue,
           deletedValue,
@@ -196,6 +217,9 @@ export default class Input {
         });
 
         setInputAttributes(element, attributes);
+
+        cache.value = attributes.value;
+        cache.options = options;
 
         tracker.selectionStart = attributes.selectionStart;
         tracker.selectionEnd = attributes.selectionEnd;

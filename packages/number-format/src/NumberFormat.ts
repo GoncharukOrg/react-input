@@ -10,18 +10,7 @@ import resolveSelection from './utils/resolveSelection';
 
 import type { NumberFormatOptions } from './types';
 
-interface CachedProps {
-  locales: Intl.LocalesArgument;
-  options: NumberFormatOptions;
-}
-
-interface Cache {
-  value: string;
-  props: CachedProps;
-  fallbackProps: CachedProps;
-}
-
-export default class NumberFormat extends Input {
+export default class NumberFormat extends Input<{ locales: Intl.LocalesArgument; options: NumberFormatOptions }> {
   static {
     Object.defineProperty(this.prototype, Symbol.toStringTag, {
       writable: false,
@@ -32,8 +21,6 @@ export default class NumberFormat extends Input {
   }
 
   constructor(_options: NumberFormatOptions & { locales?: Intl.LocalesArgument } = {}) {
-    let cache: Cache | null = null;
-
     super({
       /**
        * Init
@@ -52,31 +39,15 @@ export default class NumberFormat extends Input {
           }
         }
 
-        const cachedProps = { locales, options };
-        cache = { value: initialValue, props: cachedProps, fallbackProps: cachedProps };
-
-        return initialValue;
+        return { value: initialValue, options: { locales, options } };
       },
       /**
        * Tracking
        */
-      tracking: ({ inputType, previousValue, addedValue, changeStart, changeEnd }) => {
+      tracking: ({ inputType, previousValue, previousOptions, addedValue, changeStart, changeEnd }) => {
         const { locales, ...options } = _options;
 
-        if (cache === null) {
-          throw new SyntheticChangeError('The state has not been initialized.');
-        }
-
-        // Предыдущее значение всегда должно соответствовать маскированному значению из кэша. Обратная ситуация может
-        // возникнуть при контроле значения, если значение не было изменено после ввода. Для предотвращения подобных
-        // ситуаций, нам важно синхронизировать предыдущее значение с кэшированным значением, если они различаются
-        if (cache.value !== previousValue) {
-          cache.props = cache.fallbackProps;
-        } else {
-          cache.fallbackProps = cache.props;
-        }
-
-        const previousLocalizedValues = localizeValues(cache.props.locales);
+        const previousLocalizedValues = localizeValues(previousOptions.locales);
         const localizedValues = localizeValues(locales);
         const resolvedOptions = resolveOptions(locales, options);
 
@@ -143,7 +114,7 @@ export default class NumberFormat extends Input {
           }
 
           if (previousFractionIndex !== -1) {
-            const previousResolvedOptions = resolveOptions(cache.props.locales, cache.props.options);
+            const previousResolvedOptions = resolveOptions(previousOptions.locales, previousOptions.options);
             const previousMinimumFractionDigits = previousResolvedOptions.minimumFractionDigits ?? 0;
 
             // Если изменения происходят в области `minimumFractionDigits`
@@ -202,13 +173,11 @@ export default class NumberFormat extends Input {
           changeEnd,
         });
 
-        cache.value = value;
-        cache.props = { locales, options };
-
         return {
           value,
           selectionStart: selection.start,
           selectionEnd: selection.end,
+          options: { locales, options },
         };
       },
     });

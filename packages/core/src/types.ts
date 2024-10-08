@@ -6,23 +6,27 @@ export interface InputAttributes {
   selectionEnd: number;
 }
 
-export type InitFunction = (param: { initialValue: string; controlled: boolean }) => string;
+export type InitFunction<T> = (param: { initialValue: string; controlled: boolean }) => {
+  value: string;
+  options: T;
+};
 
-export type TrackingFunction = (param: {
+export type TrackingFunction<T> = (param: {
   inputType: InputType;
   value: string;
   addedValue: string;
   deletedValue: string;
   previousValue: string;
+  previousOptions: T;
   changeStart: number;
   changeEnd: number;
   selectionStart: number;
   selectionEnd: number;
-}) => InputAttributes;
+}) => InputAttributes & { options: T };
 
-export interface InputOptions {
-  init: InitFunction;
-  tracking: TrackingFunction;
+export interface InputOptions<T = unknown> {
+  init: InitFunction<T>;
+  tracking: TrackingFunction<T>;
 }
 
 export type InputComponentProps<C extends React.ComponentType | undefined = undefined> = {

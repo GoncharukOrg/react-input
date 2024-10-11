@@ -42,15 +42,15 @@ export function format(value: string, { mask, replacement }: Options): string {
  *
  * `unformat('+1_', { mask: '+__', replacement: { _: /\d/ } })` → "1"
  */
-export function unformat(formattedValue: string, { mask, replacement }: Options): string {
+export function unformat(value: string, { mask, replacement }: Options): string {
   const replacementObject = typeof replacement === 'string' ? _formatToReplacementObject(replacement) : replacement;
 
-  const value = _unformat(formattedValue, { mask, replacement: replacementObject, separate: false });
+  const unformattedValue = _unformat(value, { mask, replacement: replacementObject, separate: false });
 
   const regExp$1 = RegExp(`[^${Object.keys(replacementObject).join('')}]`, 'g');
   const replacementChars = mask.replace(regExp$1, '');
 
-  return _filter(value, { replacementChars, replacement: replacementObject, separate: false });
+  return _filter(unformattedValue, { replacementChars, replacement: replacementObject, separate: false });
 }
 
 /**

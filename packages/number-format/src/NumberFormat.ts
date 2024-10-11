@@ -20,6 +20,9 @@ export default class NumberFormat extends Input<{ locales: Intl.LocalesArgument;
     });
   }
 
+  format: (value: number | bigint | string) => string;
+  unformat: (value: string) => string;
+
   constructor(_options: NumberFormatOptions & { locales?: Intl.LocalesArgument } = {}) {
     super({
       /**
@@ -181,6 +184,14 @@ export default class NumberFormat extends Input<{ locales: Intl.LocalesArgument;
         };
       },
     });
+
+    this.format = (value: number | bigint | string) => {
+      return utils.format(value, _options);
+    };
+
+    this.unformat = (value: string) => {
+      return utils.unformat(value, _options.locales);
+    };
   }
 }
 

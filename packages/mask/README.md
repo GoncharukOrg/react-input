@@ -111,8 +111,6 @@ elements.forEach((element) => {
 
 Please note that in this way you can register multiple elements to which the mask will be applied.
 
-To use the utilities described in the «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils)» section, access them via the `ReactInput.Mask` class, for example `ReactInput.Mask.format(...`.
-
 > Although you can use a class to mask input, using a hook or component in the React environment is preferable due to the optimizations applied, where you do not have to think about when to call `register` and `unregister` for input masking to work.
 
 ## Initializing the value
@@ -372,6 +370,17 @@ When testing a component with `showMask`, make sure that you set the initial cur
 ## Utils
 
 `@react-input/mask` provides utilities to make things easier when processing a value. You can use them regardless of using the `InputMask` component or the `useMask` hook.
+
+You can use utilities by importing them from the package or calling them from an instance of the `Mask` class. With the second option, you don't need to pass parameters to the methods, as shown in the examples below, for example when using with a CDN:
+
+```js
+const mask = new ReactInput.Mask({
+  mask: '+__',
+  replacement: { _: /\d/ },
+});
+
+mask.unformat('+1_'); // returns: "1"
+```
 
 ### `format`
 

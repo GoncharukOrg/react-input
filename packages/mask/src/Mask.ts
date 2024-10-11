@@ -8,7 +8,7 @@ import resolveSelection from './utils/resolveSelection';
 import unformat from './utils/unformat';
 import validate from './utils/validate';
 
-import type { MaskOptions, Replacement } from './types';
+import type { MaskOptions, MaskPart, Replacement } from './types';
 
 function normalizeOptions(options: MaskOptions) {
   return {
@@ -33,6 +33,11 @@ export default class Mask extends Input<{ mask: string; replacement: Replacement
       value: 'Mask',
     });
   }
+
+  format: (value: string) => string;
+  formatToParts: (value: string) => MaskPart[];
+  unformat: (value: string) => string;
+  generatePattern: (takeReplacementKey?: boolean) => string;
 
   constructor(options: MaskOptions = {}) {
     super({
@@ -158,6 +163,22 @@ export default class Mask extends Input<{ mask: string; replacement: Replacement
         };
       },
     });
+
+    this.format = (value: string) => {
+      return utils.format(value, normalizeOptions(options));
+    };
+
+    this.formatToParts = (value: string) => {
+      return utils.formatToParts(value, normalizeOptions(options));
+    };
+
+    this.unformat = (value: string) => {
+      return utils.unformat(value, normalizeOptions(options));
+    };
+
+    this.generatePattern = (takeReplacementKey?: boolean) => {
+      return utils.generatePattern(normalizeOptions(options), takeReplacementKey);
+    };
   }
 }
 

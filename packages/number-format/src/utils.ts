@@ -36,9 +36,9 @@ export function format(
  *
  * `unformat('$1,23,456.78', 'en-IN')` → "123456.78"
  */
-export function unformat(formattedValue: string, locales?: Intl.LocalesArgument) {
+export function unformat(value: string, locales?: Intl.LocalesArgument) {
   const localizedValues = _localizeValues(locales);
-  const filteredValue = _filter(formattedValue, localizedValues);
+  const filteredValue = _filter(value, localizedValues);
 
   return _normalize(filteredValue, localizedValues);
 }

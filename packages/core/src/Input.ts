@@ -41,7 +41,7 @@ export default class Input<T = unknown> {
   constructor({ init, tracking }: InputOptions<T>) {
     const handlersMap = new WeakMap<HTMLInputElement, ContextValue>();
 
-    this.register = function register(element: HTMLInputElement) {
+    this.register = (element: HTMLInputElement) => {
       if (!ALLOWED_TYPES.includes(element.type)) {
         if (process.env.NODE_ENV !== 'production') {
           console.warn(`Warn: The input element type does not match one of the types: ${ALLOWED_TYPES.join(', ')}.`);
@@ -252,7 +252,7 @@ export default class Input<T = unknown> {
       handlersMap.set(element, { onFocus, onBlur, onInput });
     };
 
-    this.unregister = function unregister(element: HTMLInputElement) {
+    this.unregister = (element: HTMLInputElement) => {
       const handlers = handlersMap.get(element);
 
       if (handlers !== undefined) {

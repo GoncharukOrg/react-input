@@ -121,8 +121,6 @@ elements.forEach((element) => {
 
 Note that this way you can register multiple elements to which input formatting will be applied.
 
-To use the utilities described in the «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)» section, access them via the `ReactInput.NumberFormat` class, for example `ReactInput.NumberFormat.format(...`.
-
 > While you can use a class to format input, using a hook or component in the React environment is preferable due to the optimizations applied, where you don't have to think about when to call `register` and `unregister` for input formatting to work.
 
 ## Initializing the value
@@ -354,6 +352,18 @@ To make it easier to work with the library, you will receive corresponding messa
 ## Utils
 
 `@react-input/number-format` provides utilities to make things easier when processing a value. You can use them regardless of using the `InputNumberFormat` component or the `useNumberFormat` hook.
+
+You can use utilities by importing them from the package or calling them from an instance of the `NumberFormat` class. With the second option, you don't need to pass parameters to the methods, as shown in the examples below, for example when using with a CDN:
+
+```ts
+const numberFormat = new ReactInput.NumberFormat({
+  locales: 'en-IN',
+  format: 'currency',
+  currency: 'USD',
+});
+
+numberFormat.unformat('$1,23,456.78'); // returns: "123456.78"
+```
 
 ### `format`
 

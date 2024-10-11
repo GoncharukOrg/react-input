@@ -93,6 +93,9 @@ export default function resolveSelection({
   // каретки, в рамках изменения значения при добавлении/удалении значения,
   // будет подсчёт количества цифр до выделенной области изменения (до `changeStart`).
 
+  const maximumIntegerDigits =
+    resolvedOptions.maximumIntegerDigits !== undefined ? Number(resolvedOptions.maximumIntegerDigits) : undefined;
+
   let selection = value.length;
   // "Устойчиваое" число - цифры и десятичный разделитель без учитёта
   // нулей от начала значения до первой цифры не равной нулю в `integer`
@@ -144,12 +147,9 @@ export default function resolveSelection({
 
         const joinedPreviousInteger = previousInteger + previousFraction;
 
-        if (
-          resolvedOptions.maximumIntegerDigits !== undefined &&
-          joinedPreviousInteger.length > resolvedOptions.maximumIntegerDigits
-        ) {
-          countStableDigits = resolvedOptions.maximumIntegerDigits;
-          previousInteger = joinedPreviousInteger.slice(0, resolvedOptions.maximumIntegerDigits);
+        if (maximumIntegerDigits !== undefined && joinedPreviousInteger.length > maximumIntegerDigits) {
+          countStableDigits = maximumIntegerDigits;
+          previousInteger = joinedPreviousInteger.slice(0, maximumIntegerDigits);
         }
       } else {
         addedFraction = addedInteger;
@@ -163,11 +163,7 @@ export default function resolveSelection({
       addedInteger = addedInteger.replace(RegExp(`^[0${previousLocalizedValues.digits[0]}]+`, 'g'), '');
     }
 
-    const endSlice =
-      resolvedOptions.maximumIntegerDigits !== undefined
-        ? resolvedOptions.maximumIntegerDigits - previousInteger.length
-        : undefined;
-
+    const endSlice = maximumIntegerDigits !== undefined ? maximumIntegerDigits - previousInteger.length : undefined;
     const normalizedAdded = addedInteger.slice(0, endSlice) + (hasAddedDecimal ? '.' : '') + addedFraction;
 
     countStableDigits += normalizedAdded.replace(

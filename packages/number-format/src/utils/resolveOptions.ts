@@ -22,6 +22,12 @@ export default function resolveOptions(
   locales: Intl.LocalesArgument,
   { format, groupDisplay, maximumIntegerDigits, ...options }: NumberFormatOptions,
 ) {
+  maximumIntegerDigits = maximumIntegerDigits !== undefined ? Number(maximumIntegerDigits) : undefined;
+
+  if (maximumIntegerDigits !== undefined && Number.isNaN(maximumIntegerDigits)) {
+    throw new RangeError('maximumIntegerDigits value is out of range.');
+  }
+
   const resolvedOptions = new Intl.NumberFormat(locales, {
     ...options,
     style: format,

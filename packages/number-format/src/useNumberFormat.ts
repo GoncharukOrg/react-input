@@ -61,24 +61,12 @@ export default function useNumberFormat({
    */
 
   const init: Init = ({ controlled, initialValue }) => {
-    const maximumIntegerDigits = options.maximumIntegerDigits;
-    const resolvedOptions = resolveOptions(locales, options);
-
-    const invalidRange =
-      maximumIntegerDigits !== undefined &&
-      resolvedOptions.maximumIntegerDigits !== undefined &&
-      (typeof maximumIntegerDigits !== 'number' || maximumIntegerDigits < resolvedOptions.maximumIntegerDigits);
-
-    if (invalidRange) {
-      throw new RangeError('maximumIntegerDigits value is out of range.');
-    }
-
     if (!controlled) {
       const localizedValues = localizeValues(locales);
-
       const filteredValue = filter(initialValue, localizedValues);
 
       if (filteredValue.length > 0) {
+        const resolvedOptions = resolveOptions(locales, options);
         const normalizedValue = normalize(filteredValue, localizedValues);
         initialValue = _format(normalizedValue, { locales, options, localizedValues, resolvedOptions }).value;
       }

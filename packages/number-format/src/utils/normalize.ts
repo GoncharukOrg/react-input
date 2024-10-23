@@ -1,6 +1,6 @@
 import type { LocalizedNumberFormatValues } from '../types';
 
-export default function unformat(value: string, localizedValues: LocalizedNumberFormatValues) {
+export default function normalize(value: string, localizedValues: LocalizedNumberFormatValues) {
   const normalizedValue = value
     // Нормализуем десятичный разделитель
     .replace(RegExp(`[,${localizedValues.decimal}]`, 'g'), '.')

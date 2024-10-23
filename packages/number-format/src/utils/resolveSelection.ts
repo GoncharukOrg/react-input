@@ -214,10 +214,7 @@ export default function resolveSelection({
       selection = previousDigitIndex + 1;
     }
 
-    if (
-      value[selection] === localizedValues.decimal &&
-      RegExp(`[.,${localizedValues.decimal}]`).test(addedValue[addedValue.length - 1] ?? '')
-    ) {
+    if (value[selection] === localizedValues.decimal && RegExp(`[.,${localizedValues.decimal}]$`).test(addedValue)) {
       selection += 1;
     }
   }

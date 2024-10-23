@@ -14,7 +14,8 @@ interface Options {
  * @returns
  */
 export default function format(value: string, { locales, options, localizedValues, resolvedOptions }: Options) {
-  const minimumFractionDigits = resolvedOptions.minimumFractionDigits ?? 0;
+  const { maximumIntegerDigits, minimumFractionDigits = 0, maximumFractionDigits } = resolvedOptions;
+
   const normalizedOptions: NumberFormatOptions & Intl.NumberFormatOptions = { ...options };
 
   normalizedOptions.style = normalizedOptions.format;
@@ -35,7 +36,7 @@ export default function format(value: string, { locales, options, localizedValue
 
   // - `replace` - Учитываем `minimumIntegerDigits`.
   // Так, при `addedValue` "2": "000 001" -> "000 0012" -> "12" -> "000 012"
-  integer = integer.replace(/^(-)?0+/, '$1').slice(0, resolvedOptions.maximumIntegerDigits);
+  integer = integer.replace(/^(-)?0+/, '$1').slice(0, maximumIntegerDigits);
 
   // В значении может встречаться юникод, нам важно заменить
   // такие символы для соответствия стандартному значению
@@ -46,7 +47,7 @@ export default function format(value: string, { locales, options, localizedValue
   }
 
   if (
-    (resolvedOptions.maximumFractionDigits === undefined || resolvedOptions.maximumFractionDigits > 0) &&
+    (maximumFractionDigits === undefined || maximumFractionDigits > 0) &&
     (value.includes('.') || fraction.length > 0)
   ) {
     nextValue = nextValue.replace(
@@ -55,7 +56,7 @@ export default function format(value: string, { locales, options, localizedValue
     );
 
     if (fraction.length > 0) {
-      fraction = fraction.slice(0, resolvedOptions.maximumFractionDigits);
+      fraction = fraction.slice(0, maximumFractionDigits);
       const localizedFraction = fraction.replace(/\d/g, (digit) => localizedValues.digits[Number(digit)]);
 
       nextValue = nextValue.replace(

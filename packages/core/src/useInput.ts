@@ -18,8 +18,6 @@ export default function useInput({ init, tracking }: InputOptions) {
   $options.current.init = init;
   $options.current.tracking = tracking;
 
-  // TODO: доступ по ссылке больше не имеет значения
-  // TODO: useProxy
   return useMemo(() => {
     return createProxy($ref, new Input($options.current));
   }, []);

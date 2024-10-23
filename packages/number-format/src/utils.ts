@@ -40,5 +40,5 @@ export function unformat(value: string, locales?: Intl.LocalesArgument) {
   const localizedValues = _localizeValues(locales);
   const filteredValue = _filter(value, localizedValues);
 
-  return _normalize(filteredValue, localizedValues);
+  return _normalize(filteredValue, localizedValues).replace(/\.$/, '');
 }

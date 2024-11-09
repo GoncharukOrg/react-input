@@ -1,3 +1,4 @@
+import _exec from './utils/exec';
 import _filter from './utils/filter';
 import _format from './utils/format';
 import _localizeValues from './utils/localizeValues';
@@ -38,7 +39,14 @@ export function format(
  */
 export function unformat(value: string, locales?: Intl.LocalesArgument) {
   const localizedValues = _localizeValues(locales);
-  const filteredValue = _filter(value, localizedValues);
 
-  return _normalize(filteredValue, localizedValues).replace(/\.$/, '');
+  let _value = value;
+
+  _value = _exec(value, localizedValues);
+  _value = _filter(_value, localizedValues);
+  _value = _normalize(_value, localizedValues);
+
+  // Для нормализации значения, ставим минус слева.
+  // В случае арабской локали он может находиться справа
+  return _value.replace(/(.+)(-)$/, '$2$1').replace(/\.$/, '');
 }

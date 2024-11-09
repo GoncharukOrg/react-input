@@ -38,9 +38,24 @@ export default function format(value: string, { locales, options, localizedValue
   // Так, при `addedValue` "2": "000 001" -> "000 0012" -> "12" -> "000 012"
   integer = integer.replace(/^(-)?0+/, '$1').slice(0, maximumIntegerDigits);
 
+  const bigInteger = BigInt(integer);
+  let nextValue = '';
+
+  // При `percent` происходит умножение на 100, поэтому нам важно обработать его отдельно под видом `decimal`
+  if (resolvedOptions.format === 'percent') {
+    const p$1 = `${localizedValues.minusSign}?[${localizedValues.digits}]+([^${localizedValues.digits}][${localizedValues.digits}]+)*${localizedValues.minusSign}?`;
+
+    const decimalValue = new Intl.NumberFormat(locales, { ...normalizedOptions, style: 'decimal' }).format(bigInteger);
+    const percentValue = new Intl.NumberFormat(locales, normalizedOptions).format(0);
+
+    nextValue = percentValue.replace(localizedValues.digits[0], RegExp(p$1).exec(decimalValue)?.[0] ?? '');
+  } else {
+    nextValue = new Intl.NumberFormat(locales, normalizedOptions).format(bigInteger);
+  }
+
   // В значении может встречаться юникод, нам важно заменить
   // такие символы для соответствия стандартному значению
-  let nextValue = new Intl.NumberFormat(locales, normalizedOptions).format(BigInt(integer)).replace(/\s/g, ' ');
+  nextValue = nextValue.replace(/\s/g, ' ');
 
   if (fraction.length < minimumFractionDigits) {
     fraction += '0'.repeat(minimumFractionDigits - fraction.length);
@@ -85,6 +100,7 @@ export default function format(value: string, { locales, options, localizedValue
     if (lastDigitIndex !== -1) {
       nextValue = nextValue.slice(0, lastDigitIndex + 1) + sign + nextValue.slice(lastDigitIndex + 1);
 
+      // Если не поставить юникод, поведение курсора будет нарушено
       if (!nextValue.startsWith('‏')) {
         nextValue = `‏${nextValue}`;
       }

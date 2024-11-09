@@ -9,8 +9,16 @@ import '@testing-library/jest-dom';
 
 function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
   const ref = useInput({
-    init: ({ initialValue }) => initialValue,
-    tracking: ({ value, selectionStart, selectionEnd }) => ({ value, selectionStart, selectionEnd }),
+    init: ({ initialValue }) => ({
+      value: initialValue,
+      options: {},
+    }),
+    tracking: ({ value, selectionStart, selectionEnd }) => ({
+      value,
+      selectionStart,
+      selectionEnd,
+      options: {},
+    }),
   });
 
   return <input ref={ref} autoFocus {...props} data-testid="testing-input" />;

@@ -42,11 +42,11 @@ export default function useMask({
    */
 
   const init: Init = ({ controlled, initialValue }) => {
+    initialValue = controlled || initialValue ? initialValue : showMask ? mask : '';
+
     if (process.env.NODE_ENV !== 'production') {
       validate({ initialValue, mask, replacement: replacementObject });
     }
-
-    initialValue = controlled || initialValue ? initialValue : showMask ? mask : '';
 
     const cachedProps = { mask, replacement: replacementObject, showMask, separate };
     cache.current = { value: initialValue, props: cachedProps, fallbackProps: cachedProps };
@@ -74,31 +74,6 @@ export default function useMask({
       cache.current.fallbackProps = cache.current.props;
     }
 
-    // Дополнительно нам важно учесть, что немаскированное значение с учетом удаления или добавления символов должно
-    // получаться с помощью закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
-
-    let beforeChangeValue = unformat(previousValue, {
-      end: changeStart,
-      mask: cache.current.props.mask,
-      replacement: cache.current.props.replacement,
-      separate: cache.current.props.separate,
-    });
-
-    // Регулярное выражение по поиску символов кроме ключей `replacement`
-    const regExp$1 = RegExp(`[^${Object.keys(cache.current.props.replacement).join('')}]`, 'g');
-
-    // Находим все заменяемые символы для фильтрации пользовательского значения.
-    // Важно определить корректное значение на данном этапе
-    const replacementChars = cache.current.props.mask.replace(regExp$1, '');
-
-    if (beforeChangeValue) {
-      beforeChangeValue = filter(beforeChangeValue, {
-        replacementChars,
-        replacement: cache.current.props.replacement,
-        separate: cache.current.props.separate,
-      });
-    }
-
     const _addedValue = track?.({
       ...(inputType === 'insert' ? { inputType, data: addedValue } : { inputType, data: null }),
       value: previousValue,
@@ -114,17 +89,15 @@ export default function useMask({
       addedValue = _addedValue;
     }
 
-    if (addedValue) {
-      addedValue = filter(addedValue, {
-        replacementChars: replacementChars.slice(beforeChangeValue.length),
-        replacement: cache.current.props.replacement,
-        separate: false, // Поскольку нас интересуют только "полезные" символы, фильтруем без учёта заменяемых символов
-      });
-    }
+    // Дополнительно нам важно учесть, что немаскированное значение с учетом удаления или добавления символов должно
+    // получаться с помощью закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
 
-    if (inputType === 'insert' && addedValue === '') {
-      throw new SyntheticChangeError('The character does not match the key value of the `replacement` object.');
-    }
+    let beforeChangeValue = unformat(previousValue, {
+      end: changeStart,
+      mask: cache.current.props.mask,
+      replacement: cache.current.props.replacement,
+      separate: cache.current.props.separate,
+    });
 
     let afterChangeValue = unformat(previousValue, {
       start: changeEnd,
@@ -133,11 +106,37 @@ export default function useMask({
       separate: cache.current.props.separate,
     });
 
+    // Регулярное выражение по поиску символов кроме ключей `replacement`
+    const regExp$1 = RegExp(`[^${Object.keys(replacementObject).join('')}]`, 'g');
+    // Находим все заменяемые символы для фильтрации пользовательского значения.
+    // Важно определить корректное значение на данном этапе
+    const replacementChars = mask.replace(regExp$1, '');
+
+    if (beforeChangeValue) {
+      beforeChangeValue = filter(beforeChangeValue, {
+        replacementChars,
+        replacement: replacementObject,
+        separate,
+      });
+    }
+
+    if (addedValue) {
+      addedValue = filter(addedValue, {
+        replacementChars: replacementChars.slice(beforeChangeValue.length),
+        replacement: replacementObject,
+        separate: false, // Поскольку нас интересуют только "полезные" символы, фильтруем без учёта заменяемых символов
+      });
+    }
+
+    if (inputType === 'insert' && addedValue === '') {
+      throw new SyntheticChangeError('The character does not match the key value of the `replacement` object.');
+    }
+
     // Модифицируем `afterChangeValue` чтобы позиция символов не смещалась. Необходимо выполнять
     // после фильтрации `addedValue` и перед фильтрацией `afterChangeValue`
-    if (cache.current.props.separate) {
+    if (separate) {
       // Находим заменяемые символы в диапазоне изменяемых символов
-      const separateChars = cache.current.props.mask.slice(changeStart, changeEnd).replace(regExp$1, '');
+      const separateChars = mask.slice(changeStart, changeEnd).replace(regExp$1, '');
 
       // Получаем количество символов для сохранения перед `afterChangeValue`. Возможные значения:
       // `меньше ноля` - обрезаем значение от начала на количество символов;
@@ -155,8 +154,8 @@ export default function useMask({
     if (afterChangeValue) {
       afterChangeValue = filter(afterChangeValue, {
         replacementChars: replacementChars.slice(beforeChangeValue.length + addedValue.length),
-        replacement: cache.current.props.replacement,
-        separate: cache.current.props.separate,
+        replacement: replacementObject,
+        separate,
       });
     }
 

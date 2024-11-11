@@ -81,8 +81,8 @@
   },
   "peerDependencies": {
     "@types/react": ">=16.8",
-    "react": ">=16.8",
-    "react-dom": ">=16.8"
+    "react": ">=16.8 || ^19.0.0-rc",
+    "react-dom": ">=16.8 || ^19.0.0-rc"
   },
   "peerDependenciesMeta": {
     "@types/react": {

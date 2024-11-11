@@ -24,7 +24,7 @@ function normalizeOptions(options: MaskOptions) {
   };
 }
 
-export default class Mask extends Input<{ mask: string; replacement: Replacement }> {
+export default class Mask extends Input<{ mask: string; replacement: Replacement; separate: boolean }> {
   static {
     Object.defineProperty(this.prototype, Symbol.toStringTag, {
       writable: false,
@@ -45,7 +45,7 @@ export default class Mask extends Input<{ mask: string; replacement: Replacement
        * Init
        */
       init: ({ initialValue, controlled }) => {
-        const { mask, replacement, showMask } = normalizeOptions(options);
+        const { mask, replacement, separate, showMask } = normalizeOptions(options);
 
         initialValue = controlled || initialValue ? initialValue : showMask ? mask : '';
 
@@ -53,7 +53,7 @@ export default class Mask extends Input<{ mask: string; replacement: Replacement
           validate({ initialValue, mask, replacement });
         }
 
-        return { value: initialValue, options: { mask, replacement } };
+        return { value: initialValue, options: { mask, replacement, separate } };
       },
       /**
        * Tracking
@@ -79,8 +79,8 @@ export default class Mask extends Input<{ mask: string; replacement: Replacement
         // Дополнительно учитываем, что добавление/удаление символов не затрагивают значения до и после диапазона
         // изменения, поэтому нам важно получить их немаскированные значения на основе предыдущего значения и
         // закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
-        let beforeChangeValue = unformat(previousValue, { end: changeStart, separate, ...previousOptions });
-        let afterChangeValue = unformat(previousValue, { start: changeEnd, separate, ...previousOptions });
+        let beforeChangeValue = unformat(previousValue, { end: changeStart, ...previousOptions });
+        let afterChangeValue = unformat(previousValue, { start: changeEnd, ...previousOptions });
 
         // Регулярное выражение по поиску символов кроме ключей `replacement`
         const regExp$1 = RegExp(`[^${Object.keys(replacement).join('')}]`, 'g');
@@ -159,7 +159,7 @@ export default class Mask extends Input<{ mask: string; replacement: Replacement
           value,
           selectionStart: selection,
           selectionEnd: selection,
-          options: { mask: modifiedMask, replacement: modifiedReplacement },
+          options: { mask: modifiedMask, replacement: modifiedReplacement, separate: modifiedSeparate },
         };
       },
     });

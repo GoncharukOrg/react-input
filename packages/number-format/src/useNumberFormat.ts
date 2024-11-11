@@ -2,6 +2,7 @@ import { useRef } from 'react';
 
 import { SyntheticChangeError, useInput } from '@react-input/core';
 
+import exec from './utils/exec';
 import filter from './utils/filter';
 import _format from './utils/format';
 import localizeValues from './utils/localizeValues';
@@ -9,8 +10,28 @@ import normalize from './utils/normalize';
 import resolveOptions from './utils/resolveOptions';
 import resolveSelection from './utils/resolveSelection';
 
-import type { NumberFormatEventDetail, NumberFormatOptions, NumberFormatProps } from './types';
+import type {
+  NumberFormatEventDetail,
+  LocalizedNumberFormatValues,
+  NumberFormatOptions,
+  NumberFormatProps,
+} from './types';
 import type { Init, Tracking } from '@react-input/core';
+
+function normalizeAddedValue(addedValue: string, localizedValues: LocalizedNumberFormatValues) {
+  const normalizedLocalizedValues = { minusSign: '-', decimal: '.', digits: '\\d', signBackwards: false };
+
+  const addedValue$1 = exec(addedValue, localizedValues);
+  const addedValue$2 = exec(addedValue.replace(',', '.'), normalizedLocalizedValues);
+
+  const $addedValue = addedValue$1 ? addedValue$1 : addedValue$2;
+  const $localizedValues = addedValue$1 ? localizedValues : normalizedLocalizedValues;
+
+  addedValue = filter($addedValue, $localizedValues);
+  addedValue = normalize(addedValue, localizedValues);
+
+  return addedValue;
+}
 
 interface CachedNumberFormatProps {
   locales: Intl.LocalesArgument;
@@ -61,14 +82,17 @@ export default function useNumberFormat({
    */
 
   const init: Init = ({ controlled, initialValue }) => {
-    if (!controlled) {
+    if (!controlled && initialValue.length > 0) {
       const localizedValues = localizeValues(locales);
-      const filteredValue = filter(initialValue, localizedValues);
+      const resolvedOptions = resolveOptions(locales, options);
 
-      if (filteredValue.length > 0) {
-        const resolvedOptions = resolveOptions(locales, options);
-        const normalizedValue = normalize(filteredValue, localizedValues);
-        initialValue = _format(normalizedValue, { locales, options, localizedValues, resolvedOptions }).value;
+      let _value = normalizeAddedValue(initialValue, localizedValues);
+      // Для нормализации значения, ставим минус слева.
+      // В случае арабской локали он может находиться справа
+      _value = _value.replace(/(.+)(-)$/, '$2$1');
+
+      if (_value.length > 0) {
+        initialValue = _format(_value, { locales, options, localizedValues, resolvedOptions }).value;
       }
     }
 
@@ -108,35 +132,58 @@ export default function useNumberFormat({
     const localizedValues = localizeValues(locales);
     const resolvedOptions = resolveOptions(locales, options);
 
-    addedValue = filter(addedValue, localizedValues);
+    const r$1 = RegExp(`^[${localizedValues.minusSign}]$`);
+    const r$2 = RegExp(`^[,${localizedValues.decimal}]$`);
 
-    if (resolvedOptions.maximumFractionDigits === 0) {
-      addedValue = addedValue.replace(RegExp(`[.,${localizedValues.decimal}]`, 'g'), '');
+    if (r$1.test(addedValue)) {
+      addedValue = addedValue.replace(r$1, '-');
+    } else if (r$2.test(addedValue)) {
+      addedValue = addedValue.replace(r$2, '.');
+    } else {
+      addedValue = normalizeAddedValue(addedValue, localizedValues);
     }
 
     if (inputType === 'insert' && !addedValue) {
       throw new SyntheticChangeError('The added value does not contain allowed characters.');
     }
 
-    const regExp$1 = RegExp(
-      `[^\\${previousLocalizedValues.minusSign}${previousLocalizedValues.decimal}${previousLocalizedValues.digits}]`,
-      'g',
-    );
+    let beforeChangeValue = previousValue.slice(0, changeStart);
+    beforeChangeValue = exec(beforeChangeValue, previousLocalizedValues);
+    beforeChangeValue = filter(beforeChangeValue, previousLocalizedValues);
+    beforeChangeValue = normalize(beforeChangeValue, previousLocalizedValues);
 
-    // Нам важно удалить ненужные символы перед преобразованием в число, так
-    // как символ группы и символ десятичного разделителя могут пересекаться
-    const beforeChangeValue = previousValue.slice(0, changeStart).replace(regExp$1, '');
-    const afterChangeValue = previousValue.slice(changeEnd).replace(regExp$1, '');
+    let afterChangeValue = previousValue.slice(changeEnd);
+    afterChangeValue = exec(afterChangeValue, previousLocalizedValues);
+    afterChangeValue = filter(afterChangeValue, previousLocalizedValues);
+    afterChangeValue = normalize(afterChangeValue, previousLocalizedValues);
 
-    const filteredValue = filter(beforeChangeValue + addedValue + afterChangeValue, localizedValues);
-    let normalizedValue = normalize(filteredValue, localizedValues);
+    let normalizedValue = beforeChangeValue + addedValue + afterChangeValue;
+
+    // Удаляем лишние знаки десятичного разделителя
+    normalizedValue = normalizedValue.replace(/[.](?=.*[.])/g, '');
+
+    // Если `signBackwards === true`, тогда знак минуса определён локалью как "стоящий справа",
+    // в этом случае удаляем знак минуса стоящий перед остальными символами (`lookahead`),
+    // в противном случае удаляем знак минуса стоящий после остальных символов (альтернатива `lookbehind`)
+    if (localizedValues.signBackwards) {
+      normalizedValue = normalizedValue.replace(/[-](?=.*[-.\d])/g, '');
+    } else {
+      const index = normalizedValue.search(/[-.\d]/);
+
+      normalizedValue = normalizedValue.replace(/[-]/g, (match, offset) => {
+        return index !== -1 && offset > index ? '' : match;
+      });
+    }
+
+    // Для нормализации значения, ставим минус слева.
+    // В случае арабской локали он может находиться справа
+    normalizedValue = normalizedValue.replace(/(.+)(-)$/, '$2$1');
 
     // В случае ввода знака минуса нам нужно его удалить если
     // оно присутствует, в противном случае добавить, тем самым
     // создав автоматическую вставку при любой позиции каретки
     {
-      const isReflectMinusSign =
-        RegExp(`^[\\-\\${localizedValues.minusSign}]$`).test(addedValue) && changeStart === changeEnd;
+      const isReflectMinusSign = addedValue === '-' && changeStart === changeEnd;
 
       const hasPreviousValueMinusSign = previousValue.includes(previousLocalizedValues.minusSign);
       const hasNormalizedValueMinusSign = normalizedValue.includes('-');
@@ -153,24 +200,12 @@ export default function useNumberFormat({
     // для замены значения, чтобы заменить "0" на вводимое значение,
     // например, при вводе "1", получим "0.00" -> "0.1" -> "0.10" (не "0.100")
     if (/\..*0$/.test(normalizedValue)) {
-      // let previousInteger = '';
-      let previousFraction = '';
-      let previousFractionIndex = -1;
+      const p$1 = `([${previousLocalizedValues.digits}])([${previousLocalizedValues.decimal}])([${previousLocalizedValues.digits}]+)`;
+      const result = RegExp(p$1).exec(previousValue);
 
-      for (let i = 0, decimal = false; i < previousValue.length; i++) {
-        const isDigit = previousLocalizedValues.digits.includes(previousValue[i]);
-        const isDecimal = previousValue[i] === previousLocalizedValues.decimal;
-
-        if (!decimal) {
-          if (isDecimal) decimal = true;
-          // if (isDigit) previousInteger += previousValue[i];
-        } else if (isDigit) {
-          previousFraction += previousValue[i];
-          if (previousFractionIndex === -1) previousFractionIndex = i;
-        }
-      }
-
-      if (previousFractionIndex !== -1) {
+      if (result !== null) {
+        const previousFraction = result[3];
+        const previousFractionIndex = Number(result[5]) + result[1].length + result[2].length;
         const previousResolvedOptions = resolveOptions(cache.current.props.locales, cache.current.props.options);
 
         const previousMinimumFractionDigits = previousResolvedOptions.minimumFractionDigits ?? 0;

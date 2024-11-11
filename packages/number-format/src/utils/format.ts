@@ -14,7 +14,8 @@ interface Options {
  * @returns
  */
 export default function format(value: string, { locales, options, localizedValues, resolvedOptions }: Options) {
-  const minimumFractionDigits = resolvedOptions.minimumFractionDigits ?? 0;
+  const { maximumIntegerDigits, minimumFractionDigits = 0, maximumFractionDigits } = resolvedOptions;
+
   const normalizedOptions: NumberFormatOptions & Intl.NumberFormatOptions = { ...options };
 
   normalizedOptions.style = normalizedOptions.format;
@@ -35,18 +36,35 @@ export default function format(value: string, { locales, options, localizedValue
 
   // - `replace` - Учитываем `minimumIntegerDigits`.
   // Так, при `addedValue` "2": "000 001" -> "000 0012" -> "12" -> "000 012"
-  integer = integer.replace(/^(-)?0+/, '$1').slice(0, resolvedOptions.maximumIntegerDigits);
+  integer = integer.replace(/^(-)?0+/, '$1');
+  integer = RegExp(`-?\\d{0,${maximumIntegerDigits ?? ''}}`).exec(integer)?.[0] ?? '';
+
+  const bigInteger = BigInt(integer);
+  let nextValue = '';
+
+  // При `percent` происходит умножение на 100, поэтому нам важно обработать его отдельно под видом `decimal`
+  if (resolvedOptions.format === 'percent') {
+    const p$1 = `[${localizedValues.digits}]+([^${localizedValues.digits}][${localizedValues.digits}]+)*`;
+    const r$1 = RegExp(p$1);
+
+    const decimalValue = new Intl.NumberFormat(locales, { ...normalizedOptions, style: 'decimal' }).format(bigInteger);
+    const percentValue = new Intl.NumberFormat(locales, normalizedOptions).format(bigInteger);
+
+    nextValue = percentValue.replace(r$1, r$1.exec(decimalValue)?.[0] ?? '');
+  } else {
+    nextValue = new Intl.NumberFormat(locales, normalizedOptions).format(bigInteger);
+  }
 
   // В значении может встречаться юникод, нам важно заменить
   // такие символы для соответствия стандартному значению
-  let nextValue = new Intl.NumberFormat(locales, normalizedOptions).format(BigInt(integer)).replace(/\s/g, ' ');
+  nextValue = nextValue.replace(/\s/g, ' ');
 
   if (fraction.length < minimumFractionDigits) {
     fraction += '0'.repeat(minimumFractionDigits - fraction.length);
   }
 
   if (
-    (resolvedOptions.maximumFractionDigits === undefined || resolvedOptions.maximumFractionDigits > 0) &&
+    (maximumFractionDigits === undefined || maximumFractionDigits > 0) &&
     (value.includes('.') || fraction.length > 0)
   ) {
     nextValue = nextValue.replace(
@@ -55,7 +73,7 @@ export default function format(value: string, { locales, options, localizedValue
     );
 
     if (fraction.length > 0) {
-      fraction = fraction.slice(0, resolvedOptions.maximumFractionDigits);
+      fraction = fraction.slice(0, maximumFractionDigits);
       const localizedFraction = fraction.replace(/\d/g, (digit) => localizedValues.digits[Number(digit)]);
 
       nextValue = nextValue.replace(
@@ -84,6 +102,7 @@ export default function format(value: string, { locales, options, localizedValue
     if (lastDigitIndex !== -1) {
       nextValue = nextValue.slice(0, lastDigitIndex + 1) + sign + nextValue.slice(lastDigitIndex + 1);
 
+      // Если не поставить юникод, поведение курсора будет нарушено
       if (!nextValue.startsWith('‏')) {
         nextValue = `‏${nextValue}`;
       }

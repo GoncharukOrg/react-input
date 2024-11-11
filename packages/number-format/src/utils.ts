@@ -1,3 +1,4 @@
+import _exec from './utils/exec';
 import _filter from './utils/filter';
 import _format from './utils/format';
 import _localizeValues from './utils/localizeValues';
@@ -36,9 +37,16 @@ export function format(
  *
  * `unformat('$1,23,456.78', 'en-IN')` → "123456.78"
  */
-export function unformat(formattedValue: string, locales?: Intl.LocalesArgument) {
+export function unformat(value: string, locales?: Intl.LocalesArgument) {
   const localizedValues = _localizeValues(locales);
-  const filteredValue = _filter(formattedValue, localizedValues);
 
-  return _normalize(filteredValue, localizedValues);
+  let _value = value;
+
+  _value = _exec(value, localizedValues);
+  _value = _filter(_value, localizedValues);
+  _value = _normalize(_value, localizedValues);
+
+  // Для нормализации значения, ставим минус слева.
+  // В случае арабской локали он может находиться справа
+  return _value.replace(/(.+)(-)$/, '$2$1').replace(/\.$/, '');
 }

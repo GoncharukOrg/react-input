@@ -37,7 +37,7 @@ export default function resolveSelection({
   const hasPreviousDecimal = previousValue.includes(localizedValues.decimal);
 
   // Если был введен `decimal` возвращаем позицию после символа `decimal`
-  if (hasPreviousDecimal && RegExp(`^[.,${localizedValues.decimal}]$`).test(addedValue)) {
+  if (hasPreviousDecimal && addedValue === '.') {
     const decimalIndex = value.indexOf(localizedValues.decimal);
 
     if (decimalIndex !== -1) {
@@ -49,7 +49,7 @@ export default function resolveSelection({
   const hasPreviousMinusSign = previousValue.includes(localizedValues.minusSign);
 
   // Если был введен `minusSign`
-  if (hasPreviousMinusSign && RegExp(`^[\\-\\${localizedValues.minusSign}]$`).test(addedValue)) {
+  if (hasPreviousMinusSign && addedValue === '-') {
     const minusSignIndex = value.indexOf(localizedValues.minusSign);
 
     if (minusSignIndex !== -1) {
@@ -126,15 +126,10 @@ export default function resolveSelection({
       .replace(RegExp(`^${previousLocalizedValues.digits[0]}+`, 'g'), '')
       .split(previousLocalizedValues.decimal);
 
-    let absAdded = addedValue
-      .replace(RegExp(`[\\-\\${localizedValues.minusSign}]`, 'g'), '')
-      .replace(RegExp(`[,${localizedValues.decimal}]`, 'g'), '.');
-
     // Поскольку десятичный разделитель не может находиться
     // перед имеющимся разделителем, нам важно удалить его
-    if (previousDecimalIndex !== -1 && changeEnd <= previousDecimalIndex) {
-      absAdded = absAdded.replace(RegExp(`[^\\d${localizedValues.digits}]+`, 'g'), '');
-    }
+    const p$0 = previousDecimalIndex !== -1 && changeEnd <= previousDecimalIndex ? '\\.' : '\\.(?=.*\\.)';
+    const absAdded = addedValue.replace(RegExp(`-|${p$0}`, 'g'), '');
 
     const hasAddedDecimal = absAdded.includes('.');
     let [addedInteger, addedFraction = ''] = absAdded.split('.');
@@ -160,7 +155,7 @@ export default function resolveSelection({
     const p$1 = `[${previousLocalizedValues.decimal}${previousLocalizedValues.digits.slice(1)}]`;
 
     if (!RegExp(p$1).test(previousValueBeforeSelectionStartRange)) {
-      addedInteger = addedInteger.replace(RegExp(`^[0${previousLocalizedValues.digits[0]}]+`, 'g'), '');
+      addedInteger = addedInteger.replace(/^0+/g, '');
     }
 
     const endSlice = maximumIntegerDigits !== undefined ? maximumIntegerDigits - previousInteger.length : undefined;
@@ -212,13 +207,6 @@ export default function resolveSelection({
 
     if (previousDigitIndex !== undefined) {
       selection = previousDigitIndex + 1;
-    }
-
-    if (
-      value[selection] === localizedValues.decimal &&
-      RegExp(`[.,${localizedValues.decimal}]`).test(addedValue[addedValue.length - 1] ?? '')
-    ) {
-      selection += 1;
     }
   }
 

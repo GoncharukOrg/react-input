@@ -30,12 +30,15 @@ export default function resolveOptions(
 
   const resolvedOptions = new Intl.NumberFormat(locales, {
     ...options,
-    style: format,
+    style: format === 'percent' ? 'decimal' : format,
     useGrouping: groupDisplay,
   }).resolvedOptions() as unknown as ResolvedNumberFormatOptions;
 
-  resolvedOptions.format = (resolvedOptions as unknown as Intl.ResolvedNumberFormatOptions).style;
-  resolvedOptions.groupDisplay = (resolvedOptions as unknown as Intl.ResolvedNumberFormatOptions).useGrouping;
+  const resolvedFormat = (resolvedOptions as unknown as Intl.ResolvedNumberFormatOptions).style;
+  const resolvedGroupDisplay = (resolvedOptions as unknown as Intl.ResolvedNumberFormatOptions).useGrouping;
+
+  resolvedOptions.format = format === 'percent' ? 'percent' : resolvedFormat;
+  resolvedOptions.groupDisplay = resolvedGroupDisplay;
 
   const isMaxGreaterMin =
     maximumIntegerDigits !== undefined && maximumIntegerDigits < resolvedOptions.minimumIntegerDigits;

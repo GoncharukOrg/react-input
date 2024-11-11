@@ -7,7 +7,10 @@ import type { LocalizedNumberFormatValues } from '../types';
  * @param param
  * @returns
  */
-export default function exec(value: string, { minusSign, decimal, digits }: LocalizedNumberFormatValues) {
+export default function exec(
+  value: string,
+  { minusSign, decimal, digits, signBackwards }: LocalizedNumberFormatValues,
+) {
   const integerPattern = `[${digits}]+([^${decimal}${digits}][${digits}]+)*`;
   const fractionPattern = `[${decimal}][${digits}]`;
 
@@ -16,5 +19,15 @@ export default function exec(value: string, { minusSign, decimal, digits }: Loca
   const p$3 = integerPattern;
   const p$4 = `[${decimal}]`;
 
-  return RegExp(`${minusSign}?(${p$1}|${p$2}|${p$3}|${p$4})${minusSign}?`).exec(value)?.[0] ?? '';
+  const _value = RegExp(`(${p$1}|${p$2}|${p$3}|${p$4})`).exec(value)?.[0] ?? '';
+
+  if (_value !== '' && signBackwards && RegExp(`[${digits}].*${minusSign}`).test(value)) {
+    return _value + minusSign;
+  }
+
+  if (_value !== '' && RegExp(`${minusSign}.*[${digits}]`).test(value)) {
+    return minusSign + _value;
+  }
+
+  return _value;
 }

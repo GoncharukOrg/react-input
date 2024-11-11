@@ -36,19 +36,21 @@ export default function format(value: string, { locales, options, localizedValue
 
   // - `replace` - Учитываем `minimumIntegerDigits`.
   // Так, при `addedValue` "2": "000 001" -> "000 0012" -> "12" -> "000 012"
-  integer = integer.replace(/^(-)?0+/, '$1').slice(0, maximumIntegerDigits);
+  integer = integer.replace(/^(-)?0+/, '$1');
+  integer = RegExp(`-?\\d{0,${maximumIntegerDigits ?? ''}}`).exec(integer)?.[0] ?? '';
 
   const bigInteger = BigInt(integer);
   let nextValue = '';
 
   // При `percent` происходит умножение на 100, поэтому нам важно обработать его отдельно под видом `decimal`
   if (resolvedOptions.format === 'percent') {
-    const p$1 = `${localizedValues.minusSign}?[${localizedValues.digits}]+([^${localizedValues.digits}][${localizedValues.digits}]+)*${localizedValues.minusSign}?`;
+    const p$1 = `[${localizedValues.digits}]+([^${localizedValues.digits}][${localizedValues.digits}]+)*`;
+    const r$1 = RegExp(p$1);
 
     const decimalValue = new Intl.NumberFormat(locales, { ...normalizedOptions, style: 'decimal' }).format(bigInteger);
-    const percentValue = new Intl.NumberFormat(locales, normalizedOptions).format(0);
+    const percentValue = new Intl.NumberFormat(locales, normalizedOptions).format(bigInteger);
 
-    nextValue = percentValue.replace(localizedValues.digits[0], RegExp(p$1).exec(decimalValue)?.[0] ?? '');
+    nextValue = percentValue.replace(r$1, r$1.exec(decimalValue)?.[0] ?? '');
   } else {
     nextValue = new Intl.NumberFormat(locales, normalizedOptions).format(bigInteger);
   }

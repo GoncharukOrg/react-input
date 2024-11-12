@@ -12,7 +12,7 @@ import validate from './utils/validate';
 import type { MaskEventDetail, MaskProps, Replacement } from './types';
 import type { Init, Tracking } from '@react-input/core';
 
-type CachedMaskProps = Required<Omit<MaskProps, 'track' | 'modify' | 'onMask'>> & {
+type CachedMaskProps = Required<Omit<MaskProps, 'showMask' | 'track' | 'modify' | 'onMask'>> & {
   replacement: Replacement;
 };
 
@@ -36,11 +36,8 @@ export default function useMask({
   const cache = useRef<Cache | null>(null);
 
   /**
-   *
    * Init
-   *
    */
-
   const init: Init = ({ controlled, initialValue }) => {
     initialValue = controlled || initialValue ? initialValue : showMask ? mask : '';
 
@@ -48,18 +45,15 @@ export default function useMask({
       validate({ initialValue, mask, replacement: replacementObject });
     }
 
-    const cachedProps = { mask, replacement: replacementObject, showMask, separate };
+    const cachedProps = { mask, replacement: replacementObject, separate };
     cache.current = { value: initialValue, props: cachedProps, fallbackProps: cachedProps };
 
     return { value: initialValue };
   };
 
   /**
-   *
    * Tracking
-   *
    */
-
   const tracking: Tracking<MaskEventDetail> = ({ inputType, previousValue, addedValue, changeStart, changeEnd }) => {
     if (cache.current === null) {
       throw new SyntheticChangeError('The state has not been initialized.');
@@ -82,50 +76,42 @@ export default function useMask({
     });
 
     if (_addedValue === false) {
-      throw new SyntheticChangeError('Custom trekking stop.');
+      throw new SyntheticChangeError('Custom tracking stop.');
     } else if (_addedValue === null) {
       addedValue = '';
     } else if (_addedValue !== true && _addedValue !== undefined) {
       addedValue = _addedValue;
     }
 
-    // Дополнительно нам важно учесть, что немаскированное значение с учетом удаления или добавления символов должно
-    // получаться с помощью закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
-
-    let beforeChangeValue = unformat(previousValue, {
-      end: changeStart,
-      mask: cache.current.props.mask,
-      replacement: cache.current.props.replacement,
-      separate: cache.current.props.separate,
-    });
-
-    let afterChangeValue = unformat(previousValue, {
-      start: changeEnd,
-      mask: cache.current.props.mask,
-      replacement: cache.current.props.replacement,
-      separate: cache.current.props.separate,
-    });
+    // Дополнительно учитываем, что добавление/удаление символов не затрагивают значения до и после диапазона
+    // изменения, поэтому нам важно получить их немаскированные значения на основе предыдущего значения и
+    // закэшированных пропсов, то есть тех которые были применены к значению на момент предыдущего маскирования
+    let beforeChangeValue = unformat(previousValue, { end: changeStart, ...cache.current.props });
+    let afterChangeValue = unformat(previousValue, { start: changeEnd, ...cache.current.props });
 
     // Регулярное выражение по поиску символов кроме ключей `replacement`
-    const regExp$1 = RegExp(`[^${Object.keys(replacementObject).join('')}]`, 'g');
+    const regExp$1 = RegExp(`[^${Object.keys(cache.current.props.replacement).join('')}]`, 'g');
     // Находим все заменяемые символы для фильтрации пользовательского значения.
     // Важно определить корректное значение на данном этапе
-    const replacementChars = mask.replace(regExp$1, '');
+    let replacementChars = cache.current.props.mask.replace(regExp$1, '');
 
     if (beforeChangeValue) {
       beforeChangeValue = filter(beforeChangeValue, {
         replacementChars,
-        replacement: replacementObject,
-        separate,
+        replacement: cache.current.props.replacement,
+        separate: cache.current.props.separate,
       });
+      replacementChars = replacementChars.slice(beforeChangeValue.length);
     }
 
     if (addedValue) {
+      // Поскольку нас интересуют только "полезные" символы, фильтруем без учёта заменяемых символов
       addedValue = filter(addedValue, {
-        replacementChars: replacementChars.slice(beforeChangeValue.length),
-        replacement: replacementObject,
-        separate: false, // Поскольку нас интересуют только "полезные" символы, фильтруем без учёта заменяемых символов
+        replacementChars,
+        replacement: cache.current.props.replacement,
+        separate: false,
       });
+      replacementChars = replacementChars.slice(addedValue.length);
     }
 
     if (inputType === 'insert' && addedValue === '') {
@@ -134,10 +120,9 @@ export default function useMask({
 
     // Модифицируем `afterChangeValue` чтобы позиция символов не смещалась. Необходимо выполнять
     // после фильтрации `addedValue` и перед фильтрацией `afterChangeValue`
-    if (separate) {
+    if (cache.current.props.separate) {
       // Находим заменяемые символы в диапазоне изменяемых символов
-      const separateChars = mask.slice(changeStart, changeEnd).replace(regExp$1, '');
-
+      const separateChars = cache.current.props.mask.slice(changeStart, changeEnd).replace(regExp$1, '');
       // Получаем количество символов для сохранения перед `afterChangeValue`. Возможные значения:
       // `меньше ноля` - обрезаем значение от начала на количество символов;
       // `ноль` - не меняем значение;
@@ -153,9 +138,9 @@ export default function useMask({
 
     if (afterChangeValue) {
       afterChangeValue = filter(afterChangeValue, {
-        replacementChars: replacementChars.slice(beforeChangeValue.length + addedValue.length),
-        replacement: replacementObject,
-        separate,
+        replacementChars,
+        replacement: cache.current.props.replacement,
+        separate: cache.current.props.separate,
       });
     }
 
@@ -191,12 +176,7 @@ export default function useMask({
     });
 
     cache.current.value = detail.value;
-    cache.current.props = {
-      mask: modifiedMask,
-      replacement: modifiedReplacement,
-      showMask: modifiedShowMask,
-      separate: modifiedSeparate,
-    };
+    cache.current.props = { mask: modifiedMask, replacement: modifiedReplacement, separate: modifiedSeparate };
 
     return {
       value: detail.value,

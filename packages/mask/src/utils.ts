@@ -1,7 +1,7 @@
-import filter from './utils/filter';
+import _filter from './utils/filter';
 import _format from './utils/format';
 import _formatToParts from './utils/formatToParts';
-import formatToReplacementObject from './utils/formatToReplacementObject';
+import _formatToReplacementObject from './utils/formatToReplacementObject';
 import _unformat from './utils/unformat';
 
 import type { MaskPart, Replacement } from './types';
@@ -25,12 +25,12 @@ interface Options {
  * `format('1', { mask: '+__', replacement: { _: /\d/ } })` → "+1"
  */
 export function format(value: string, { mask, replacement }: Options): string {
-  const replacementObject = typeof replacement === 'string' ? formatToReplacementObject(replacement) : replacement;
+  const replacementObject = typeof replacement === 'string' ? _formatToReplacementObject(replacement) : replacement;
 
   const regExp$1 = RegExp(`[^${Object.keys(replacementObject).join('')}]`, 'g');
   const replacementChars = mask.replace(regExp$1, '');
 
-  const input = filter(value, { replacementChars, replacement: replacementObject, separate: false });
+  const input = _filter(value, { replacementChars, replacement: replacementObject, separate: false });
 
   return _format(input, { mask, replacement: replacementObject, showMask: false });
 }
@@ -42,15 +42,15 @@ export function format(value: string, { mask, replacement }: Options): string {
  *
  * `unformat('+1_', { mask: '+__', replacement: { _: /\d/ } })` → "1"
  */
-export function unformat(formattedValue: string, { mask, replacement }: Options): string {
-  const replacementObject = typeof replacement === 'string' ? formatToReplacementObject(replacement) : replacement;
+export function unformat(value: string, { mask, replacement }: Options): string {
+  const replacementObject = typeof replacement === 'string' ? _formatToReplacementObject(replacement) : replacement;
 
-  const value = _unformat(formattedValue, { mask, replacement: replacementObject, separate: false });
+  const unformattedValue = _unformat(value, { mask, replacement: replacementObject, separate: false });
 
   const regExp$1 = RegExp(`[^${Object.keys(replacementObject).join('')}]`, 'g');
   const replacementChars = mask.replace(regExp$1, '');
 
-  return filter(value, { replacementChars, replacement: replacementObject, separate: false });
+  return _filter(unformattedValue, { replacementChars, replacement: replacementObject, separate: false });
 }
 
 /**
@@ -75,7 +75,7 @@ export function unformat(formattedValue: string, { mask, replacement }: Options)
  * ```
  */
 export function formatToParts(value: string, { mask, replacement }: Options): MaskPart[] {
-  const replacementObject = typeof replacement === 'string' ? formatToReplacementObject(replacement) : replacement;
+  const replacementObject = typeof replacement === 'string' ? _formatToReplacementObject(replacement) : replacement;
 
   const formattedValue = format(value, { mask, replacement: replacementObject });
 
@@ -95,7 +95,7 @@ export function formatToParts(value: string, { mask, replacement }: Options): Ma
  * but any a valid character, in addition to the replacement character, will contribute to the return of `true`.
  */
 export function generatePattern({ mask, replacement }: Options, takeReplacementKey = false): string {
-  const replacementObject = typeof replacement === 'string' ? formatToReplacementObject(replacement) : replacement;
+  const replacementObject = typeof replacement === 'string' ? _formatToReplacementObject(replacement) : replacement;
 
   const special = ['[', ']', '\\', '/', '^', '$', '.', '|', '?', '*', '+', '(', ')', '{', '}'];
 

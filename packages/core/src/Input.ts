@@ -171,7 +171,6 @@ export default class Input<T = unknown> {
           }
 
           let addedValue = '';
-          let deletedValue = '';
           let changeStart = tracker.selectionStart;
           let changeEnd = tracker.selectionEnd;
 
@@ -184,8 +183,6 @@ export default class Input<T = unknown> {
 
             changeStart = selectionStart;
             changeEnd = selectionStart + countDeleted;
-
-            deletedValue = previousValue.slice(changeStart, changeEnd);
           }
 
           // Предыдущее значение всегда должно соответствовать маскированному значению из кэша. Обратная ситуация может
@@ -205,7 +202,6 @@ export default class Input<T = unknown> {
             previousOptions,
             value,
             addedValue,
-            deletedValue,
             changeStart,
             changeEnd,
             selectionStart,

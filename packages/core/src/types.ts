@@ -13,11 +13,10 @@ export type InitFunction<T> = (param: { initialValue: string; controlled: boolea
 
 export type TrackingFunction<T> = (param: {
   inputType: InputType;
-  value: string;
-  addedValue: string;
-  deletedValue: string;
   previousValue: string;
   previousOptions: T;
+  value: string;
+  addedValue: string;
   changeStart: number;
   changeEnd: number;
   selectionStart: number;
@@ -37,5 +36,5 @@ export type InputComponentProps<C extends React.ComponentType | undefined = unde
 // https://github.com/GoncharukOrg/react-input/issues/15
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InputComponent<P extends object> = <C extends React.ComponentType<any> | undefined = undefined>(
-  props: P & Omit<InputComponentProps<C>, keyof P> & React.RefAttributes<HTMLInputElement>,
+  props: P & InputComponentProps<C> & React.RefAttributes<HTMLInputElement>,
 ) => React.JSX.Element;

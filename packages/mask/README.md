@@ -221,7 +221,7 @@ export default function App() {
     <>
       <InputMask
         mask="1yyy"
-        replacement={{ _: /\d/ }}
+        replacement={{ y: /\d/ }}
         value={detail?.value ?? ''}
         onMask={(event) => setDetail(event.detail)}
       />

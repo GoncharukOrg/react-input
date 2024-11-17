@@ -82,6 +82,12 @@ export function formatToParts(value: string, { mask, replacement }: Options): Ma
   return _formatToParts(formattedValue, { mask, replacement: replacementObject });
 }
 
+const SPECIAL = ['[', ']', '\\', '/', '^', '$', '.', '|', '?', '*', '+', '(', ')', '{', '}'];
+
+function resolveSpecial(char: string) {
+  return SPECIAL.includes(char) ? `\\${char}` : char;
+}
+
 /**
  * Generates a regular expression to match a masked value (see «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#generatepattern)»).
  *
@@ -97,23 +103,18 @@ export function formatToParts(value: string, { mask, replacement }: Options): Ma
 export function generatePattern({ mask, replacement }: Options, takeReplacementKey = false): string {
   const replacementObject = typeof replacement === 'string' ? _formatToReplacementObject(replacement) : replacement;
 
-  const special = ['[', ']', '\\', '/', '^', '$', '.', '|', '?', '*', '+', '(', ')', '{', '}'];
-
   let pattern = '';
 
   for (let i = 0; i < mask.length; i++) {
-    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacementObject, mask[i]);
-    const lookahead = takeReplacementKey ? `(?!${mask[i]})` : '';
+    const char = mask[i];
+    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacementObject, char);
+    const lookahead = takeReplacementKey ? `(?!${resolveSpecial(char)})` : '';
 
     if (i === 0) {
       pattern += '^';
     }
 
-    pattern += isReplacementKey
-      ? `${lookahead}(${replacementObject[mask[i]].toString().slice(1, -1)})`
-      : special.includes(mask[i])
-        ? `\\${mask[i]}`
-        : mask[i];
+    pattern += isReplacementKey ? `${lookahead}(${replacementObject[char].source})` : resolveSpecial(char);
 
     if (i === mask.length - 1) {
       pattern += '$';

@@ -39,7 +39,8 @@ export default function format(value: string, { locales, options, localizedValue
   integer = integer.replace(/^(-)?0+/, '$1');
   integer = RegExp(`-?\\d{0,${maximumIntegerDigits ?? ''}}`).exec(integer)?.[0] ?? '';
 
-  const bigInteger = BigInt(integer);
+  // `BigInt` не принимает "-" и при отрицательном нуле не учитывает "-"
+  const bigInteger = /^-0?$/.test(integer) ? -0 : BigInt(integer);
   let nextValue = '';
 
   // При `percent` происходит умножение на 100, поэтому нам важно обработать его отдельно под видом `decimal`
@@ -109,5 +110,5 @@ export default function format(value: string, { locales, options, localizedValue
     }
   }
 
-  return { value: nextValue, number: Number(integer + '.' + fraction) };
+  return { value: nextValue, number: Number(`${integer}.${fraction}`) };
 }

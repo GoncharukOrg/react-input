@@ -21,11 +21,11 @@ export default function exec(
 
   const _value = RegExp(`(${p$1}|${p$2}|${p$3}|${p$4})`).exec(value)?.[0] ?? '';
 
-  if (_value !== '' && signBackwards && RegExp(`[${digits}].*${minusSign}`).test(value)) {
+  if (signBackwards && RegExp(`[${digits}]?.*${minusSign}`).test(value)) {
     return _value + minusSign;
   }
 
-  if (_value !== '' && RegExp(`${minusSign}.*[${digits}]`).test(value)) {
+  if (RegExp(`${minusSign}.*[${digits}]?`).test(value)) {
     return minusSign + _value;
   }
 

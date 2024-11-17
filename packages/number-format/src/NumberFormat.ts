@@ -215,11 +215,11 @@ export default class NumberFormat extends Input<{ locales: Intl.LocalesArgument;
       },
     });
 
-    this.format = (value: number | bigint | string) => {
+    this.format = (value) => {
       return utils.format(value, _options);
     };
 
-    this.unformat = (value: string) => {
+    this.unformat = (value) => {
       return utils.unformat(value, _options.locales);
     };
   }

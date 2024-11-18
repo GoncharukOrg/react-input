@@ -161,6 +161,7 @@ export default function useMask({
     const detail = resolveDetail(input, {
       mask: modifiedMask,
       replacement: modifiedReplacement,
+      separate: modifiedSeparate,
       showMask: modifiedShowMask,
     });
 

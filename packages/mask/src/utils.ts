@@ -32,7 +32,7 @@ export function format(value: string, { mask, replacement }: Options): string {
 
   const input = _filter(value, { replacementChars, replacement: replacementObject, separate: false });
 
-  return _format(input, { mask, replacement: replacementObject, showMask: false });
+  return _format(input, { mask, replacement: replacementObject, separate: false, showMask: false });
 }
 
 /**

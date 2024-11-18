@@ -8,6 +8,7 @@ import type { MaskEventDetail, Replacement } from '../types';
 interface Options {
   mask: string;
   replacement: Replacement;
+  separate: boolean;
   showMask: boolean;
 }
 
@@ -17,8 +18,11 @@ interface Options {
  * @param options
  * @returns
  */
-export default function resolveDetail(input: string, { mask, replacement, showMask }: Options): MaskEventDetail {
-  const formattedValue = format(input, { mask, replacement, showMask });
+export default function resolveDetail(
+  input: string,
+  { mask, replacement, separate, showMask }: Options,
+): MaskEventDetail {
+  const formattedValue = format(input, { mask, replacement, separate, showMask });
   const parts = formatToParts(formattedValue, { mask, replacement });
 
   const pattern = generatePattern({ mask, replacement });

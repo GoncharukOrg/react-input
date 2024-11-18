@@ -18,6 +18,8 @@ The `input-number-format` event and `onNumberFormat` method are no longer availa
 
 To use the useful data from the `detail` property of the `input-number-format` (`onNumberFormat`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils)» section.
 
+**Documentation for version `v1` is available [here](https://github.com/GoncharukOrg/react-input/tree/v1/packages/number-format).**
+
 ## Installation
 
 ```bash
@@ -392,6 +394,59 @@ Returns a string as the numeric equivalent of the formatted value. Returning a s
 unformat('$1,23,456.78', 'en-IN');
 // returns: "123456.78"
 ```
+
+## Migration to v2
+
+If you are upgrading from version 1 to version 2, there are a number of important changes you need to take into account.
+
+### onNumberFormat
+
+The `input-number-format` event and `onNumberFormat` method are no longer available in newer versions, focusing work on only using React's own events and methods such as `onChange`, since the `input-number-format` event and `onNumberFormat` method cannot be explicitly coordinated with React's events and methods, making such usage and event firing order non-obvious.
+
+Thus, you should use `onChange` instead of the `onNumberFormat` method.
+
+Additionally, if you are referencing data in the `detail` property of the `onNumberFormat` event object, you should use the utilities described in the [`Utils`](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils) section instead, for example:
+
+instead of
+
+```tsx
+import { InputNumberFormat } from '@react-input/number-format';
+
+// ...
+
+const locales = 'en';
+
+return (
+  <InputNumberFormat
+    locales={locales}
+    onNumberFormat={(event) => {
+      const { value, number } = event.detail;
+    }}
+  />
+);
+```
+
+use
+
+```tsx
+import { InputNumberFormat, unformat } from '@react-input/number-format';
+
+// ...
+
+const locales = 'en';
+
+return (
+  <InputNumberFormat
+    locales={locales}
+    onChange={(event) => {
+      const value = event.target.value;
+      const number = Number(unformat(value, locales));
+    }}
+  />
+);
+```
+
+For more information on using utilities, see [`Utils`](https://github.com/GoncharukOrg/react-input/tree/main/packages/number-format#utils).
 
 ## Other packages from `@react-input`
 

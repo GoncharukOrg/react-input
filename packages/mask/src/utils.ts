@@ -4,7 +4,7 @@ import _formatToParts from './utils/formatToParts';
 import _formatToReplacementObject from './utils/formatToReplacementObject';
 import _unformat from './utils/unformat';
 
-import type { MaskPart, Replacement } from './types';
+import type { MaskPart, Overlap, Replacement } from './types';
 
 interface Options {
   mask: string;
@@ -32,7 +32,7 @@ export function format(value: string, { mask, replacement }: Options): string {
 
   const input = _filter(value, { replacementChars, replacement: replacementObject, separate: false });
 
-  return _format(input, { mask, replacement: replacementObject, showMask: false });
+  return _format(input, { mask, replacement: replacementObject, separate: false, showMask: false });
 }
 
 /**
@@ -82,40 +82,60 @@ export function formatToParts(value: string, { mask, replacement }: Options): Ma
   return _formatToParts(formattedValue, { mask, replacement: replacementObject });
 }
 
+const SPECIAL = ['[', ']', '\\', '/', '^', '$', '.', '|', '?', '*', '+', '(', ')', '{', '}'];
+
+function resolveSpecial(char: string) {
+  return SPECIAL.includes(char) ? `\\${char}` : char;
+}
+
 /**
  * Generates a regular expression to match a masked value (see «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#generatepattern)»).
  *
- * If `takeReplacementKey: true`, then the regular expression search will not take into account the
- * `replacement` parameter key, that is, the character at the index of the replacement character in the
- * value can be any character corresponding to the `replacement` value except the `replacement` key itself.
+ * If the first parameter is `full`, then the regular expression will match the entire length of the mask. Otherwise, if `partial` is specified as the first
+ * parameter, then the regular value can also match a partial value.
  *
- * So, if `mask: '_'` and `replacement: { _: /\D/ }` then:
- * - if `takeReplacementKey: false`, the regular expression (pattern) will match `/^(\D)$/` and `RegExp(pattern).test(mask)` will return `true`;
- * - if `takeReplacementKey: true`, the regular expression (pattern) will match `/^(?!_)(\D)$/` and `RegExp(pattern).test(mask)` will return `false`,
- * but any a valid character, in addition to the replacement character, will contribute to the return of `true`.
+ * Additionally, it is possible to generate an inexact match. So if the first parameter has the `-inexact` postfix, then the regular expression search will
+ * not take into account the `replacement` parameter key, i.e. the character in the index of the replacement character in the value can be any character that
+ * matches the `replacement` value, except for the `replacement` key itself.
+ *
+ * So, if `mask: '###'` and `replacement: { '#': /\D/ }`, then:
+ * - if `overlap: 'full'`, the regular expression (pattern) will match all non-digits except "#" and `RegExp(pattern).test('ab#')` will return `false`.
+ * - if `overlap: 'full-inexact'`, the regular expression (pattern) will match all non-digits including "#" and `RegExp(pattern).test('ab#')` will return `true`.
+ * - if `overlap: 'partial'`, the regular expression (pattern) will match all non-digits except "#" taking into account the partial value and `RegExp(pattern).test('a#')` will return `false`;
+ * - if `overlap: 'partail-inexact'`, the regular expression (pattern) will match all non-digits including "#" taking into account the partial value and `RegExp(pattern).test('a#')` will return `true`;
  */
-export function generatePattern({ mask, replacement }: Options, takeReplacementKey = false): string {
-  const replacementObject = typeof replacement === 'string' ? _formatToReplacementObject(replacement) : replacement;
+export function generatePattern(overlap: Overlap, { mask, replacement }: Options): string {
+  if (overlap !== 'full' && overlap !== 'full-inexact' && overlap !== 'partial' && overlap !== 'partial-inexact') {
+    new TypeError('The overlap value can be "full", "full-inexact", "partial" or "partial-inexact".');
+  }
 
-  const special = ['[', ']', '\\', '/', '^', '$', '.', '|', '?', '*', '+', '(', ')', '{', '}'];
+  const replacementObject = typeof replacement === 'string' ? _formatToReplacementObject(replacement) : replacement;
+  const isPartial = overlap === 'partial' || overlap === 'partial-inexact';
+  const isExact = overlap === 'full' || overlap === 'partial';
 
   let pattern = '';
 
   for (let i = 0; i < mask.length; i++) {
-    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacementObject, mask[i]);
-    const lookahead = takeReplacementKey ? `(?!${mask[i]})` : '';
+    const char = mask[i];
+    const isReplacementKey = Object.prototype.hasOwnProperty.call(replacementObject, char);
 
     if (i === 0) {
-      pattern += '^';
+      pattern = '^';
+    }
+
+    if (isPartial) {
+      pattern += '(';
     }
 
     pattern += isReplacementKey
-      ? `${lookahead}(${replacementObject[mask[i]].toString().slice(1, -1)})`
-      : special.includes(mask[i])
-        ? `\\${mask[i]}`
-        : mask[i];
+      ? `${isExact ? `(?!${resolveSpecial(char)})` : ''}(${replacementObject[char].source})`
+      : resolveSpecial(char);
 
     if (i === mask.length - 1) {
+      if (isPartial) {
+        pattern += ')?'.repeat(mask.length);
+      }
+
       pattern += '$';
     }
   }

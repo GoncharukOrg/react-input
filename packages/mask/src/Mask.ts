@@ -8,7 +8,7 @@ import resolveSelection from './utils/resolveSelection';
 import unformat from './utils/unformat';
 import validate from './utils/validate';
 
-import type { MaskOptions, MaskPart, Replacement } from './types';
+import type { MaskOptions, MaskPart, Overlap, Replacement } from './types';
 
 function normalizeOptions(options: MaskOptions) {
   return {
@@ -37,7 +37,7 @@ export default class Mask extends Input<{ mask: string; replacement: Replacement
   format: (value: string) => string;
   formatToParts: (value: string) => MaskPart[];
   unformat: (value: string) => string;
-  generatePattern: (takeReplacementKey?: boolean) => string;
+  generatePattern: (overlap: Overlap) => string;
 
   constructor(options: MaskOptions = {}) {
     super({
@@ -59,22 +59,33 @@ export default class Mask extends Input<{ mask: string; replacement: Replacement
        * Tracking
        */
       tracking: ({ inputType, previousValue, previousOptions, addedValue, changeStart, changeEnd }) => {
-        const { mask, replacement, showMask, separate, track, modify } = normalizeOptions(options);
+        const { track, modify, ...normalizedOptions } = normalizeOptions(options);
 
-        const _addedValue = track?.({
-          ...(inputType === 'insert' ? { inputType, data: addedValue } : { inputType, data: null }),
-          value: previousValue,
-          selectionStart: changeStart,
-          selectionEnd: changeEnd,
-        });
+        let { mask, replacement, showMask, separate } = normalizedOptions;
 
-        if (_addedValue === false) {
+        const _data = inputType === 'insert' ? { inputType, data: addedValue } : { inputType, data: null };
+        const trackingData = { ..._data, value: previousValue, selectionStart: changeStart, selectionEnd: changeEnd };
+
+        const trackingValue = track?.(trackingData);
+
+        if (trackingValue === false) {
           throw new SyntheticChangeError('Custom tracking stop.');
-        } else if (_addedValue === null) {
+        } else if (trackingValue === null) {
           addedValue = '';
-        } else if (_addedValue !== true && _addedValue !== undefined) {
-          addedValue = _addedValue;
+        } else if (trackingValue !== true && trackingValue !== undefined) {
+          addedValue = trackingValue;
         }
+
+        const modifiedOptions = modify?.(trackingData);
+
+        if (modifiedOptions?.mask !== undefined) mask = modifiedOptions.mask;
+        if (modifiedOptions?.replacement !== undefined)
+          replacement =
+            typeof modifiedOptions?.replacement === 'string'
+              ? formatToReplacementObject(modifiedOptions?.replacement)
+              : modifiedOptions.replacement;
+        if (modifiedOptions?.showMask !== undefined) showMask = modifiedOptions.showMask;
+        if (modifiedOptions?.separate !== undefined) separate = modifiedOptions.separate;
 
         // Дополнительно учитываем, что добавление/удаление символов не затрагивают значения до и после диапазона
         // изменения, поэтому нам важно получить их немаскированные значения на основе предыдущего значения и
@@ -126,58 +137,41 @@ export default class Mask extends Input<{ mask: string; replacement: Replacement
         }
 
         const input = beforeChangeValue + addedValue + afterChangeValue;
-
-        /* eslint-disable prefer-const */
-        let {
-          mask: modifiedMask = mask,
-          replacement: modifiedReplacement = replacement,
-          showMask: modifiedShowMask = showMask,
-          separate: modifiedSeparate = separate,
-        } = modify?.(input) ?? {};
-
-        if (typeof modifiedReplacement === 'string') {
-          modifiedReplacement = formatToReplacementObject(modifiedReplacement);
-        }
-
-        const value = format(input, {
-          mask: modifiedMask,
-          replacement: modifiedReplacement,
-          showMask: modifiedShowMask,
-        });
+        const value = format(input, { mask, replacement, separate, showMask });
 
         const selection = resolveSelection({
           inputType,
           value,
           addedValue,
           beforeChangeValue,
-          mask: modifiedMask,
-          replacement: modifiedReplacement,
-          separate: modifiedSeparate,
+          mask,
+          replacement,
+          separate,
         });
 
         return {
           value,
           selectionStart: selection,
           selectionEnd: selection,
-          options: { mask: modifiedMask, replacement: modifiedReplacement, separate: modifiedSeparate },
+          options: { mask, replacement, separate },
         };
       },
     });
 
-    this.format = (value: string) => {
+    this.format = (value) => {
       return utils.format(value, normalizeOptions(options));
     };
 
-    this.formatToParts = (value: string) => {
+    this.formatToParts = (value) => {
       return utils.formatToParts(value, normalizeOptions(options));
     };
 
-    this.unformat = (value: string) => {
+    this.unformat = (value) => {
       return utils.unformat(value, normalizeOptions(options));
     };
 
-    this.generatePattern = (takeReplacementKey?: boolean) => {
-      return utils.generatePattern(normalizeOptions(options), takeReplacementKey);
+    this.generatePattern = (overlap) => {
+      return utils.generatePattern(overlap, normalizeOptions(options));
     };
   }
 }

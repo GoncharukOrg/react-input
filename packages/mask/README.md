@@ -18,6 +18,8 @@ The `input-mask` event and `onMask` method are no longer available in newer vers
 
 To use the useful data from the `detail` property of the `input-mask` (`onMask`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils)» section.
 
+**Documentation for version `v1` is available [here](https://github.com/GoncharukOrg/react-input/tree/v1/packages/mask).**
+
 ## Installation
 
 ```bash
@@ -212,21 +214,17 @@ The `modify` function is triggered before masking and allows you conditionally c
 
 The `modify` function expects to return an object containing the data to modify, optionally including `mask`, `replacement`, `showMask` and `separate`, or to return `undefined`. Changes will be only applied to those properties that were returned, so you can change any property as you like, or not change any property by passing `undefined`.
 
-The `modify` function takes a value without mask characters that is valid at the time of input. For example, if the `mask` property has the value `+0 (___) ___-__-__` and the previous value is `+0 (123) ___-__-__` and the user entered the character "4" at the ninth index of the value, then `modify` will take the value "1234". Note that there are no mask characters including "7" as well. Using this value you can modify the properties with the expected result.
+The `modify` function takes the following parameters:
 
-Let's consider a possible situation when we need to change the mask depending on the phone city code:
+| Name             |                      Type                       | Description                                                                                                                                                                                                                                                                             |
+| ---------------- | :---------------------------------------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `inputType`      | `insert` \| `deleteBackward` \| `deleteForward` | Input type, where `insert` is any event that affects the input of new characters, `deleteBackward` is deleting characters to the left of the cursor, `deleteForward` is deleting characters to the right of the cursor.                                                                 |
+| `value`          |                    `string`                     | Corresponds to the value before modification, that is, the value before the character input or character removal events were raised.                                                                                                                                                    |
+| `data`           |               `string` \| `null`                | In the case of input - the entered characters, in the case of deletion - `null`.                                                                                                                                                                                                        |
+| `selectionStart` |                    `number`                     | The index of the beginning of the range of change in the value, in the case of input corresponds to the initial position of the cursor in `value` at the time the input event is called, in the case of deletion it corresponds to the index of the first deleted character.            |
+| `selectionEnd`   |                    `number`                     | The index of the end of the range of change in the value, in the case of input corresponds to the final position of the cursor in `value` at the time the input event is called, in the case of deletion it corresponds to the index of the character after the last deleted character. |
 
-```tsx
-import { InputMask } from '@react-input/mask';
-
-export default function App() {
-  const modify = (input: string) => {
-    return { mask: input[0] === '0' ? '+_ (___) ___-__-__' : undefined };
-  };
-
-  return <InputMask mask="+_ __________" replacement={{ _: /\d/ }} modify={modify} />;
-}
-```
+An example of using the `modify` function can be found in the `phone-login` example, which removes the change of the mask depending on the input. See [`phone-login.tsx`](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask/src/examples/phone-login.tsx).
 
 The advantage of this approach is that you do not need to store the state of the component to change its properties, the modification happens in the already running masking process.
 
@@ -437,26 +435,125 @@ formatToParts('1', { mask: '+__', replacement: { _: /\d/ } });
 
 Generates a regular expression to match a masked value.
 
-Takes two parameters, where the first is an object with the `mask` and `replacement` properties, the values of which you use when masking, the second is a flag (`boolean`), indicating to the utility exactly how you want to generate the regular expression.
+Takes two parameters, where the first is a flag (`full` | `full-inexact` | `partial` | `partial-inexact`) telling the utility how exactly you want to match the value with the generated regular expression, the second is an object with `mask` and `replacement` properties, the values ​​of which you use when masking.
 
-If the second parameter is `true`, then the regular expression search will not take into account the `replacement` parameter key, that is, the character at the index of the replacement character in the value can be any character corresponding to the `replacement` value except the `replacement` key itself.
+If the first parameter is `full`, then the regular expression will match the entire length of the mask. Otherwise, if `partial` is specified as the first parameter, then the regular value can also match a partial value.
 
-So, if `mask: '_'` and `replacement: { _: /\D/ }` then:
+Additionally, it is possible to generate an inexact match. So if the first parameter has the `-inexact` postfix, then the regular expression search will not take into account the `replacement` parameter key, i.e. the character in the index of the replacement character in the value can be any character that matches the `replacement` value, except for the `replacement` key itself.
 
-if the second parameter is omitted or `false`, the regular expression (pattern) will match `/^(\D)$/` and `RegExp(pattern).test(mask)` will return `true`:
+So, if `mask: '###'` and `replacement: { '#': /\D/ }`, then:
 
-```ts
-const pattern = generatePattern({ mask, replacement }); // "^(\\D)$"
-RegExp(pattern).test('_'); // true
-```
-
-if the second parameter is `true`, the regular expression (pattern) will match `/^(?!_)(\D)$/` and `RegExp(pattern).test(mask)` will return `false`, but any a valid character, in addition to the replacement character, will contribute to the return of `true`:
+- if the first parameter is `full`, then the regular expression (pattern) will match all non-digits except "#" and `RegExp(pattern).test('ab#')` will return `false`:
+- if the first parameter is `partial`, then the regular expression (pattern) will match all non-digits including "#" and `RegExp(pattern).test('ab#')` will return `true`:
+- if the first parameter is `partial`, then the regular expression (pattern) will match all non-digits except "#" taking into account the incomplete value and `RegExp(pattern).test('a#')` will return `false`:
+- if the first parameter is `partial-inexact`, then the regular expression (pattern) will match all non-digits including "#" taking into account the partial value and `RegExp(pattern).test('a#')` will return `true`:
 
 ```ts
-const pattern = generatePattern({ mask, replacement }, true); // "^(?!_)(\\D)$"
-RegExp(pattern).test('_'); // false
-RegExp(pattern).test('a'); // true
+const options = {
+  mask: '###',
+  replacement: { '#': /\D/ },
+};
+
+const pattern$1 = generatePattern('full', options);
+RegExp(pattern$1).test('ab#'); // false
+RegExp(pattern$1).test('abc'); // true
+
+const pattern$2 = generatePattern('full-inexact', options);
+RegExp(pattern$2).test('ab#'); // true
+RegExp(pattern$2).test('abc'); // true
+
+const pattern$3 = generatePattern('partial', options);
+RegExp(pattern$3).test('a#'); // false
+RegExp(pattern$3).test('ab'); // true
+
+const pattern$4 = generatePattern('partial-inexact', options);
+RegExp(pattern$4).test('a#'); // true
+RegExp(pattern$4).test('ab'); // true
 ```
+
+## Migration to v2
+
+If you are upgrading from version 1 to version 2, there are a number of important changes you need to take into account.
+
+### `onMask`
+
+The `input-mask` event and `onMask` method are no longer available in newer versions, focusing work on only using React's own events and methods such as `onChange`, since the `input-mask` event and `onMask` method cannot be explicitly coordinated with React's events and methods, making such usage and event firing order non-obvious.
+
+Thus, you should use `onChange` instead of the `onMask` method.
+
+Additionally, if you are referencing data in the `detail` property of the `onMask` event object, you should use the utilities described in the [`Utils`](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils) section instead, for example:
+
+instead of
+
+```tsx
+import { InputMask } from '@react-input/mask';
+
+// ...
+
+const options = {
+  mask: '___-___',
+  replacement: { _: /\d/ },
+};
+
+return (
+  <InputMask
+    {...options}
+    onMask={(event) => {
+      const { value, input, parts, pattern, isValid } = event.detail;
+    }}
+  />
+);
+```
+
+use
+
+```tsx
+import { InputMask, unformat, formatToParts, generatePattern } from '@react-input/mask';
+
+// ...
+
+const options = {
+  mask: '___-___',
+  replacement: { _: /\d/ },
+};
+
+return (
+  <InputMask
+    {...options}
+    onChange={(event) => {
+      const value = event.target.value;
+      const input = unformat(value, options);
+      const parts = formatToParts(value, options);
+      const pattern = generatePattern('full-inexact', options);
+      const isValid = RegExp(pattern).test(value);
+    }}
+  />
+);
+```
+
+For more information on using utilities, see [`Utils`](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils).
+
+### `modify`
+
+The `modify` method now uses the new API, so that it takes an input object similar to the `track` method instead of unmasked values.
+This approach allows for more flexible control and the ability to choose masking. For more information on the `modify` method, see [`Modify`](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#modify).
+
+### `generatePattern`
+
+The `generatePattern` utility now has a new API, so:
+
+- if you use `generatePattern(options, true)` (with `true` as the second argument), you should change to `generatePattern('full', options)`;
+- if you use `generatePattern(options)` (without `true` as the second argument), you should change to `generatePattern('full-inexact', options)`.
+
+For more information on using the `generatePattern` utility, see [`Utils`](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#generatepattern).
+
+### `TrackParam`
+
+The `TrackParam` type has been renamed to `TrackingData`.
+
+## Examples
+
+Check out the usage examples that take into account different cases that may be useful in your particular case. [See examples](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask/src/examples).
 
 ## Other packages from `@react-input`
 

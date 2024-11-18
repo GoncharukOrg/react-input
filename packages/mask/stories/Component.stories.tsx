@@ -3,7 +3,7 @@ import React, { forwardRef, useState } from 'react';
 
 import InputMask from '../src/InputMask';
 
-import type { InputMaskProps, TrackParam } from '../src';
+import type { InputMaskProps, TrackingData } from '../src';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
@@ -82,8 +82,15 @@ export const ControlledComponentWithModifyPhone: Story = {
     controlled: true,
     mask: '+_ (___) ___-__-__',
     replacement: { _: /\d/ },
-    modify: (input: string) => {
-      return { mask: input && !input.startsWith('7') ? '+_ __________' : '+_ (___) ___-__-__' };
+    modify: ({ value, data, selectionStart }: TrackingData) => {
+      const _data = (data ?? '').replace(/\D/, '');
+      const beforeChange = value.slice(0, selectionStart);
+      return {
+        mask:
+          (beforeChange.length <= 1 && _data.startsWith('7')) || beforeChange[1]?.startsWith('7')
+            ? '+_ (___) ___-__-__'
+            : '+_ __________',
+      };
     },
   },
 };
@@ -94,7 +101,7 @@ export const ControlledComponentWithTrackPhone: Story = {
     controlled: true,
     mask: '+_ (___) ___-__-__',
     replacement: { _: /\d/ },
-    track: ({ inputType, value, data, selectionStart, selectionEnd }: TrackParam) => {
+    track: ({ inputType, value, data, selectionStart, selectionEnd }: TrackingData) => {
       if (inputType === 'insert' && selectionStart <= 1) {
         const _data = data.replace(/\D/g, '');
         return /^[78]/.test(_data) ? `7${_data.slice(1)}` : /^[0-69]/.test(_data) ? `7${_data}` : data;

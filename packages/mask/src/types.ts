@@ -1,3 +1,5 @@
+export type Overlap = 'full' | 'full-inexact' | 'partial' | 'partial-inexact';
+
 export interface MaskPart {
   type: 'replacement' | 'mask' | 'input';
   value: string;
@@ -6,7 +8,7 @@ export interface MaskPart {
 
 export type Replacement = Record<string, RegExp>;
 
-export type TrackParam = (
+export type TrackingData = (
   | { inputType: 'insert'; data: string }
   | { inputType: 'deleteBackward' | 'deleteForward'; data: null }
 ) & {
@@ -15,7 +17,7 @@ export type TrackParam = (
   selectionEnd: number;
 };
 
-export type Track = (param: TrackParam) => string | boolean | null | undefined;
+export type Track = (data: TrackingData) => string | boolean | null | undefined;
 
 export interface ModifiedData {
   mask?: string;
@@ -24,7 +26,7 @@ export interface ModifiedData {
   separate?: boolean;
 }
 
-export type Modify = (input: string) => ModifiedData | undefined;
+export type Modify = (data: TrackingData) => ModifiedData | undefined;
 
 export interface MaskOptions {
   /** Input mask, `replacement` is used to replace characters. */

@@ -171,7 +171,7 @@ The `modify` function is triggered before masking and allows you conditionally c
 
 The `modify` function expects to return an object containing the data to modify, optionally including `mask`, `replacement`, `showMask` and `separate`, or to return `undefined`. Changes will be only applied to those properties that were returned, so you can change any property as you like, or not change any property by passing `undefined`.
 
-The `modify` function takes a value without mask characters that is valid at the time of input. For example, if the `mask` property has the value `+0 (___) ___-__-__` and the previous value is `+0 (123) ___-__-__` and the user entered the character "4" at the ninth index of the value, then `modify` will take the value "1234". Note that there are no mask characters including "7" as well. Using this value you can modify the properties with the expected result.
+The `modify` function takes a value without mask characters that is valid at the time of input. For example, if the `mask` property has the value `+0 (___) ___-__-__` and the previous value is `+0 (123) ___-__-__` and the user entered the character "4" at the ninth index of the value, then `modify` will take the value "1234". Note that there are no mask characters including "0" as well. Using this value you can modify the properties with the expected result.
 
 Let's consider a possible situation when we need to change the mask depending on the phone city code:
 

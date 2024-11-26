@@ -12,8 +12,6 @@
 
 ## What's new?
 
-Usage via CDN is available (see «[Usage with CDN](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#usage-with-cdn)»).
-
 The `input-mask` event and `onMask` method are no longer available in newer versions, focusing work on only using React's own events and methods such as `onChange`, since the `input-mask` event and `onMask` method cannot be explicitly coordinated with React's events and methods, making such usage and event firing order non-obvious.
 
 To use the useful data from the `detail` property of the `input-mask` (`onMask`) event object, you can also use the utilities described in the «[Utils](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#utils)» section.
@@ -30,12 +28,6 @@ or using **yarn**:
 
 ```bash
 yarn add @react-input/mask
-```
-
-or using **CDN** (for more information, see [UNPKG](https://unpkg.com/)):
-
-```html
-<script src="https://unpkg.com/@react-input/mask/cdn"></script>
 ```
 
 ## Unique properties
@@ -86,34 +78,6 @@ export default function App() {
 ```
 
 The `useMask` hook takes the same properties as the `InputMask` component, except for the `component` properties. Both approaches are equivalent, but the use of the `InputMask` component provides additional capabilities, which will be discussed in the section «[Integration with custom components](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask#integration-with-custom-components)».
-
-## Usage with CDN
-
-To use the library's capabilities, you can also load it via CDN.
-
-When loading, you get the global class `ReactInput.Mask`, calling it with the specified mask parameters will create a new object with two methods, where the first is `register`, which applies masking when inputting to the specified element, the second is `unregister`, which cancels the previous action. The following example illustrates this use:
-
-```js
-const mask = new ReactInput.Mask({
-  mask: '+0 (___) ___-__-__',
-  replacement: { _: /\d/ },
-});
-
-const elements = document.getElementsByName('phone');
-
-elements.forEach((element) => {
-  mask.register(element);
-});
-
-// If necessary, you can disable masking as you type.
-// elements.forEach((element) => {
-//   mask.unregister(element);
-// });
-```
-
-Please note that in this way you can register multiple elements to which the mask will be applied.
-
-> Although you can use a class to mask input, using a hook or component in the React environment is preferable due to the optimizations applied, where you do not have to think about when to call `register` and `unregister` for input masking to work.
 
 ## Initializing the value
 
@@ -368,17 +332,6 @@ When testing a component with `showMask`, make sure that you set the initial cur
 ## Utils
 
 `@react-input/mask` provides utilities to make things easier when processing a value. You can use them regardless of using the `InputMask` component or the `useMask` hook.
-
-You can use utilities by importing them from the package or calling them from an instance of the `Mask` class. With the second option, you don't need to pass parameters to the methods, as shown in the examples below, for example when using with a CDN:
-
-```js
-const mask = new ReactInput.Mask({
-  mask: '+__',
-  replacement: { _: /\d/ },
-});
-
-mask.unformat('+1_'); // returns: "1"
-```
 
 ### `format`
 

@@ -82,12 +82,16 @@ export const ControlledComponentWithModifyPhone: Story = {
     controlled: true,
     mask: '+_ (___) ___-__-__',
     replacement: { _: /\d/ },
-    modify: ({ value, data, selectionStart }: TrackingData) => {
-      const _data = (data ?? '').replace(/\D/, '');
+    modify: ({ value, data, selectionStart, selectionEnd }: TrackingData) => {
       const beforeChange = value.slice(0, selectionStart);
+      const afterChange = value.slice(selectionEnd);
+
+      const beforeStart = beforeChange.replace(/\D/, '');
+      const afterStart = ((data ?? '') + afterChange).replace(/\D/, '');
+
       return {
         mask:
-          (beforeChange.length <= 1 && _data.startsWith('7')) || beforeChange[1]?.startsWith('7')
+          beforeStart.startsWith('7') || (beforeStart === '' && afterStart.startsWith('7'))
             ? '+_ (___) ___-__-__'
             : '+_ __________',
       };

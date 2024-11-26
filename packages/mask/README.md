@@ -443,10 +443,10 @@ Additionally, it is possible to generate an inexact match. So if the first param
 
 So, if `mask: '###'` and `replacement: { '#': /\D/ }`, then:
 
-- if the first parameter is `full`, then the regular expression (pattern) will match all non-digits except "#" and `RegExp(pattern).test('ab#')` will return `false`:
-- if the first parameter is `partial`, then the regular expression (pattern) will match all non-digits including "#" and `RegExp(pattern).test('ab#')` will return `true`:
-- if the first parameter is `partial`, then the regular expression (pattern) will match all non-digits except "#" taking into account the incomplete value and `RegExp(pattern).test('a#')` will return `false`:
-- if the first parameter is `partial-inexact`, then the regular expression (pattern) will match all non-digits including "#" taking into account the partial value and `RegExp(pattern).test('a#')` will return `true`:
+- if the first parameter is `full`, then the regular expression (pattern) will match all non-digits except "#" and `RegExp(pattern).test('ab#')` will return `false`;
+- if the first parameter is `full-inexact`,then the regular expression (pattern) will match all non-digits including "#" and `RegExp(pattern).test('ab#')` will return `true`;
+- if the first parameter is `partial`, then the regular expression (pattern) will match all non-digits except "#" taking into account the partial value and `RegExp(pattern).test('a#')` will return `false`;
+- if the first parameter is `partial-inexact`, then the regular expression (pattern) will match all non-digits including "#" taking into account the partial value and `RegExp(pattern).test('a#')` will return `true`.
 
 ```ts
 const options = {

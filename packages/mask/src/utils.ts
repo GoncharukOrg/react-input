@@ -99,10 +99,10 @@ function resolveSpecial(char: string) {
  * matches the `replacement` value, except for the `replacement` key itself.
  *
  * So, if `mask: '###'` and `replacement: { '#': /\D/ }`, then:
- * - if `overlap: 'full'`, the regular expression (pattern) will match all non-digits except "#" and `RegExp(pattern).test('ab#')` will return `false`.
- * - if `overlap: 'full-inexact'`, the regular expression (pattern) will match all non-digits including "#" and `RegExp(pattern).test('ab#')` will return `true`.
+ * - if `overlap: 'full'`, the regular expression (pattern) will match all non-digits except "#" and `RegExp(pattern).test('ab#')` will return `false`;
+ * - if `overlap: 'full-inexact'`, the regular expression (pattern) will match all non-digits including "#" and `RegExp(pattern).test('ab#')` will return `true`;
  * - if `overlap: 'partial'`, the regular expression (pattern) will match all non-digits except "#" taking into account the partial value and `RegExp(pattern).test('a#')` will return `false`;
- * - if `overlap: 'partail-inexact'`, the regular expression (pattern) will match all non-digits including "#" taking into account the partial value and `RegExp(pattern).test('a#')` will return `true`;
+ * - if `overlap: 'partial-inexact'`, the regular expression (pattern) will match all non-digits including "#" taking into account the partial value and `RegExp(pattern).test('a#')` will return `true`.
  */
 export function generatePattern(overlap: Overlap, { mask, replacement }: Options): string {
   if (overlap !== 'full' && overlap !== 'full-inexact' && overlap !== 'partial' && overlap !== 'partial-inexact') {

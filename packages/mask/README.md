@@ -224,9 +224,9 @@ The `modify` function takes the following parameters:
 | `selectionStart` |                    `number`                     | The index of the beginning of the range of change in the value, in the case of input corresponds to the initial position of the cursor in `value` at the time the input event is called, in the case of deletion it corresponds to the index of the first deleted character.            |
 | `selectionEnd`   |                    `number`                     | The index of the end of the range of change in the value, in the case of input corresponds to the final position of the cursor in `value` at the time the input event is called, in the case of deletion it corresponds to the index of the character after the last deleted character. |
 
-An example of using the `modify` function can be found in the `phone-login` example, which removes the change of the mask depending on the input. See [`phone-login.tsx`](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask/src/examples/phone-login.tsx).
-
 The advantage of this approach is that you do not need to store the state of the component to change its properties, the modification happens in the already running masking process.
+
+An example of using the `modify` function can be found in the `phone-login` example, which removes the change of the mask depending on the input. See [`phone-login.tsx`](https://github.com/GoncharukOrg/react-input/tree/main/packages/mask/src/examples/phone-login.tsx).
 
 ## Integration with custom components
 

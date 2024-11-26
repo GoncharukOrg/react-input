@@ -78,7 +78,7 @@ export default class Input<T = unknown> {
         selectionEnd: 0,
       };
 
-      const descriptor = Object.getOwnPropertyDescriptor(element, 'value');
+      const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
 
       // Поскольку значение элемента может быть изменено вне текущей логики,
       // нам важно перехватывать каждое изменение для обновления `tracker.value`.

@@ -1,6 +1,6 @@
 {
   "name": "@react-input/mask",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "license": "MIT",
   "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
   "description": "React input component for masked input.",
@@ -80,7 +80,7 @@
     "release:patch": "tsx ../../scripts/release.ts patch"
   },
   "dependencies": {
-    "@react-input/core": "^2.0.0"
+    "@react-input/core": "^2.0.1"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

@@ -1,23 +1,8 @@
 import SyntheticChangeError from './SyntheticChangeError';
 
-import type { InputAttributes, InputOptions, InputType } from './types';
+import type { InputOptions, InputType } from './types';
 
 const ALLOWED_TYPES = ['text', 'email', 'tel', 'search', 'url'];
-
-// Важно установить позицию курсора после установки значения,
-// так как после установки значения, курсор автоматически уходит в конец значения
-function setInputAttributes(
-  element: HTMLInputElement,
-  { value, selectionStart, selectionEnd }: Partial<InputAttributes>,
-) {
-  if (value !== undefined) {
-    element.value = value;
-  }
-
-  if (selectionStart !== undefined && selectionEnd !== undefined) {
-    element.setSelectionRange(selectionStart, selectionEnd);
-  }
-}
 
 interface ContextValue {
   onFocus: (event: FocusEvent) => void;
@@ -41,7 +26,7 @@ export default class Input<T = unknown> {
   constructor({ init, tracking }: InputOptions<T>) {
     const handlersMap = new WeakMap<HTMLInputElement, ContextValue>();
 
-    this.register = (element: HTMLInputElement) => {
+    this.register = (element) => {
       if (!ALLOWED_TYPES.includes(element.type)) {
         if (process.env.NODE_ENV !== 'production') {
           console.warn(`Warn: The input element type does not match one of the types: ${ALLOWED_TYPES.join(', ')}.`);
@@ -78,7 +63,11 @@ export default class Input<T = unknown> {
         selectionEnd: 0,
       };
 
-      const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+      // Важно сохранить дескриптор создаваемый React
+      const descriptor = Object.getOwnPropertyDescriptor(
+        '_valueTracker' in element ? element : HTMLInputElement.prototype,
+        'value',
+      );
 
       // Поскольку значение элемента может быть изменено вне текущей логики,
       // нам важно перехватывать каждое изменение для обновления `tracker.value`.
@@ -94,7 +83,7 @@ export default class Input<T = unknown> {
       // Поскольку в `init` возможно изменение инициализированного значения, мы
       // также должны изменить значение элемента, при этом мы не должны устанавливать
       // позицию каретки, так как установка позиции здесь приведёт к автофокусу.
-      setInputAttributes(element, { value });
+      element.value = value;
 
       /**
        * Handle focus
@@ -208,7 +197,8 @@ export default class Input<T = unknown> {
             selectionEnd,
           });
 
-          setInputAttributes(element, attributes);
+          element.value = attributes.value;
+          element.setSelectionRange(attributes.selectionStart, attributes.selectionEnd);
 
           cache.value = attributes.value;
           cache.options = options;
@@ -224,7 +214,8 @@ export default class Input<T = unknown> {
             previousValue,
           );
         } catch (error) {
-          setInputAttributes(element, tracker);
+          element.value = tracker.value;
+          element.setSelectionRange(tracker.selectionStart, tracker.selectionEnd);
 
           event.preventDefault();
           event.stopPropagation();
@@ -248,7 +239,7 @@ export default class Input<T = unknown> {
       handlersMap.set(element, { onFocus, onBlur, onInput });
     };
 
-    this.unregister = (element: HTMLInputElement) => {
+    this.unregister = (element) => {
       const handlers = handlersMap.get(element);
 
       if (handlers !== undefined) {

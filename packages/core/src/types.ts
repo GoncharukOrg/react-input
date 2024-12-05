@@ -1,11 +1,5 @@
 export type InputType = 'insert' | 'deleteBackward' | 'deleteForward';
 
-export interface InputAttributes {
-  value: string;
-  selectionStart: number;
-  selectionEnd: number;
-}
-
 export type InitFunction<T> = (param: { initialValue: string; controlled: boolean }) => {
   value: string;
   options: T;
@@ -21,7 +15,12 @@ export type TrackingFunction<T> = (param: {
   changeEnd: number;
   selectionStart: number;
   selectionEnd: number;
-}) => InputAttributes & { options: T };
+}) => {
+  value: string;
+  selectionStart: number;
+  selectionEnd: number;
+  options: T;
+};
 
 export interface InputOptions<T = unknown> {
   init: InitFunction<T>;
